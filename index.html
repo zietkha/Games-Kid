@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>English Kha Master Kids — Chơi Trò Chơi Học Tiếng Anh Tiểu Học (Lớp 1-5)</title>
+  <meta name="description" content="Nền tảng vừa học vừa chơi Tiếng Anh tương tác chuẩn quốc tế cho học sinh Tiểu học Lớp 1 - 5: Tự tạo bài học mẫu câu, chơi trò chơi kiểu Baamboozle chia đội kịch tính, Flashcard 3D, trắc nghiệm và xếp chữ!">
+
+  <!-- Google Fonts: Quicksand & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Liquid Glass Dynamic Animated Blobs Background -->
+  <div class="mesh-bg" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
+
+  <!-- Confetti Canvas for Celebrating Victories and Game Highlights -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar glass-panel">
+    <div class="nav-container">
+      <div class="nav-brand" id="brandBtn">
+        <div class="brand-icon">
+          <span>🌟</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">English Kha Master <span class="badge-kids">KIDS 🎈</span></span>
+          <span class="brand-subtitle">Trò Chơi Tiếng Anh Tiểu Học Lớp 1 – 5</span>
+        </div>
+      </div>
+
+      <!-- Quick Stats, Sound & Profile Controls -->
+      <div class="nav-actions">
+        <!-- Add Lesson Button -->
+        <button class="stat-pill create-lesson-pill" id="openAddLessonBtn" title="Thêm bài học & mẫu câu mới">
+          <span class="pill-icon">✨</span>
+          <span class="pill-label">Thêm Bài Học</span>
+        </button>
+
+        <!-- Daily Check-in Button -->
+        <button class="stat-pill checkin-pill" id="dailyCheckinBtn" title="Điểm danh nhận quà hôm nay!">
+          <span class="pill-icon">🎁</span>
+          <span class="pill-label">Điểm Danh</span>
+        </button>
+
+        <!-- Streak Pill -->
+        <div class="stat-pill streak-pill" title="Chuỗi ngày học liên tục">
+          <span class="pill-icon">🔥</span>
+          <span id="navStreakCount" class="pill-val">3</span>
+          <span class="pill-label">Ngày</span>
+        </div>
+
+        <!-- XP Pill -->
+        <div class="stat-pill xp-pill" title="Kinh nghiệm học tập">
+          <span class="pill-icon">⚡</span>
+          <span id="navXpCount" class="pill-val">350</span>
+          <span class="pill-label">XP</span>
+        </div>
+
+        <!-- Sound Toggle -->
+        <button class="sound-toggle-btn glass-btn" id="soundToggleBtn" title="Bật/Tắt âm thanh hiệu ứng">
+          <span id="soundIcon">🔊</span>
+        </button>
+
+        <!-- Profile Button -->
+        <button class="profile-btn glass-btn" id="openProfileBtn" title="Hồ sơ & Huy hiệu của bé">
+          <span class="avatar-emoji" id="navAvatarEmoji">🦁</span>
+          <span class="learner-name" id="navLearnerName">Bé Siêu Nhân</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs / Quick Filter -->
+    <nav class="sub-nav">
+      <button class="nav-tab active" data-target="view-dashboard">
+        <span class="tab-icon">🏠</span> Khám Phá Bài Học
+      </button>
+      <button class="nav-tab" data-target="view-ai-studio">
+        <span class="tab-icon">🎨</span> AI Studio (Ảnh & Mẫu Câu)
+      </button>
+      <button class="nav-tab" data-target="view-baamboozle">
+        <span class="tab-icon">🎲</span> Trò Chơi Baamboozle (Đấu Đội)
+      </button>
+      <button class="nav-tab" data-target="view-games">
+        <span class="tab-icon">🎮</span> Mini-Games Cá Nhân
+      </button>
+      <button class="nav-tab" data-target="view-leaderboard">
+        <span class="tab-icon">🏆</span> Bảng Xếp Hạng & Điểm Danh
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+    
+    <!-- ================= VIEW 1: DASHBOARD & GRADE SELECTION ================= -->
+    <section id="view-dashboard" class="app-view active">
+      <!-- Hero Banner -->
+      <div class="hero-banner glass-panel">
+        <div class="hero-text">
+          <div class="hero-badge">🌈 Học mà Chơi — Vui Từng Giây!</div>
+          <h1 class="hero-title">Chọn Khối Lớp Của Bé Để Khám Phá!</h1>
+          <p class="hero-desc">Chương trình chuẩn Tiếng Anh Tiểu học bám sát khung GDPT mới. Bạn có thể tự thêm bài học và mẫu câu để AI biến hóa thành đấu trường trò chơi <strong>Baamboozle</strong> kịch tính!</p>
+          <div class="hero-highlights">
+            <span class="hl-chip highlight-chip" onclick="switchView('view-ai-studio')">🎨 AI Đoán Hình & Điền Câu</span>
+            <span class="hl-chip" onclick="openModal('addLessonModal')">✨ Thêm bài học mới</span>
+            <span class="hl-chip" onclick="switchView('view-baamboozle')">🎲 Baamboozle 2 đội</span>
+            <span class="hl-chip" onclick="openSkillModal('flashcard')">🎴 Flashcard 3D</span>
+            <span class="hl-chip" onclick="openSkillModal('quiz')">🧠 Trắc nghiệm</span>
+          </div>
+        </div>
+        <div class="hero-mascot">
+          <div class="mascot-card">
+            <span class="mascot-emoji">🚀</span>
+            <div class="mascot-bubble">Bé ơi, hôm nay sẵn sàng cùng Robot Kha chiến Baamboozle và đoán hình mẫu câu chưa nào?</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade Selector Bar (Lớp 1 -> Lớp 5) -->
+      <div class="grade-selector-section">
+        <div class="section-header">
+          <h2 class="section-title">🎒 Chọn Khối Lớp Học:</h2>
+          <span class="section-hint">Nhấn chọn lớp để xem toàn bộ bài học & thử thách trò chơi tương ứng</span>
+        </div>
+
+        <div class="grade-cards-grid" id="gradeCardsGrid">
+          <!-- Grade cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- Skills Section for Selected Grade -->
+      <div class="skills-section">
+        <div class="section-header">
+          <div class="skill-grade-header">
+            <h2 class="section-title" id="currentGradeTitle">🌟 Bài Học & Trò Chơi Lớp 1</h2>
+            <span class="grade-tag" id="currentGradeTheme">Chủ đề: Chữ cái, Màu sắc, Số đếm & Động vật</span>
+          </div>
+          <div class="audio-speed-control">
+            <span>Tốc độ đọc mẫu:</span>
+            <button class="speed-toggle active" data-speed="0.85">Chậm dễ nghe 🐢</button>
+            <button class="speed-toggle" data-speed="1.0">Tự nhiên 🐰</button>
+          </div>
+        </div>
+
+        <!-- 5-Skill Cards Grid -->
+        <div class="skill-cards-grid" id="skillCardsGrid">
+          <!-- 0. AI Picture & Sentence Studio Card (Featured NEW) -->
+          <div class="skill-card glass-panel featured-skill" data-skill="ai-studio" style="border-color: #f472b6;">
+            <div class="featured-ribbon" style="background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);">⭐ MỚI ĐỘC ĐÁO</div>
+            <div class="skill-icon-wrap" style="background: #fce7f3;">
+              <span class="skill-icon">🎨</span>
+            </div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag" style="color: #db2777;">AI Studio Hình Ảnh</span>
+                <span class="skill-count">Đoán hình & điền câu</span>
+              </div>
+              <h3 class="skill-name">Đoán Hình & Điền Mẫu Câu AI</h3>
+              <p class="skill-desc">Tải ảnh hoặc chọn ảnh có sẵn, từ vựng bên dưới. AI tự động xóa chữ hoặc ẩn từ trong câu mẫu, tạo trò chơi đoán hình kịch tính!</p>
+              <button class="action-btn btn-primary" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);" onclick="switchView('view-ai-studio')">Vào AI Studio Khám Phá ➔</button>
+            </div>
+          </div>
+
+          <!-- 1. Baamboozle Arena Card (Featured) -->
+          <div class="skill-card glass-panel featured-skill" data-skill="baamboozle">
+            <div class="featured-ribbon">🔥 HOT NHẤT LỚP HỌC</div>
+            <div class="skill-icon-wrap bg-purple">
+              <span class="skill-icon">🎲</span>
+            </div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Đấu Đội Baamboozle</span>
+                <span class="skill-count">16 ô số bí ẩn</span>
+              </div>
+              <h3 class="skill-name">Trò Chơi Baamboozle Lật Ô Số</h3>
+              <p class="skill-desc">Chia 2 đội chọn ô số bí mật, trả lời mẫu câu tiếng Anh và đón nhận bất ngờ: Hoán đổi điểm, cướp điểm, thưởng điểm sốc!</p>
+              <button class="action-btn btn-indigo" onclick="switchView('view-baamboozle')">Vào Đấu Trường Baamboozle ➔</button>
+            </div>
+          </div>
+
+          <!-- 2. Flashcard 3D Card -->
+          <div class="skill-card glass-panel" data-skill="flashcard">
+            <div class="skill-icon-wrap bg-blue">
+              <span class="skill-icon">📖</span>
+            </div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Từ Vựng & Đọc</span>
+                <span class="skill-count" id="count-reading">10 thẻ học</span>
+              </div>
+              <h3 class="skill-name">Flashcard 3D & Mẫu Câu</h3>
+              <p class="skill-desc">Lật thẻ 3D trực quan hai mặt, xem hình minh họa, tra từ vựng có phiên âm quốc tế IPA và nghe phát âm bản xứ chuẩn.</p>
+              <button class="action-btn btn-primary" onclick="openSkillModal('flashcard')">Khám Phá Flashcard ➔</button>
+            </div>
+          </div>
+
+          <!-- 3. Speed Quiz Card -->
+          <div class="skill-card glass-panel" data-skill="quiz">
+            <div class="skill-icon-wrap bg-amber">
+              <span class="skill-icon">🧠</span>
+            </div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Phản Xạ Nhanh</span>
+                <span class="skill-count" id="count-quiz">5 câu đố vui</span>
+              </div>
+              <h3 class="skill-name">Đố Vui Trắc Nghiệm Tốc Độ</h3>
+              <p class="skill-desc">Thử thách 15 giây chọn đáp án đúng, nhận phản hồi tức thì, xem giải thích và tích lũy thật nhiều điểm thưởng XP!</p>
+              <button class="action-btn btn-warning" onclick="openSkillModal('quiz')">Chơi Trắc Nghiệm ➔</button>
+            </div>
+          </div>
+
+          <!-- 4. Word Scramble & Picture Match Card -->
+          <div class="skill-card glass-panel" data-skill="scramble">
+            <div class="skill-icon-wrap bg-emerald">
+              <span class="skill-icon">🧩</span>
+            </div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Tập Đánh Vần & Đoán Hình</span>
+                <span class="skill-count" id="count-writing">Ghép từ logic</span>
+              </div>
+              <h3 class="skill-name">Xếp Chữ & Nghe Đoán Hình</h3>
+              <p class="skill-desc">Trò chơi xáo trộn chữ cái Word Scramble và nghe âm thanh đoán hình ảnh giúp rèn luyện trí nhớ chính tả toàn diện.</p>
+              <button class="action-btn btn-success" onclick="openSkillModal('scramble')">Chơi Xếp Chữ Ngay ➔</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 2: BAAMBOOZLE GAME ARENA (NEW FEATURE) ================= -->
+    <section id="view-baamboozle" class="app-view">
+      <div class="baamboozle-arena-header glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <button type="button" class="back-to-home-btn" onclick="goBackToHome()">
+            <span>⬅️</span> Quay lại Trang Chủ
+          </button>
+        </div>
+        <div class="baam-info">
+          <h2>🎲 Đấu Trường Baamboozle Lật Ô Số Bí Mật</h2>
+          <p>Chọn bài học mẫu câu, chia 2 đội và lần lượt chọn ô số bí ẩn để ghi điểm và lật ngược tình thế!</p>
+        </div>
+        <div class="baam-controls">
+          <label for="baamLessonSelect">Bộ bài học:</label>
+          <select id="baamLessonSelect" class="glass-select">
+            <!-- Populated by JS -->
+          </select>
+          <button class="glass-btn small-btn btn-primary" onclick="openModal('addLessonModal')">
+            <span>✨</span> Tạo Bài Mới
+          </button>
+          <button class="glass-btn small-btn" id="baamRestartGameBtn">
+            <span>🔄</span> Chơi Ván Mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Teams Scoreboard -->
+      <div class="baam-scoreboard-row">
+        <!-- Team 1 -->
+        <div class="team-score-card glass-panel team-1 active" id="teamCard1">
+          <div class="team-badge">Đến Lượt! 🎯</div>
+          <div class="team-avatar">🦊</div>
+          <h3 class="team-name" id="teamName1">Đội Cáo Đỏ</h3>
+          <div class="team-score-val" id="teamScore1">0</div>
+          <span class="team-pts-label">Điểm số</span>
+          <div class="team-score-adjust-bar">
+            <button class="score-adj-btn btn-minus" onclick="adjustBaamTeamScore(1, -10)" title="Trừ 10 điểm">-10</button>
+            <button class="score-adj-btn btn-plus" onclick="adjustBaamTeamScore(1, 10)" title="Cộng 10 điểm">+10</button>
+          </div>
+        </div>
+
+        <!-- VS Divider -->
+        <div class="vs-indicator">
+          <span>VS</span>
+        </div>
+
+        <!-- Team 2 -->
+        <div class="team-score-card glass-panel team-2" id="teamCard2">
+          <div class="team-badge">Chờ Lượt ⏳</div>
+          <div class="team-avatar">🦁</div>
+          <h3 class="team-name" id="teamName2">Đội Sư Tử Xanh</h3>
+          <div class="team-score-val" id="teamScore2">0</div>
+          <span class="team-pts-label">Điểm số</span>
+          <div class="team-score-adjust-bar">
+            <button class="score-adj-btn btn-minus" onclick="adjustBaamTeamScore(2, -10)" title="Trừ 10 điểm">-10</button>
+            <button class="score-adj-btn btn-plus" onclick="adjustBaamTeamScore(2, 10)" title="Cộng 10 điểm">+10</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Baamboozle Grid of Mystery Tiles -->
+      <div class="baam-board-container glass-panel">
+        <div class="baam-board-toolbar">
+          <div class="baam-turn-indicator" id="baamTurnText">Lượt của: <strong class="text-team-1">Đội Cáo Đỏ 🦊</strong> — Hãy chọn 1 ô số!</div>
+          <div class="baam-tiles-left" id="baamRemainingTilesText">Còn lại: 16 / 16 ô</div>
+        </div>
+
+        <div class="baam-tiles-grid" id="baamTilesGrid">
+          <!-- 16 Mystery tiles populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 2.5: AI STUDIO & PICTURE SENTENCE GAME ================= -->
+    <section id="view-ai-studio" class="app-view">
+      <!-- Section Header with Mode Switcher -->
+      <div class="ai-studio-header glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <button type="button" class="back-to-home-btn" onclick="goBackToHome()">
+            <span>⬅️</span> Quay lại Trang Chủ
+          </button>
+          <div class="studio-badge" style="margin:0;">✨ AI Game Creator & Visual Arena</div>
+        </div>
+        <div class="ai-studio-title-area">
+          <h2>🎨 AI Đoán Hình & Điền Mẫu Câu Tiếng Anh</h2>
+          <p>Tải ảnh hoặc chọn ảnh có sẵn, từ vựng bên dưới. AI sẽ tự động phân tích và xóa từ/chữ cái để học sinh vừa nhìn ảnh vừa điền câu chuẩn xác!</p>
+        </div>
+        <div class="studio-mode-toggles">
+          <button class="studio-tab-btn active" id="btnModeAiPlay" onclick="switchStudioMode('play')">
+            <span>🎮</span> Chơi Thử Thách
+          </button>
+          <button class="studio-tab-btn" id="btnModeAiCreate" onclick="switchStudioMode('create')">
+            <span>🛠️</span> AI Studio Tạo Game
+          </button>
+        </div>
+      </div>
+
+      <!-- SUB-MODE 1: PLAY ARENA (ĐẤU TRƯỜNG CHƠI GAME) -->
+      <div id="aiStudioPlayMode" class="studio-sub-view active">
+        <div class="ai-game-stage glass-panel">
+          <!-- Game Status & Score bar -->
+          <div class="ai-game-toolbar">
+            <div class="game-progress-info">
+              <span class="q-counter-pill" id="aiGameProgressText">Câu 1 / 10</span>
+              <div class="q-progress-bar-track">
+                <div class="q-progress-bar-fill" id="aiGameProgressFill" style="width: 10%;"></div>
+              </div>
+            </div>
+            <div class="game-stats-pills">
+              <div class="stat-pill-sm score-pill">
+                <span>⭐</span> <span id="aiGameScore">0</span> Điểm
+              </div>
+              <div class="stat-pill-sm streak-pill">
+                <span>🔥</span> <span id="aiGameStreak">0</span> Chuỗi Đúng
+              </div>
+              <button class="glass-btn small-btn" id="aiGameRestartBtn" onclick="restartAiPictureGame()">
+                <span>🔄</span> Chơi lại
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Visual & Sentence Playground -->
+          <div class="ai-playground-grid">
+            <!-- Left Column: Picture Card (No spoiler answer below) -->
+            <div class="ai-picture-card glass-panel">
+              <div class="picture-frame">
+                <img id="aiPlayImage" class="ai-play-img" src="" alt="Minh họa câu đố">
+                <div class="picture-sparkle-tag">🖼️ Ảnh Gợi Ý</div>
+              </div>
+              <div class="picture-caption-hint">
+                <span>🔍</span> Quan sát hình ảnh để tìm từ vựng còn thiếu
+              </div>
+            </div>
+
+            <!-- Right Column: Sentence Cloze & Answer Workspace -->
+            <div class="ai-sentence-workspace glass-panel">
+              <div class="sentence-stage-header">
+                <span class="stage-tag">📝 Nhiệm vụ: Điền từ/chữ cái còn thiếu vào câu</span>
+                <button class="glass-btn small-btn sound-btn" id="aiPlaySpeakSentenceBtn">
+                  <span>🔊</span> Nghe toàn bộ câu
+                </button>
+              </div>
+
+              <!-- The Cloze Sentence -->
+              <div class="cloze-sentence-card">
+                <div class="cloze-sentence-text" id="aiPlaySentenceDisplay">
+                  <!-- Sentence with blanks rendered by JS -->
+                </div>
+                <div class="cloze-vietnamese-hint" id="aiPlaySentenceMeaning">
+                  "Con mèo đang ngủ trên chiếc thảm ấm áp."
+                </div>
+              </div>
+
+              <!-- Input Area: Typing and Interactive Word Chips -->
+              <div class="answer-interactive-area">
+                <div class="direct-input-wrap">
+                  <label for="aiAnswerInput">Nhập từ hoặc chữ cái điền vào ô trống:</label>
+                  <div class="input-with-action">
+                    <input type="text" id="aiAnswerInput" class="glass-input answer-input-box" placeholder="Gõ từ đáp án hoặc bấm chọn thẻ từ bên dưới..." autocomplete="off">
+                    <button class="glass-btn clear-btn" id="aiAnswerClearBtn" title="Xóa ô nhập">✕</button>
+                  </div>
+                </div>
+
+                <!-- Word Bank / Chips Generated by AI -->
+                <div class="word-bank-section">
+                  <div class="word-bank-header">
+                    <span>💡 Ngân hàng từ gợi ý (Bấm để chọn):</span>
+                  </div>
+                  <div class="word-bank-chips" id="aiPlayWordBank">
+                    <!-- Word chips populated by AI -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action & Validation Controls -->
+              <div class="ai-game-actions">
+                <button class="action-btn btn-warning" id="aiGameHintBtn" onclick="revealAiGameHint()">
+                  <span>💡</span> Gợi Ý (+0 XP)
+                </button>
+                <button class="action-btn btn-primary flex-1" id="aiGameSubmitBtn" onclick="submitAiGameAnswer()">
+                  <span>🚀</span> Kiểm Tra Đáp Án Ngay!
+                </button>
+                <button class="action-btn btn-success flex-1" id="aiGameNextBtn" onclick="nextAiGameQuestion()" style="display: none;">
+                  <span>Tiếp Tục ➔</span>
+                </button>
+              </div>
+
+              <!-- Live Feedback Alert Box -->
+              <div class="ai-feedback-banner" id="aiFeedbackBanner" style="display: none;">
+                <div class="fb-icon" id="aiFbIcon">🎉</div>
+                <div class="fb-text">
+                  <h4 id="aiFbTitle">Chính xác tuyệt vời!</h4>
+                  <p id="aiFbDesc">Bé đã hoàn thành đúng mẫu câu tiếng Anh.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-MODE 2: CREATOR STUDIO (TỰ THÊM ẢNH, TỪ VỰNG & MẪU CÂU) -->
+      <div id="aiStudioCreateMode" class="studio-sub-view">
+        <div class="creator-studio-grid">
+          <!-- Left: Input Form -->
+          <div class="creator-form-panel glass-panel">
+            <div class="form-title-row">
+              <h3>✨ Tạo Câu Đố Mới Nhanh Chóng</h3>
+              <button class="ai-assist-btn" id="aiAutoGeneratePackBtn" onclick="generateAiSamplePack()">
+                <span>🤖</span> AI Sinh Nhanh Bộ Câu Hỏi Mẫu
+              </button>
+            </div>
+
+            <!-- Step 1: Image -->
+            <div class="form-step">
+              <label class="step-label">1. Thêm Ảnh Minh Họa Cho Từ Vựng:</label>
+              
+              <div class="image-source-options">
+                <label class="custom-file-upload glass-btn small-btn">
+                  <input type="file" id="creatorImageFileInput" accept="image/*" style="display: none;">
+                  <span>📁 Tải ảnh từ máy tính</span>
+                </label>
+                <span class="or-separator">hoặc</span>
+                <input type="url" id="creatorImageUrlInput" class="glass-input flex-1" placeholder="Dán link ảnh online (https://...)">
+              </div>
+
+              <!-- Quick Cartoon Preset Gallery -->
+              <div class="quick-preset-gallery">
+                <span class="gallery-label">Hoặc chọn nhanh ảnh mẫu có sẵn:</span>
+                <div class="preset-thumbs-row" id="creatorPresetThumbs">
+                  <!-- Quick preset thumbnail buttons populated by JS -->
+                </div>
+              </div>
+
+              <!-- Live Preview of Chosen Image -->
+              <div class="image-preview-container" id="creatorImagePreviewWrap" style="display: none;">
+                <img id="creatorImagePreview" src="" alt="Preview">
+                <button type="button" class="remove-img-btn" id="creatorRemoveImageBtn" onclick="removeCreatorImage()">✕ Xóa ảnh</button>
+              </div>
+            </div>
+
+            <!-- Step 2: Vocabulary Under Image -->
+            <div class="form-step">
+              <label class="step-label" for="creatorVocabInput">2. Từ Vựng Chính (Tiếng Anh):</label>
+              <div class="form-row-compact">
+                <input type="text" id="creatorVocabInput" class="glass-input flex-1" placeholder="Ví dụ: School, Doctor, Beach...">
+                <input type="text" id="creatorMeaningInput" class="glass-input flex-1" placeholder="Nghĩa TV: Trường học (tuỳ chọn)">
+              </div>
+            </div>
+
+            <!-- Step 3: AI Auto-Generate Sentence -->
+            <div class="form-step">
+              <div class="step-label-with-ai">
+                <label class="step-label">3. AI Tạo Mẫu Câu Tự Động:</label>
+                <span class="ai-badge-sm">Trí tuệ nhân tạo 🤖</span>
+              </div>
+              <p class="step-hint">Chỉ cần nhập từ vựng ở bước 2 rồi bấm nút bên dưới — AI sẽ tự tạo mẫu câu đơn giản dễ hiểu cho học sinh lớp 4 kèm bản dịch tiếng Việt!</p>
+              <button type="button" class="action-btn btn-ai-generate full-width" id="aiGenerateSentenceBtn" onclick="aiAutoGenerateSentence()">
+                <span>🤖</span> AI Tạo Mẫu Câu & Dịch Nghĩa Ngay
+              </button>
+
+              <!-- AI Generated Sentence Result -->
+              <div class="ai-sentence-result-box" id="aiSentenceResultBox" style="display:none;">
+                <div class="ai-result-header">✨ AI đã tạo mẫu câu cho từ "<span id="aiResultVocabLabel"></span>":</div>
+                <div class="ai-result-sentence-wrap">
+                  <label class="ai-result-label">📝 Mẫu câu tiếng Anh:</label>
+                  <input type="text" id="creatorSentenceInput" class="glass-input full-width ai-editable" placeholder="Mẫu câu sẽ hiển thị ở đây...">
+                </div>
+                <div class="ai-result-sentence-wrap" style="margin-top:8px;">
+                  <label class="ai-result-label">🇻🇳 Bản dịch tiếng Việt:</label>
+                  <input type="text" id="creatorSentenceMeaningInput" class="glass-input full-width ai-editable" placeholder="Bản dịch sẽ hiển thị ở đây...">
+                </div>
+                <p class="ai-edit-note">💡 Bạn có thể chỉnh sửa mẫu câu hoặc bản dịch trước khi lưu.</p>
+              </div>
+            </div>
+
+            <!-- Step 4: AI Cloze Mechanism -->
+            <div class="form-step" id="step4ClozeSection" style="display:none;">
+              <div class="step-label-with-ai">
+                <label class="step-label">4. Cách AI Ẩn Từ Trong Câu:</label>
+                <span class="ai-badge-sm">Trí tuệ nhân tạo AI 🪄</span>
+              </div>
+              <div class="ai-cloze-options">
+                <label class="radio-option">
+                  <input type="radio" name="aiClozeMode" value="vocab" checked>
+                  <span>🎯 AI ẩn đúng từ vựng chính (Khuyến nghị)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="aiClozeMode" value="random_word">
+                  <span>🎲 AI ẩn ngẫu nhiên 1 từ khóa quan trọng</span>
+                </label>
+              </div>
+
+              <div class="ai-preview-action-row">
+                <button type="button" class="glass-btn btn-primary" onclick="previewAiClozeTransform()">
+                  <span>🪄</span> AI Phân Tích & Xem Trước Thử Thách
+                </button>
+              </div>
+
+              <!-- AI Output Preview Box -->
+              <div class="ai-cloze-preview-box" id="creatorAiPreviewBox" style="display: none;">
+                <div class="preview-header">💡 Kết quả AI phân tích câu:</div>
+                <div class="preview-sentence" id="creatorAiSentencePreview"></div>
+                <div class="preview-answer">Đáp án đúng: <strong id="creatorAiCorrectWordPreview"></strong></div>
+                <div class="preview-distractors">Các thẻ từ gợi ý: <span id="creatorAiDistractorsPreview"></span></div>
+              </div>
+            </div>
+
+            <!-- Submit and Play Actions -->
+            <div class="creator-form-actions" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+              <button type="button" class="action-btn btn-success flex-1" onclick="saveCreatorQuestion()" style="font-size:1.02rem; padding:12px 18px;">
+                <span>💾</span> Lưu Câu Đố (Tiếp tục tạo câu khác)
+              </button>
+              <button type="button" class="action-btn btn-primary" onclick="startPlayingFromFirstQuestion()" style="font-size:1.02rem; padding:12px 20px;">
+                <span>🚀</span> Bắt Đầu Chơi Từ Đầu ➔
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: List of Created Questions -->
+          <div class="creator-list-panel glass-panel">
+            <div class="list-panel-header">
+              <h3>📚 Ngân Hàng Câu Đố (<span id="creatorQuestionsCount">0</span>)</h3>
+              <div class="list-panel-actions">
+                <button type="button" class="glass-btn small-btn btn-danger-soft" onclick="clearAllAiQuestions()" title="Lược bỏ và xóa sạch tất cả bài đã có">🗑️ Lược bỏ hết bài</button>
+                <button type="button" class="glass-btn small-btn" onclick="resetToDefaultAiQuestions()" title="Khôi phục lại bộ câu hỏi mẫu mặc định">🔄 Khôi phục mẫu</button>
+              </div>
+            </div>
+
+            <!-- Prominent Button to Play from Beginning -->
+            <button type="button" class="action-btn btn-primary full-width" onclick="startPlayingFromFirstQuestion()" style="margin: 12px 0 14px 0; font-size:1rem; font-weight:700; padding:10px 16px; border-radius:12px;">
+              <span>🎮</span> Bắt Đầu Chơi Từ Câu Đầu Tiên (Câu 1) ➔
+            </button>
+
+            <div class="questions-list-scroll" id="creatorQuestionsList">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 3: MINI GAMES ARENA ================= -->
+    <section id="view-games" class="app-view">
+      <div class="games-nav-row glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <button type="button" class="back-to-home-btn" onclick="goBackToHome()">
+            <span>⬅️</span> Quay lại Trang Chủ
+          </button>
+        </div>
+        <div class="games-title-group">
+          <h2>🎮 Đấu Trường Trò Chơi Trí Tuệ (Cá Nhân)</h2>
+          <p>Lựa chọn trò chơi bé yêu thích để vừa học vừa chơi thoải mái, tích lũy XP và lên cấp vù vù!</p>
+        </div>
+        <div class="game-mode-tabs">
+          <button class="game-tab-btn active" data-game="flashcard">🎴 Flashcard 3D</button>
+          <button class="game-tab-btn" data-game="quiz">🧠 Trắc Nghiệm Tốc Độ</button>
+          <button class="game-tab-btn" data-game="picture">🖼️ Nghe Đoán Hình</button>
+          <button class="game-tab-btn" data-game="scramble">🔤 Thử Thách Xếp Chữ</button>
+        </div>
+      </div>
+
+      <!-- Game Container 1: Flashcard 3D -->
+      <div class="game-box active" id="game-flashcard-box">
+        <div class="flashcard-workspace glass-panel">
+          <div class="flashcard-controls-top">
+            <button type="button" class="back-to-home-btn" onclick="goBackToHome()" style="padding:6px 12px; font-size:0.85rem;">
+              <span>⬅️</span> Về Trang Chủ
+            </button>
+            <span class="srs-status-tag" id="srsCardStatus">Trạng thái: 🟢 Đang học</span>
+            <div class="srs-hint">Nhấn vào thẻ bài để lật mặt xem nghĩa, câu ví dụ và nghe đọc mẫu!</div>
+            <button class="glass-btn small-btn" id="shuffleCardsBtn">🔀 Đổi thẻ ngẫu nhiên</button>
+          </div>
+
+          <!-- 3D Flipping Card Stage -->
+          <div class="flashcard-stage">
+            <div class="card-3d" id="interactiveFlashcard" onclick="flipCard()">
+              <!-- Front Face -->
+              <div class="card-face card-front">
+                <div class="card-corner-icon">✨</div>
+                <div class="card-illustration" id="fcFrontEmoji">🍎</div>
+                <h2 class="card-english-word" id="fcFrontWord">Apple</h2>
+                <div class="card-phonetic" id="fcFrontPhonetic">/ˈæp.əl/</div>
+                <div class="card-prompt-hint">Bấm vào thẻ để lật xem nghĩa 🔄</div>
+              </div>
+              <!-- Back Face -->
+              <div class="card-face card-back">
+                <div class="card-corner-icon">📖</div>
+                <div class="card-vietnamese" id="fcBackMeaning">Quả táo</div>
+                <div class="card-example" id="fcBackExample">"I like eating a red apple every morning."</div>
+                <div class="card-actions-row" onclick="event.stopPropagation()">
+                  <button class="glass-btn small-btn sound-btn" id="fcSpeakBtn">
+                    <span>🔊</span> Nghe phát âm mẫu
+                  </button>
+                  <button class="glass-btn small-btn btn-success" id="fcMarkLearnedBtn" onclick="markCardMastered()">
+                    <span>✓</span> Đã nhớ kỹ (+5 XP)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flashcard-footer-controls">
+            <button class="glass-btn" id="prevCardBtn">⬅️ Thẻ trước</button>
+            <span class="card-pagination" id="cardPaginationText">Thẻ 1 / 10</span>
+            <button class="glass-btn btn-primary" id="nextCardBtn">Thẻ kế tiếp ➡️</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Container 2: Speed Quiz Challenge -->
+      <div class="game-box" id="game-quiz-box">
+        <div class="quiz-workspace glass-panel">
+          <div class="quiz-header-bar">
+            <div class="quiz-progress-wrap">
+              <span id="quizQuestionCount">Câu 1 / 5</span>
+              <div class="quiz-progress-track">
+                <div class="quiz-progress-fill" id="quizProgressBar" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="quiz-timer-pill" id="quizTimer">
+              <span>⏱️</span> <span id="quizTimeRemaining">15</span>s
+            </div>
+            <div class="quiz-score-pill">
+              <span>Điểm:</span> <strong id="quizCurrentScore">0</strong>
+            </div>
+          </div>
+
+          <div class="quiz-question-card">
+            <div class="quiz-illus" id="quizQuestionEmoji">🍌</div>
+            <h2 class="quiz-question-title" id="quizQuestionPrompt">Từ tiếng Anh nào chỉ "Quả chuối"?</h2>
+            <div class="quiz-audio-trigger">
+              <button class="glass-btn small-btn" id="quizListenQuestionBtn">🔊 Nghe từ khóa</button>
+            </div>
+          </div>
+
+          <div class="quiz-options-grid" id="quizOptionsGrid">
+            <!-- 4 Options populated dynamically -->
+          </div>
+
+          <div class="quiz-explanation-box" id="quizExplanationBox">
+            <div class="exp-title" id="quizExpTitle">Chính xác! 🎉</div>
+            <div class="exp-text" id="quizExpText">"Banana" có nghĩa là Quả chuối trong tiếng Anh.</div>
+            <button class="action-btn btn-primary" id="quizNextQuestionBtn">Câu Tiếp Theo ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Container 3: Picture Match -->
+      <div class="game-box" id="game-picture-box">
+        <div class="picture-workspace glass-panel">
+          <div class="pic-header-bar">
+            <div class="pic-task-prompt">
+              <h3>🎧 Nghe Phát Âm & Chọn Bức Hình Đúng</h3>
+              <p>Bé hãy bấm nút loa nghe từ phát âm, sau đó chọn bức tranh tương ứng nhé!</p>
+            </div>
+            <div class="quiz-score-pill">
+              <span>Điểm:</span> <strong id="pictureGameScore">0</strong>
+            </div>
+          </div>
+
+          <div class="sound-prompt-card">
+            <button class="listen-big-btn" id="pictureListenBtn">
+              <span class="speaker-large-icon">🔊</span>
+              <span>Bấm Nghe Lại Âm Thanh</span>
+            </button>
+            <div class="phonetic-hint" id="picturePhoneticHint">/kæt/</div>
+          </div>
+
+          <div class="picture-cards-grid" id="pictureCardsGrid">
+            <!-- 4 Picture choices populated dynamically -->
+          </div>
+
+          <div class="picture-feedback-row" id="pictureFeedbackRow">
+            <div class="pf-text" id="pictureFeedbackText">Hãy chọn 1 trong 4 hình trên!</div>
+            <button class="action-btn btn-primary" id="pictureNextBtn" style="display: none;">Thử Thách Kế Tiếp ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Container 4: Word Scramble -->
+      <div class="game-box" id="game-scramble-box">
+        <div class="scramble-workspace glass-panel">
+          <div class="scramble-header">
+            <h3>🧩 Trò Chơi Xếp Chữ (Word Scramble)</h3>
+            <p>Bấm chọn các chữ cái theo đúng thứ tự (hoặc gõ phím) để tạo thành từ tiếng Anh chuẩn xác!</p>
+          </div>
+
+          <div class="scramble-clue-card">
+            <div class="scramble-emoji" id="scrambleEmoji">🐶</div>
+            <div class="scramble-hint-meaning" id="scrambleMeaning">Gợi ý nghĩa: Con chó</div>
+          </div>
+
+          <!-- Slots where user places letters -->
+          <div class="scramble-answer-slots" id="scrambleAnswerSlots">
+            <!-- Dynamic answer slot tiles -->
+          </div>
+
+          <!-- Scrambled available letter buttons -->
+          <div class="scramble-letter-bank" id="scrambleLetterBank">
+            <!-- Dynamic scrambled buttons -->
+          </div>
+
+          <div class="scramble-actions">
+            <button class="glass-btn" id="scrambleResetBtn">🔄 Xếp lại từ đầu</button>
+            <button class="action-btn btn-success" id="scrambleCheckBtn">Kiểm Tra Đáp Án ➔</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 4: LEADERBOARD & STATS ================= -->
+    <section id="view-leaderboard" class="app-view">
+      <div class="leaderboard-header glass-panel">
+        <div class="lb-title-group">
+          <h2>🏆 Bảng Vàng Vinh Danh Học Sinh Xuất Sắc</h2>
+          <p>Xếp hạng dựa trên tính chuyên cần học tập (Thời gian online tích lũy, số bài học đã vượt qua và chuỗi Streak 🔥)!</p>
+        </div>
+        <div class="lb-summary-chips">
+          <div class="lb-chip">
+            <span class="chip-val" id="myLiveRank">#3</span>
+            <span class="chip-lbl">Vị trí của bé</span>
+          </div>
+          <div class="lb-chip">
+            <span class="chip-val" id="myTotalOnlineTime">45 phút</span>
+            <span class="chip-lbl">Thời gian học</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Podium Top 3 -->
+      <div class="podium-row">
+        <!-- Rank 2 -->
+        <div class="podium-col rank-2">
+          <div class="podium-avatar">🥈 🐰</div>
+          <div class="podium-name">Minh Khang</div>
+          <div class="podium-score">1,240 XP</div>
+          <div class="podium-block">2</div>
+        </div>
+        <!-- Rank 1 -->
+        <div class="podium-col rank-1">
+          <div class="crown-icon">👑</div>
+          <div class="podium-avatar">🥇 🦁</div>
+          <div class="podium-name">Bảo Trâm</div>
+          <div class="podium-score">1,680 XP</div>
+          <div class="podium-block">1</div>
+        </div>
+        <!-- Rank 3 -->
+        <div class="podium-col rank-3">
+          <div class="podium-avatar">🥉 🐼</div>
+          <div class="podium-name" id="podiumUserTitle">Bé Siêu Nhân (Bạn)</div>
+          <div class="podium-score" id="podiumUserXp">890 XP</div>
+          <div class="podium-block">3</div>
+        </div>
+      </div>
+
+      <!-- Leaderboard Table -->
+      <div class="leaderboard-table-wrap glass-panel">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Hạng</th>
+              <th>Học Sinh</th>
+              <th>Khối Lớp</th>
+              <th>Thời Gian Học</th>
+              <th>Điểm Danh</th>
+              <th>Bài Hoàn Thành</th>
+              <th>Điểm XP</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardTbody">
+            <!-- Filled dynamically by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: ADD LESSON & AI SENTENCE GENERATOR ================= -->
+  <div class="modal-overlay" id="addLessonModal" aria-hidden="true">
+    <div class="modal-card glass-panel add-lesson-card">
+      <button class="modal-close-btn" onclick="closeModal('addLessonModal')">✕</button>
+      <div class="modal-header">
+        <div class="modal-icon-badge">✨ AI Lesson Creator</div>
+        <h2 class="modal-title">Thêm Bài Học & Mẫu Câu Mới</h2>
+        <p class="modal-subtitle">Nhập chủ đề hoặc dán mẫu câu, AI sẽ tự động định dạng và biến thành trò chơi Baamboozle & Flashcard!</p>
+      </div>
+
+      <div class="add-lesson-form">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="lessonGradeInput">Khối Lớp:</label>
+            <select id="lessonGradeInput" class="glass-select full-width">
+              <option value="1">Lớp 1 (Vỡ lòng & Chữ cái)</option>
+              <option value="2">Lớp 2 (Gia đình & Đồ dùng)</option>
+              <option value="3">Lớp 3 (Thức ăn & Hoạt động)</option>
+              <option value="4">Lớp 4 (Nghề nghiệp & Nơi chốn)</option>
+              <option value="5">Lớp 5 (Giao tiếp & Đất nước)</option>
+            </select>
+          </div>
+          <div class="form-group flex-2">
+            <label for="lessonTitleInput">Tên Bài Học / Chủ Đề:</label>
+            <input type="text" id="lessonTitleInput" class="glass-input full-width" placeholder="Ví dụ: My Favorite Animals, At School...">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-ai-btn">
+            <label for="lessonSentencesInput">Danh Sách Mẫu Câu & Câu Hỏi (Mỗi dòng một câu):</label>
+            <button type="button" class="ai-assist-btn" id="aiGenerateSentencesBtn">
+              <span>🤖</span> AI Sinh Mẫu Câu Tự Động
+            </button>
+          </div>
+          <textarea id="lessonSentencesInput" class="glass-textarea" rows="6" placeholder="Nhập câu tiếng Anh | Nghĩa tiếng Việt. Ví dụ:
+What is this? | Đây là cái gì? (It is a pencil)
+I like apples | Tôi thích những quả táo đỏ
+Where do you live? | Bạn sống ở đâu? (I live in Vietnam)"></textarea>
+          <span class="input-hint">💡 Định dạng: <em>Câu tiếng Anh | Nghĩa tiếng Việt</em> (Nếu không điền nghĩa, AI sẽ tự động dịch).</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="glass-btn" onclick="closeModal('addLessonModal')">Hủy Bỏ</button>
+          <button type="button" class="action-btn btn-primary" id="saveLessonBtn">
+            <span>🚀</span> Tạo Trò Chơi Baamboozle Ngay!
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: BAAMBOOZLE QUESTION TILE POPUP ================= -->
+  <div class="modal-overlay" id="baamTileModal" aria-hidden="true">
+    <div class="modal-card glass-panel baam-question-card">
+      <!-- Tile Number Badge -->
+      <div class="baam-tile-header">
+        <span class="tile-number-badge" id="baamModalTileNum">Ô Số 1</span>
+        <span class="tile-turn-tag" id="baamModalTeamTurn">Lượt của: Đội Cáo Đỏ 🦊</span>
+      </div>
+
+      <!-- Surprise Event Display (If Mystery Power-up) -->
+      <div class="baam-powerup-box" id="baamPowerupBox" style="display: none;">
+        <div class="powerup-icon" id="baamPowerupIcon">🎁</div>
+        <h2 class="powerup-title" id="baamPowerupTitle">Sự Kiện Bất Ngờ!</h2>
+        <p class="powerup-desc" id="baamPowerupDesc">Đội bạn được thưởng nóng +50 Điểm!</p>
+        <button class="action-btn btn-success full-width" id="baamPowerupOkBtn">Nhận Quà & Đổi Lượt ➔</button>
+      </div>
+
+      <!-- Standard Question Display -->
+      <div class="baam-question-content" id="baamQuestionContent">
+        <div class="baam-question-emoji" id="baamQuestionEmoji">❓</div>
+        
+        <!-- Câu tiếng Anh hiển thị nổi bật -->
+        <div class="baam-english-card">
+          <span class="baam-card-label">Câu tiếng Anh / Từ khóa:</span>
+          <h2 class="baam-prompt-text" id="baamPromptText">Department Store</h2>
+          <div class="baam-audio-row">
+            <button class="glass-btn small-btn sound-btn" id="baamListenPromptBtn">
+              <span>🔊</span> Nghe Phát Âm Tiếng Anh
+            </button>
+          </div>
+        </div>
+
+        <!-- Trả lời bằng cách gõ hoặc bấm kiểm tra -->
+        <div class="baam-interactive-input-row" id="baamInteractiveInputRow">
+          <input type="text" id="baamStudentAnswerInput" class="glass-input full-width" placeholder="Nhập đáp án hoặc nghĩa tiếng Việt...">
+          <button class="action-btn btn-primary full-width mt-8" id="baamStudentCheckBtn">
+            <span>🚀</span> Kiểm Tra Đáp Án Ngay!
+          </button>
+        </div>
+
+        <!-- Các nút chấm điểm / xem đáp án nhanh cho lớp học -->
+        <div class="baam-quick-score-row" id="baamQuickScoreRow">
+          <button class="action-btn btn-warning flex-1" id="baamRevealAnswerBtn" title="Xem trước đáp án">
+            <span>👀</span> Xem Đáp Án
+          </button>
+          <button class="action-btn btn-secondary flex-1" id="baamAnswerWrongBtn" title="Trả lời sai không trừ điểm">
+            <span>❌</span> Sai (0đ)
+          </button>
+          <button class="action-btn btn-danger flex-1" id="baamAnswerPenaltyBtn" title="Trả lời sai bị trừ điểm (cho phép âm điểm)">
+            <span>⚠️</span> Sai Trừ (-10đ)
+          </button>
+          <button class="action-btn btn-success flex-1" id="baamAnswerCorrectBtn" title="Trả lời đúng cộng 20 điểm">
+            <span>✅</span> Đúng (+20đ)
+          </button>
+        </div>
+
+        <!-- HỘP ĐÁP ÁN HIỆN Ở DƯỚI KHI TRẢ LỜI ĐÚNG -->
+        <div class="baam-revealed-result success" id="baamResultSuccess" style="display: none;">
+          <div class="res-badge">🎉 CHÍNH XÁC TUYỆT VỜI! (+20 ĐIỂM)</div>
+          <div class="res-answer-box">
+            <span class="res-lead">Đáp án:</span>
+            <div class="res-text" id="baamCorrectAnswerText">Cửa hàng nhu yếu phẩm</div>
+          </div>
+          <button class="action-btn btn-success full-width mt-12" id="baamProceedTurnBtn">
+            Đổi Lượt Tiếp Theo ➔
+          </button>
+        </div>
+
+        <!-- HỘP HIỆN Ở DƯỚI KHI TRẢ LỜI SAI HOẶC BẤM XEM ĐÁP ÁN -->
+        <div class="baam-revealed-result wrong" id="baamResultWrong" style="display: none;">
+          <div class="res-badge">💡 ĐÁP ÁN / HƯỚNG DẪN</div>
+          <div class="res-answer-box">
+            <span class="res-lead">Đáp án chuẩn:</span>
+            <div class="res-text" id="baamWrongAnswerText">Cửa hàng nhu yếu phẩm</div>
+          </div>
+          <button class="action-btn btn-secondary full-width mt-12" id="baamProceedWrongTurnBtn">
+            Đổi Lượt Tiếp Theo ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: BAAMBOOZLE VICTORY CELEBRATION ================= -->
+  <div class="modal-overlay" id="baamVictoryModal" aria-hidden="true">
+    <div class="modal-card glass-panel victory-card">
+      <div class="victory-trophy">🏆</div>
+      <h2 class="victory-title" id="baamVictoryTitle">Đội Cáo Đỏ Chiến Thắng!</h2>
+      <p class="victory-desc" id="baamVictoryDesc">Một trận đấu Baamboozle vô cùng xuất sắc và kịch tính!</p>
+      
+      <div class="final-score-comparison">
+        <div class="final-team-col">
+          <span class="ft-emoji">🦊</span>
+          <span class="ft-name" id="finalName1">Đội Cáo Đỏ</span>
+          <span class="ft-score" id="finalScore1">140</span>
+        </div>
+        <div class="final-vs-tag">VS</div>
+        <div class="final-team-col">
+          <span class="ft-emoji">🦁</span>
+          <span class="ft-name" id="finalName2">Đội Sư Tử Xanh</span>
+          <span class="ft-score" id="finalScore2">110</span>
+        </div>
+      </div>
+
+      <div class="victory-actions">
+        <button class="action-btn btn-primary full-width" onclick="restartBaamboozleGame()">
+          Chơi Lại Trận Mới 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: DAILY CHECK-IN ================= -->
+  <div class="modal-overlay" id="checkinModal" aria-hidden="true">
+    <div class="modal-card glass-panel checkin-card">
+      <button class="modal-close-btn" onclick="closeModal('checkinModal')">✕</button>
+      <div class="checkin-header">
+        <div class="checkin-badge">🎁 Điểm Danh Hàng Ngày</div>
+        <h2 class="modal-title">Nuôi Chuỗi Học Liên Tục!</h2>
+        <p class="modal-subtitle">Chăm chỉ mỗi ngày để nhận quà tặng XP và duy trì ngọn lửa Streak 🔥</p>
+      </div>
+
+      <div class="checkin-calendar-grid" id="checkinCalendarGrid">
+        <!-- 7 Days populated dynamically -->
+      </div>
+
+      <div class="checkin-action-area">
+        <button class="action-btn btn-primary full-width" id="claimCheckinRewardBtn" onclick="claimDailyCheckin()">
+          Điểm Danh Hôm Nay (+30 XP) 🚀
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: LEARNER PROFILE & BADGES ================= -->
+  <div class="modal-overlay" id="profileModal" aria-hidden="true">
+    <div class="modal-card glass-panel profile-modal-card">
+      <button class="modal-close-btn" onclick="closeModal('profileModal')">✕</button>
+      <div class="modal-header">
+        <h2 class="modal-title">Hồ Sơ Học Tập Của Bé</h2>
+        <p class="modal-subtitle">Xem thông tin cấp độ, chỉnh sửa Avatar và bộ sưu tập huy hiệu</p>
+      </div>
+
+      <div class="profile-card-content">
+        <div class="avatar-selection-area">
+          <div class="current-avatar-preview" id="currentAvatarDisplay">🦁</div>
+          <div class="avatar-picker-row">
+            <span>Chọn hình đại diện yêu thích:</span>
+            <div class="avatar-options">
+              <button class="avatar-opt" onclick="selectAvatar('🦁')">🦁</button>
+              <button class="avatar-opt" onclick="selectAvatar('🐼')">🐼</button>
+              <button class="avatar-opt" onclick="selectAvatar('🐰')">🐰</button>
+              <button class="avatar-opt" onclick="selectAvatar('🦊')">🦊</button>
+              <button class="avatar-opt" onclick="selectAvatar('🦄')">🦄</button>
+              <button class="avatar-opt" onclick="selectAvatar('🚀')">🚀</button>
+              <button class="avatar-opt" onclick="selectAvatar('🦖')">🦖</button>
+              <button class="avatar-opt" onclick="selectAvatar('🦸')">🦸</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-name-edit">
+          <label for="learnerNameInput">Tên của bé:</label>
+          <div class="input-with-btn">
+            <input type="text" id="learnerNameInput" class="glass-input" value="Bé Siêu Nhân" maxlength="25">
+            <button class="glass-btn btn-primary" onclick="saveLearnerName()">Lưu Tên</button>
+          </div>
+        </div>
+
+        <div class="stats-summary-grid">
+          <div class="stat-box">
+            <span class="sb-val" id="profileXpVal">350</span>
+            <span class="sb-lbl">Tổng XP Đạt Được</span>
+          </div>
+          <div class="stat-box">
+            <span class="sb-val" id="profileStreakVal">3</span>
+            <span class="sb-lbl">Chuỗi Ngày Học 🔥</span>
+          </div>
+          <div class="stat-box">
+            <span class="sb-val" id="profileRankLevel">Level 3</span>
+            <span class="sb-lbl">Hạng: Chiến Thần Tiếng Anh</span>
+          </div>
+          <div class="stat-box">
+            <span class="sb-val" id="profileLessonsDone">14</span>
+            <span class="sb-lbl">Bài Đã Học Xong</span>
+          </div>
+        </div>
+
+        <div class="badges-showcase">
+          <h3 class="badges-title">🎖️ Huy Hiệu Đã Chinh Phục:</h3>
+          <div class="badges-grid" id="badgesContainer">
+            <!-- Dynamic Badges -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: WELCOME CELEBRATION POPUP ================= -->
+  <div class="modal-overlay" id="welcomeModal" aria-hidden="true">
+    <div class="modal-card glass-panel welcome-card">
+      <div class="celebrate-sticker">🎉</div>
+      <h2 class="welcome-title">Chào Mừng Đến Với English Kha Master Kids!</h2>
+      <p class="welcome-desc">Nền tảng vừa học vừa chơi Tiếng Anh vui nhộn với trò chơi **Baamboozle** lật ô số bí mật, Flashcard 3D và trắc nghiệm tốc độ!</p>
+      <div class="welcome-features-list">
+        <div class="wf-item">✨ Tự thêm bài học & mẫu câu mới, AI tự động biến hóa thành trò chơi</div>
+        <div class="wf-item">✨ Đấu trường Baamboozle 2 đội với sự kiện bí mật Swap/Steal điểm kịch tính</div>
+        <div class="wf-item">✨ Lật thẻ Flashcard 3D và các mini-games rèn luyện trí nhớ</div>
+      </div>
+      <button class="action-btn btn-primary full-width" onclick="startLearningAdventure()">Bắt Đầu Chơi Ngay Thôi Nào! 🚀</button>
+    </div>
+  </div>
+
+  <!-- Footer with Developer Credit -->
+  <footer class="app-footer glass-panel">
+    <div class="footer-content">
+      <p class="copyright-text">
+        © 2026 <strong>English Kha Master Kids</strong> — Nền Tảng Học & Chơi Tiếng Anh Tiểu Học Thông Minh.
+      </p>
+      <p class="author-credit">
+        Phần mềm được phát triển bởi <strong>Nguyễn Viết Kha</strong> — Sinh viên CNTT, Trường Đại học HUTECH, TP.HCM
+      </p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
