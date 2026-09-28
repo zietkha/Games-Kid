@@ -2778,22 +2778,18 @@ function getSavedAiQuestions() {
   try {
     const saved = localStorage.getItem(AI_QUESTIONS_STORAGE_KEY);
     if (saved !== null) {
-      return JSON.parse(saved);
+      return JSON.parse(saved); // If saved is [] -> returns []
     }
-    // Check old storage if any exists from earlier versions
-    const legacy = localStorage.getItem('ekm_ai_image_sentences');
-    if (legacy) {
-      const parsedLegacy = JSON.parse(legacy);
-      const combined = [...parsedLegacy, ...DEFAULT_AI_PICTURE_QUESTIONS];
-      localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify(combined));
-      return combined;
+    const wasCleared = localStorage.getItem('ekm_ai_cleared_by_user');
+    if (wasCleared === 'true') {
+      return [];
     }
     // First time seed: save default questions to localStorage
     localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
     return JSON.parse(JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
   } catch (e) {
     console.warn("Error reading questions bank:", e);
-    return JSON.parse(JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
+    return [];
   }
 }
 
@@ -2852,21 +2848,21 @@ function initAiStudioUI() {
 // Load current question in Game Player
 function loadAiGameQuestion() {
   const qList = AiStudioState.questions;
+  const emptyState = document.getElementById('aiPlayEmptyState');
+  const activeStage = document.getElementById('aiPlayActiveStage');
+
   if (!qList || qList.length === 0) {
+    if (emptyState) emptyState.style.display = 'block';
+    if (activeStage) activeStage.style.display = 'none';
     const progressText = document.getElementById('aiGameProgressText');
     const progressFill = document.getElementById('aiGameProgressFill');
     if (progressText) progressText.textContent = `0 / 0`;
     if (progressFill) progressFill.style.width = `0%`;
-    const sentenceDisplay = document.getElementById('aiPlaySentenceDisplay');
-    if (sentenceDisplay) sentenceDisplay.innerHTML = `<span style="color:#64748b; font-style:italic;">(Ngân hàng câu hỏi hiện đang trống. Hãy tạo câu đố ở form bên hoặc bấm "Khôi phục mẫu")</span>`;
-    const sentenceMeaning = document.getElementById('aiPlaySentenceMeaning');
-    if (sentenceMeaning) sentenceMeaning.textContent = "";
-    const chipsContainer = document.getElementById('aiPlayWordBank');
-    if (chipsContainer) chipsContainer.innerHTML = '';
-    const imgEl = document.getElementById('aiPlayImage');
-    if (imgEl) imgEl.src = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80";
     return;
   }
+
+  if (emptyState) emptyState.style.display = 'none';
+  if (activeStage) activeStage.style.display = 'block';
 
   const idx = AiStudioState.currentIndex % AiStudioState.questions.length;
   const q = AiStudioState.questions[idx];
@@ -3595,11 +3591,13 @@ function renderCreatorQuestionsList() {
 
   if (questions.length === 0) {
     container.innerHTML = `
-      <div class="empty-bank-box">
-        <div style="font-size:2.4rem; margin-bottom:8px;">📭</div>
-        <div style="font-weight:700; font-size:1.05rem; color:#1e293b; margin-bottom:6px;">Ngân hàng hiện chưa có câu hỏi nào</div>
-        <p style="font-size:0.88rem; line-height:1.5; color:#64748b; margin-bottom:12px;">Bạn đã lược bỏ hết các câu đố. Hãy thêm câu đố mới ở form bên trái hoặc bấm <strong>"Khôi phục mẫu"</strong> để nạp lại bộ câu hỏi mẫu.</p>
-        <button type="button" class="glass-btn small-btn" onclick="resetToDefaultAiQuestions()" style="font-weight:700; color:#2563eb;">🔄 Khôi phục câu hỏi mẫu</button>
+      <div class="empty-bank-box" style="background:#f8fafc; border:2px dashed #94a3b8; border-radius:16px; padding:32px 18px; text-align:center;">
+        <div style="font-size:2.8rem; margin-bottom:8px;">📭</div>
+        <div style="font-weight:800; font-size:1.1rem; color:#1e293b; margin-bottom:6px;">Chưa có bài nào được tạo</div>
+        <p style="font-size:0.9rem; line-height:1.6; color:#64748b; margin-bottom:14px;">
+          Toàn bộ câu đố trong database đã được xóa sạch. Bây giờ bạn có thể nhập ảnh và từ vựng ở form bên trái để tạo bài từ từ cho học sinh chơi!
+        </p>
+        <button type="button" class="glass-btn small-btn" onclick="resetToDefaultAiQuestions()" style="font-weight:700; color:#2563eb;">🔄 Khôi phục 10 câu mẫu</button>
       </div>
     `;
     return;
@@ -3648,36 +3646,30 @@ function deleteAiQuestion(idx) {
   }
 }
 
-// Clear all questions in the bank (Lược bỏ hết bài)
+// Clear all questions in the bank (Lược bỏ hết bài - xóa sạch khỏi database)
 function clearAllAiQuestions() {
-  if (!AiStudioState.questions || AiStudioState.questions.length === 0) {
-    showToast("Ngân hàng câu đố hiện đang trống!", "warning");
-    return;
-  }
-  const total = AiStudioState.questions.length;
-  if (confirm(`⚠️ Bạn có chắc muốn LƯỢC BỎ HẾT toàn bộ ${total} câu đố trong ngân hàng không?\n\n(Dữ liệu sẽ được dọn sạch khỏi hệ thống. Bạn có thể bấm 'Khôi phục mẫu' bất kỳ lúc nào nếu muốn sử dụng lại).`)) {
+  if (confirm("⚠️ Bạn có chắc muốn LƯỢC BỎ VÀ XÓA SẠCH toàn bộ bài trong database không?\n\nSau khi xóa, web sẽ hiện 'Chưa có bài nào được tạo' để bạn tự tạo bài từ từ cho học sinh.")) {
     AiStudioState.questions = [];
     AiStudioState.currentIndex = 0;
-    saveAiQuestionsBank();
+    localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify([]));
+    localStorage.setItem('ekm_ai_cleared_by_user', 'true');
+    localStorage.removeItem('ekm_ai_image_sentences');
     renderCreatorQuestionsList();
-    if (AiStudioState.currentMode === 'play') {
-      loadAiGameQuestion();
-    }
-    showToast(`Đã lược bỏ toàn bộ ${total} câu đố! Ngân hàng hiện đã sạch.`, "info");
+    loadAiGameQuestion();
+    showToast("🧹 Đã xóa sạch bài trong database! Hiện chưa có bài nào được tạo.", "success");
   }
 }
 
 // Reset question bank to default samples
 function resetToDefaultAiQuestions() {
-  if (confirm("Bạn có muốn khôi phục lại 10 câu hỏi mẫu mặc định không?")) {
+  if (confirm("Bạn có muốn nạp lại bộ 10 câu hỏi mẫu mặc định của hệ thống không?")) {
     AiStudioState.questions = JSON.parse(JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
     AiStudioState.currentIndex = 0;
     saveAiQuestionsBank();
+    localStorage.removeItem('ekm_ai_cleared_by_user');
     renderCreatorQuestionsList();
-    if (AiStudioState.currentMode === 'play') {
-      loadAiGameQuestion();
-    }
-    showToast("Đã khôi phục ngân hàng câu hỏi mẫu thành công!", "success");
+    loadAiGameQuestion();
+    showToast("Đã khôi phục 10 câu hỏi mẫu thành công!", "success");
   }
 }
 

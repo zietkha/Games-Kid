@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260928_3">
 </head>
 <body>
   <!-- Ambient Liquid Glass Dynamic Animated Blobs Background -->
@@ -338,7 +338,24 @@
 
       <!-- SUB-MODE 1: PLAY ARENA (ĐẤU TRƯỜNG CHƠI GAME) -->
       <div id="aiStudioPlayMode" class="studio-sub-view active">
-        <div class="ai-game-stage glass-panel">
+        <!-- Empty State in Play Mode when no questions exist in database -->
+        <div id="aiPlayEmptyState" class="glass-panel" style="display: none; text-align: center; padding: 50px 24px; border-radius: 20px; max-width: 650px; margin: 30px auto;">
+          <div style="font-size: 3.5rem; margin-bottom: 12px;">📭</div>
+          <h3 style="color: #1e3a8a; font-size: 1.35rem; font-weight: 800; margin-bottom: 10px;">Chưa Có Câu Đố Nào Được Tạo</h3>
+          <p style="color: #64748b; font-size: 0.98rem; line-height: 1.6; margin-bottom: 24px;">
+            Toàn bộ câu đố trong database đã được xóa sạch. Thầy/cô hãy qua mục <strong>"AI Studio Tạo Game"</strong> để tạo bài từ từ cho học sinh chơi nhé!
+          </p>
+          <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <button type="button" class="action-btn btn-primary" onclick="switchStudioMode('create')">
+              <span>✍️</span> Sang Mục Tạo Game Ngay ➔
+            </button>
+            <button type="button" class="glass-btn" onclick="resetToDefaultAiQuestions()">
+              <span>🔄</span> Khôi phục 10 câu mẫu
+            </button>
+          </div>
+        </div>
+
+        <div class="ai-game-stage glass-panel" id="aiPlayActiveStage">
           <!-- Game Status & Score bar -->
           <div class="ai-game-toolbar">
             <div class="game-progress-info">
@@ -1098,6 +1115,6 @@ Where do you live? | Bạn sống ở đâu? (I live in Vietnam)"></textarea>
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js"></script>
+  <script src="app.js?v=20260928_3"></script>
 </body>
 </html>
