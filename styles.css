@@ -958,12 +958,99 @@ textarea:focus {
 }
 
 .team-score-card {
+  position: relative;
+  overflow: visible;
   border: var(--border-thick);
   border-radius: var(--r-m);
   box-shadow: var(--shadow-card);
   padding: 18px 22px;
   text-align: center;
   background-color: #FFFFFF;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hiệu ứng nảy thẻ điểm khi cộng điểm (Bouncy pop) */
+.team-score-card.score-bump-gain {
+  animation: scoreGainBump 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes scoreGainBump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.1) translateY(-6px); box-shadow: 0 10px 0 var(--ink); }
+  65% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* Hiệu ứng rung lắc khi bị trừ điểm (Shake) */
+.team-score-card.score-bump-loss {
+  animation: scoreLossShake 0.5s ease-in-out;
+}
+@keyframes scoreLossShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-9px) rotate(-1.5deg); }
+  40% { transform: translateX(9px) rotate(1.5deg); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+/* Floating Score Pill (Nhảy điểm trực tiếp thích mắt) */
+.team-score-float {
+  position: absolute;
+  top: -14px;
+  right: 12px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.floating-score-pill {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 900;
+  padding: 4px 16px;
+  border-radius: 99px;
+  border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  white-space: nowrap;
+  animation: floatScoreUp 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+.floating-score-pill.gain {
+  background-color: #22C55E;
+  color: #FFFFFF;
+}
+
+.floating-score-pill.loss {
+  background-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.floating-score-pill.neutral {
+  background-color: #94A3B8;
+  color: #FFFFFF;
+}
+
+@keyframes floatScoreUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.65);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.18);
+  }
+  45% {
+    transform: translateY(-16px) scale(1.0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-32px) scale(1.0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-52px) scale(0.85);
+  }
 }
 
 .team-1-card {
@@ -985,6 +1072,103 @@ textarea:focus {
   font-size: 72px;            /* Điểm số 72-96px trên màn chiếu */
   font-weight: 800;
   line-height: 1.05;
+}
+
+/* Teacher Mode Navigation Tabs */
+.teacher-tabs-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.teacher-tab-btn {
+  min-height: 48px;
+  padding: 0 22px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+  background-color: #FFFFFF;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-s);
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teacher-tab-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+.teacher-tab-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.teacher-tab-btn.active {
+  background-color: var(--chalk);
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+/* Thẻ câu hỏi Baamboozle trong danh sách giáo viên */
+.baam-q-card {
+  background-color: #FFFFFF;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-s);
+  box-shadow: 0 3px 0 var(--ink);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.baam-q-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  flex-shrink: 0;
+  background-color: #F1F5F9;
+}
+
+.baam-q-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.baam-q-vocab {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.baam-q-meaning {
+  font-size: 15px;
+  color: #475569;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.baam-q-points {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background-color: var(--yellow-tint);
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  display: inline-block;
+  margin-top: 4px;
 }
 
 .vs-box {

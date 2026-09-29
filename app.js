@@ -323,32 +323,85 @@ function getAudioContext() {
   return audioCtx;
 }
 
-function playSoundSuccess() {
+// ==========================================================================
+// Kahoot-Authentic Sound Engine (Web Audio API)
+// ==========================================================================
+
+// 1. Kahoot Correct Answer: Bright, snappy ascending major arpeggio
+// E5 (659.25Hz) -> G#5 (830.61Hz) -> B5 (987.77Hz) -> E6 (1318.51Hz)
+function playKahootCorrectSound() {
   if (!AppState.soundEnabled) return;
   try {
     const ctx = getAudioContext();
     if (!ctx) return;
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(523.25, now); // C5
-    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
-    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
-    osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.3); // C6
+    const notes = [
+      { freq: 659.25, time: 0.00, dur: 0.12 }, // E5
+      { freq: 830.61, time: 0.07, dur: 0.12 }, // G#5
+      { freq: 987.77, time: 0.14, dur: 0.12 }, // B5
+      { freq: 1318.51, time: 0.21, dur: 0.42 }  // E6
+    ];
 
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(n.freq, now + n.time);
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.55);
+      gain.gain.setValueAtTime(0.001, now + n.time);
+      gain.gain.linearRampToValueAtTime(0.28, now + n.time + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + n.time + n.dur);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + n.time);
+      osc.stop(now + n.time + n.dur + 0.05);
+    });
   } catch (e) {}
 }
 
-function playSoundWrong() {
+// 2. Kahoot Wrong Answer: Characteristic low 2-tone descending filtered buzz
+function playKahootWrongSound() {
+  if (!AppState.soundEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const buzzTones = [
+      { startFreq: 311.13, endFreq: 246.94, time: 0.00, dur: 0.18 },
+      { startFreq: 196.00, endFreq: 146.83, time: 0.14, dur: 0.28 }
+    ];
+
+    buzzTones.forEach(t => {
+      const osc = ctx.createOscillator();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(t.startFreq, now + t.time);
+      osc.frequency.exponentialRampToValueAtTime(t.endFreq, now + t.time + t.dur);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(750, now + t.time);
+      filter.frequency.exponentialRampToValueAtTime(300, now + t.time + t.dur);
+
+      gain.gain.setValueAtTime(0.001, now + t.time);
+      gain.gain.linearRampToValueAtTime(0.22, now + t.time + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + t.time + t.dur);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + t.time);
+      osc.stop(now + t.time + t.dur + 0.02);
+    });
+  } catch (e) {}
+}
+
+// 3. Kahoot Score Ticker: Snappy woodblock pop
+function playKahootTickSound() {
   if (!AppState.soundEnabled) return;
   try {
     const ctx = getAudioContext();
@@ -358,17 +411,49 @@ function playSoundWrong() {
     const gain = ctx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(260, now);
-    osc.frequency.exponentialRampToValueAtTime(160, now + 0.25);
+    osc.frequency.setValueAtTime(1200, now);
+    osc.frequency.exponentialRampToValueAtTime(260, now + 0.03);
 
-    gain.gain.setValueAtTime(0.25, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    gain.gain.setValueAtTime(0.16, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(now);
-    osc.stop(now + 0.35);
+    osc.stop(now + 0.035);
   } catch (e) {}
+}
+
+// 4. Kahoot Powerup Celebration Fanfare
+function playKahootPowerupSound() {
+  if (!AppState.soundEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.065);
+      gain.gain.setValueAtTime(0.001, now + idx * 0.065);
+      gain.gain.linearRampToValueAtTime(0.24, now + idx * 0.065 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.065 + 0.28);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + idx * 0.065);
+      osc.stop(now + idx * 0.065 + 0.3);
+    });
+  } catch (e) {}
+}
+
+function playSoundSuccess() {
+  playKahootCorrectSound();
+}
+
+function playSoundWrong() {
+  playKahootWrongSound();
 }
 
 // Speak word aloud for pronunciation demonstration
@@ -602,10 +687,13 @@ window.verifyTeacherPin = verifyTeacherPin;
 
 function openTeacherZone() {
   switchView('view-teacher-zone');
+  switchTeacherMode('baam');
+  initBaamCreatorFileInput();
+  renderBaamCreatorPresets();
+  renderBaamCustomQuestionsList();
   renderCreatorPresets();
   renderCreatorQuestionsList();
-  selectCreatorQuestionType(AiStudioState.creatorQuestionType || 'picture_word');
-  showToast("👩‍🏫 Đã vào khu vực giáo viên & phụ huynh!", "info");
+  showToast("👩‍🏫 Đã vào khu vực giáo viên: Soạn trò chơi Baamboozle & câu đố!", "info");
 }
 window.openTeacherZone = openTeacherZone;
 
@@ -649,6 +737,9 @@ function switchView(viewId) {
       initAiStudioUI();
     }
   } else if (viewId === 'view-teacher-zone') {
+    initBaamCreatorFileInput();
+    renderBaamCreatorPresets();
+    renderBaamCustomQuestionsList();
     renderCreatorPresets();
     renderCreatorQuestionsList();
   }
@@ -1595,13 +1686,467 @@ function renderBaamLessonSelect() {
   };
 }
 
+// ==========================================================================
+// Baamboozle Custom Questions & Presets Database (Giáo viên tự tạo bài)
+// ==========================================================================
+const BAAM_QUESTIONS_STORAGE_KEY = 'ekm_baam_custom_questions';
+
+const DEFAULT_BAAM_CUSTOM_QUESTIONS = [
+  {
+    id: "baam_cq_1",
+    vocab: "Elephant",
+    meaning: "Con voi to lớn",
+    image: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_2",
+    vocab: "Apple",
+    meaning: "Quả táo đỏ ngọt ngào",
+    image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_3",
+    vocab: "Doctor",
+    meaning: "Bác sĩ khám chữa bệnh",
+    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_4",
+    vocab: "Cat",
+    meaning: "Chú mèo con dễ thương",
+    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_5",
+    vocab: "School",
+    meaning: "Trường tiểu học thân yêu",
+    image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_6",
+    vocab: "Dog",
+    meaning: "Chú cún con vẫy đuôi",
+    image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_7",
+    vocab: "Pizza",
+    meaning: "Bánh pizza phô mai",
+    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_8",
+    vocab: "Bird",
+    meaning: "Chú chim hót líu lo",
+    image: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_9",
+    vocab: "Bicycle",
+    meaning: "Chiếc xe đạp nhỏ",
+    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600&auto=format&fit=crop&q=80",
+    points: 20
+  },
+  {
+    id: "baam_cq_10",
+    vocab: "Beach",
+    meaning: "Bãi biển đầy cát vàng",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80",
+    points: 25
+  },
+  {
+    id: "baam_cq_11",
+    vocab: "Book",
+    meaning: "Quyển sách tiếng Anh",
+    image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80",
+    points: 15
+  },
+  {
+    id: "baam_cq_12",
+    vocab: "Sun",
+    meaning: "Mặt trời rực rỡ buổi sớm",
+    image: "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=600&auto=format&fit=crop&q=80",
+    points: 50
+  }
+];
+
+const BAAM_IMAGE_PRESETS = [
+  { name: "Elephant", vocab: "Elephant", meaning: "Con voi", url: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=600&auto=format&fit=crop&q=80" },
+  { name: "Apple", vocab: "Apple", meaning: "Quả táo", url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80" },
+  { name: "Doctor", vocab: "Doctor", meaning: "Bác sĩ", url: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80" },
+  { name: "Cat", vocab: "Cat", meaning: "Con mèo", url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80" },
+  { name: "School", vocab: "School", meaning: "Trường học", url: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80" },
+  { name: "Dog", vocab: "Dog", meaning: "Con chó", url: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80" },
+  { name: "Pizza", vocab: "Pizza", meaning: "Bánh pizza", url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80" },
+  { name: "Bird", vocab: "Bird", meaning: "Con chim", url: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80" }
+];
+
+// Helper: Get custom questions from localStorage
+function getBaamCustomQuestions() {
+  try {
+    const raw = localStorage.getItem(BAAM_QUESTIONS_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {}
+  // Default to 12 illustrated sample questions
+  const def = JSON.parse(JSON.stringify(DEFAULT_BAAM_CUSTOM_QUESTIONS));
+  localStorage.setItem(BAAM_QUESTIONS_STORAGE_KEY, JSON.stringify(def));
+  return def;
+}
+
+// Helper: Save custom questions to localStorage
+function saveBaamCustomQuestions(questions) {
+  try {
+    localStorage.setItem(BAAM_QUESTIONS_STORAGE_KEY, JSON.stringify(questions));
+  } catch (e) {
+    console.warn("Storage error:", e);
+  }
+}
+
+// Switch Teacher Zone Sub-Mode (Baamboozle vs Đoán hình AI)
+function switchTeacherMode(mode) {
+  const baamView = document.getElementById('teacherModeBaam');
+  const aiView = document.getElementById('teacherModeAi');
+  const btnBaam = document.getElementById('teacherTabBtnBaam');
+  const btnAi = document.getElementById('teacherTabBtnAi');
+
+  if (mode === 'baam') {
+    if (baamView) baamView.style.display = 'grid';
+    if (aiView) aiView.style.display = 'none';
+    if (btnBaam) btnBaam.classList.add('active');
+    if (btnAi) btnAi.classList.remove('active');
+    renderBaamCustomQuestionsList();
+    renderBaamCreatorPresets();
+  } else {
+    if (baamView) baamView.style.display = 'none';
+    if (aiView) aiView.style.display = 'grid';
+    if (btnAi) btnAi.classList.add('active');
+    if (btnBaam) btnBaam.classList.remove('active');
+    renderCreatorPresets();
+    renderCreatorQuestionsList();
+  }
+}
+window.switchTeacherMode = switchTeacherMode;
+
+// Render preset thumbnails in Baamboozle Creator
+function renderBaamCreatorPresets() {
+  const container = document.getElementById('baamCreatorPresetThumbs');
+  if (!container) return;
+  container.innerHTML = '';
+
+  BAAM_IMAGE_PRESETS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'preset-thumb-btn';
+    btn.title = `Chọn ảnh: ${p.name}`;
+    btn.innerHTML = `<img src="${p.url}" alt="${p.name}" loading="lazy">`;
+    btn.onclick = () => {
+      BaamState.selectedCreatorImage = p.url;
+      const urlInput = document.getElementById('baamCreatorImageUrl');
+      const vocabInput = document.getElementById('baamCreatorVocabInput');
+      const meaningInput = document.getElementById('baamCreatorMeaningInput');
+      const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+      const previewImg = document.getElementById('baamCreatorImagePreview');
+
+      if (urlInput) urlInput.value = p.url;
+      if (vocabInput) vocabInput.value = p.vocab;
+      if (meaningInput) meaningInput.value = p.meaning;
+      if (previewWrap) previewWrap.style.display = 'block';
+      if (previewImg) previewImg.src = p.url;
+
+      speakWord(p.vocab);
+      playKahootTickSound();
+    };
+    container.appendChild(btn);
+  });
+}
+
+// Test Pronunciation for the word in the creator input
+function testSpeakBaamVocab() {
+  const vocabInput = document.getElementById('baamCreatorVocabInput');
+  const text = vocabInput ? vocabInput.value.trim() : "";
+  if (!text) {
+    showToast("⚠️ Vui lòng nhập từ vựng tiếng Anh trước khi bấm nghe!", "warning");
+    if (vocabInput) vocabInput.focus();
+    return;
+  }
+  speakWord(text);
+  showToast(`🔊 Đang phát âm từ vựng: "${text}"`, "info");
+}
+window.testSpeakBaamVocab = testSpeakBaamVocab;
+
+// Save a new Baamboozle Question
+function saveBaamCreatorQuestion() {
+  const vocabInput = document.getElementById('baamCreatorVocabInput');
+  const meaningInput = document.getElementById('baamCreatorMeaningInput');
+  const pointsSelect = document.getElementById('baamCreatorPoints');
+  const urlInput = document.getElementById('baamCreatorImageUrl');
+
+  const vocab = vocabInput ? vocabInput.value.trim() : "";
+  const meaning = meaningInput ? meaningInput.value.trim() : "";
+  const points = pointsSelect ? parseInt(pointsSelect.value) || 20 : 20;
+  const image = BaamState.selectedCreatorImage || (urlInput ? urlInput.value.trim() : "");
+
+  if (!vocab) {
+    showToast("⚠️ Vui lòng nhập từ vựng hoặc câu hỏi tiếng Anh!", "warning");
+    if (vocabInput) vocabInput.focus();
+    return;
+  }
+
+  const newQuestion = {
+    id: `baam_cq_${Date.now()}`,
+    vocab: vocab,
+    meaning: meaning || "Trả lời tự nhiên bằng tiếng Anh",
+    image: image || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+    points: points
+  };
+
+  const list = getBaamCustomQuestions();
+  list.push(newQuestion);
+  saveBaamCustomQuestions(list);
+
+  renderBaamCustomQuestionsList();
+  playKahootCorrectSound();
+  addXP(20, `Tạo câu Baamboozle: ${vocab}`);
+  showToast(`💾 Đã lưu câu hỏi "${vocab}" (+${points}đ) vào kho Baamboozle!`, "success");
+
+  // Reset form inputs for next question
+  if (vocabInput) vocabInput.value = '';
+  if (meaningInput) meaningInput.value = '';
+  if (urlInput) urlInput.value = '';
+  const fileInput = document.getElementById('baamCreatorImageFile');
+  if (fileInput) fileInput.value = '';
+  const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+  const previewImg = document.getElementById('baamCreatorImagePreview');
+  if (previewWrap) previewWrap.style.display = 'none';
+  if (previewImg) previewImg.src = '';
+  BaamState.selectedCreatorImage = '';
+  if (vocabInput) vocabInput.focus();
+}
+window.saveBaamCreatorQuestion = saveBaamCreatorQuestion;
+
+// Render Baamboozle Question List
+function renderBaamCustomQuestionsList() {
+  const container = document.getElementById('baamCustomQuestionsList');
+  const countEl = document.getElementById('baamCustomQuestionsCount');
+  if (!container) return;
+
+  const list = getBaamCustomQuestions();
+  if (countEl) countEl.textContent = list.length;
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:32px 14px; color:#64748B;">
+        <div style="font-size:42px; margin-bottom:8px;">📭</div>
+        <p style="font-weight:700; margin-bottom:6px;">Chưa có câu hỏi Baamboozle nào!</p>
+        <p style="font-size:14px;">Thầy cô hãy soạn câu hỏi bên trái hoặc bấm "Nạp 12 câu mẫu" nhé.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+  list.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'baam-q-card';
+    card.innerHTML = `
+      <img src="${q.image || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80'}" alt="${q.vocab}" class="baam-q-thumb" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80'">
+      <div class="baam-q-info">
+        <div class="baam-q-vocab">
+          <span>${idx + 1}. ${q.vocab}</span>
+          <button type="button" class="btn btn-secondary small-btn" onclick="speakWord('${(q.vocab || '').replace(/'/g, "\\'")}')" title="Phát âm từ vựng" style="padding:2px 8px; font-size:13px; border-width:2px;">
+            🔊
+          </button>
+        </div>
+        <div class="baam-q-meaning">${q.meaning || 'Chưa có nghĩa tiếng Việt'}</div>
+        <span class="baam-q-points">⭐ +${q.points || 20} điểm</span>
+      </div>
+      <button type="button" class="btn btn-danger small-btn" onclick="deleteBaamCustomQuestion(${idx})" title="Xóa câu hỏi này" style="padding:8px 12px;">
+        🗑️
+      </button>
+    `;
+    container.appendChild(card);
+  });
+}
+window.renderBaamCustomQuestionsList = renderBaamCustomQuestionsList;
+
+// Delete single question
+function deleteBaamCustomQuestion(idx) {
+  const list = getBaamCustomQuestions();
+  const deleted = list.splice(idx, 1);
+  saveBaamCustomQuestions(list);
+  renderBaamCustomQuestionsList();
+  showToast(`Đã xóa câu "${deleted[0] ? deleted[0].vocab : 'hỏi'}"!`, "info");
+}
+window.deleteBaamCustomQuestion = deleteBaamCustomQuestion;
+
+// Clear all questions
+function clearAllBaamCustomQuestions() {
+  saveBaamCustomQuestions([]);
+  renderBaamCustomQuestionsList();
+  showToast("Đã xóa sạch tất cả câu hỏi Baamboozle!", "success");
+}
+window.clearAllBaamCustomQuestions = clearAllBaamCustomQuestions;
+
+// Reset to default 12 questions
+function resetToDefaultBaamQuestions() {
+  const def = JSON.parse(JSON.stringify(DEFAULT_BAAM_CUSTOM_QUESTIONS));
+  saveBaamCustomQuestions(def);
+  renderBaamCustomQuestionsList();
+  playKahootCorrectSound();
+  showToast("Đã khôi phục 12 câu hỏi Baamboozle mẫu có hình ảnh!", "success");
+}
+window.resetToDefaultBaamQuestions = resetToDefaultBaamQuestions;
+
+// Start game using the custom questions bank
+function startPlayingBaamCustomGame() {
+  initBaamboozleGame();
+  switchView('view-baamboozle');
+  playKahootPowerupSound();
+  showToast("🚀 Trận đấu Baamboozle đã sẵn sàng! Mời 2 đội chọn ô số!", "success");
+}
+window.startPlayingBaamCustomGame = startPlayingBaamCustomGame;
+
+// Hook Baamboozle Creator File & URL Inputs
+function initBaamCreatorFileInput() {
+  const fileInput = document.getElementById('baamCreatorImageFile');
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          BaamState.selectedCreatorImage = evt.target.result;
+          const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+          const previewImg = document.getElementById('baamCreatorImagePreview');
+          if (previewWrap) previewWrap.style.display = 'block';
+          if (previewImg) previewImg.src = evt.target.result;
+          playKahootTickSound();
+          showToast("📁 Đã tải ảnh cho câu hỏi Baamboozle!", "success");
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  const urlInput = document.getElementById('baamCreatorImageUrl');
+  if (urlInput) {
+    urlInput.addEventListener('input', () => {
+      const url = urlInput.value.trim();
+      if (url) {
+        BaamState.selectedCreatorImage = url;
+        const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+        const previewImg = document.getElementById('baamCreatorImagePreview');
+        if (previewWrap) previewWrap.style.display = 'block';
+        if (previewImg) previewImg.src = url;
+      }
+    });
+  }
+}
+
+// ==========================================================================
+// Direct Score Animation with Visual Flair & Kahoot Sounds
+// ==========================================================================
+function animateDirectScoreChange(team, delta) {
+  const oldScore = BaamState.scores[team] !== undefined ? BaamState.scores[team] : 0;
+  const newScore = oldScore + delta;
+  BaamState.scores[team] = newScore;
+
+  // 1. Play authentic Kahoot sound
+  if (delta > 0) {
+    playKahootCorrectSound();
+  } else if (delta < 0) {
+    playKahootWrongSound();
+  }
+
+  // 2. Score card visual bounce / shake
+  const card = document.getElementById(`teamCard${team}`);
+  if (card) {
+    card.classList.remove('score-bump-gain', 'score-bump-loss');
+    void card.offsetWidth; // force reflow
+    card.classList.add(delta >= 0 ? 'score-bump-gain' : 'score-bump-loss');
+    setTimeout(() => {
+      card.classList.remove('score-bump-gain', 'score-bump-loss');
+    }, 600);
+  }
+
+  // 3. Floating score pill (+20, -10, etc.)
+  const floatContainer = document.getElementById(`teamScoreFloat${team}`);
+  if (floatContainer) {
+    const pill = document.createElement('div');
+    const sign = delta > 0 ? `+${delta}` : `${delta}`;
+    pill.className = `floating-score-pill ${delta > 0 ? 'gain' : delta < 0 ? 'loss' : 'neutral'}`;
+    pill.textContent = `${sign} đ`;
+    floatContainer.appendChild(pill);
+    setTimeout(() => {
+      pill.remove();
+    }, 1250);
+  }
+
+  // 4. Smooth ticker animation on score element
+  const scoreEl = document.getElementById(`teamScore${team}`) || document.getElementById(`baamTeam${team}Score`);
+  if (scoreEl) {
+    if (newScore < 0) {
+      scoreEl.classList.add('is-negative');
+    } else {
+      scoreEl.classList.remove('is-negative');
+    }
+
+    const steps = Math.min(Math.max(Math.abs(delta), 1), 8);
+    const stepDuration = 35;
+    let stepCount = 0;
+    const startVal = oldScore;
+
+    if (steps > 0 && delta !== 0) {
+      const ticker = setInterval(() => {
+        stepCount++;
+        const currentVal = Math.round(startVal + (delta * (stepCount / steps)));
+        scoreEl.textContent = currentVal;
+        playKahootTickSound();
+        if (stepCount >= steps) {
+          clearInterval(ticker);
+          scoreEl.textContent = newScore;
+        }
+      }, stepDuration);
+    } else {
+      scoreEl.textContent = newScore;
+    }
+  }
+
+  // Sync secondary score display if exists
+  const altScoreEl = document.getElementById(`baamTeam${team}Score`);
+  if (altScoreEl && altScoreEl !== scoreEl) {
+    altScoreEl.textContent = newScore;
+  }
+}
+
 // Initialize Baamboozle Game Match
 function initBaamboozleGame() {
-  const lessons = getAllBaamboozleLessons();
-  let currentLesson = lessons.find(l => l.id === BaamState.selectedLessonId);
-  if (!currentLesson) {
-    currentLesson = DEFAULT_BAAMBOOZLE_LESSONS[0];
-    BaamState.selectedLessonId = currentLesson.id;
+  const customQuestions = getBaamCustomQuestions();
+  let pool = [];
+
+  if (customQuestions && customQuestions.length > 0) {
+    pool = customQuestions.map(q => ({
+      q: q.vocab || q.q,
+      a: q.meaning || q.a,
+      image: q.image || "",
+      points: q.points || 20,
+      emoji: q.emoji || "❓"
+    }));
+  } else {
+    const lessons = getAllBaamboozleLessons();
+    let currentLesson = lessons.find(l => l.id === BaamState.selectedLessonId) || DEFAULT_BAAMBOOZLE_LESSONS[0];
+    pool = [...currentLesson.sentences];
   }
 
   // Reset scores and team
@@ -1612,26 +2157,28 @@ function initBaamboozleGame() {
   BaamState.activeTileIndex = -1;
   BaamState.isGameActive = true;
 
-  // Build 16 tiles: 12 Questions + 4 Mystery Power-ups
-  const sentencePool = [...currentLesson.sentences];
-  // Shuffle sentence pool
-  for (let i = sentencePool.length - 1; i > 0; i--) {
+  // Shuffle question pool
+  for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [sentencePool[i], sentencePool[j]] = [sentencePool[j], sentencePool[i]];
+    [pool[i], pool[j]] = [pool[j], pool[i]];
   }
 
+  // Build 12 Question Tiles
   const questionTiles = [];
   for (let i = 0; i < 12; i++) {
-    const s = sentencePool[i % sentencePool.length];
+    const s = pool[i % pool.length];
     questionTiles.push({
       type: "question",
       q: s.q,
       a: s.a,
+      image: s.image || "",
+      points: s.points || 20,
       emoji: s.emoji || "❓",
       opened: false
     });
   }
 
+  // 4 Mystery Power-ups
   const powerupTiles = [
     {
       type: "powerup",
@@ -1724,9 +2271,9 @@ function renderBaamTiles() {
 function updateBaamScoreboard() {
   const card1 = document.getElementById('teamCard1');
   const card2 = document.getElementById('teamCard2');
-  const score1 = document.getElementById('teamScore1');
-  const score2 = document.getElementById('teamScore2');
-  const turnText = document.getElementById('baamTurnText');
+  const score1 = document.getElementById('teamScore1') || document.getElementById('baamTeam1Score');
+  const score2 = document.getElementById('teamScore2') || document.getElementById('baamTeam2Score');
+  const turnText = document.getElementById('baamTurnText') || document.getElementById('baamTurnIndicator');
 
   if (score1) {
     score1.textContent = BaamState.scores[1];
@@ -1785,10 +2332,10 @@ function openBaamTile(idx) {
   BaamState.activeTileIndex = idx;
 
   const modalTileNum = document.getElementById('baamModalTileNum');
-  const modalTeamTurn = document.getElementById('baamModalTeamTurn');
+  const modalTeamTurn = document.getElementById('baamModalTeamTurn') || document.getElementById('baamModalCurrentTeam');
   const teamName = BaamState.currentTeam === 1 ? "Đội Cáo Đỏ 🦊" : "Đội Sư Tử Xanh 🦁";
 
-  if (modalTileNum) modalTileNum.textContent = `Ô Số ${idx + 1}`;
+  if (modalTileNum) modalTileNum.textContent = `Ô Số #${idx + 1}`;
   if (modalTeamTurn) modalTeamTurn.textContent = `Lượt của: ${teamName}`;
 
   const powerupBox = document.getElementById('baamPowerupBox');
@@ -1799,7 +2346,7 @@ function openBaamTile(idx) {
     playSoundMystery();
     if (questionContent) questionContent.style.display = 'none';
     if (powerupBox) {
-      powerupBox.style.display = 'flex';
+      powerupBox.style.display = 'block';
       const icon = document.getElementById('baamPowerupIcon');
       const title = document.getElementById('baamPowerupTitle');
       const desc = document.getElementById('baamPowerupDesc');
@@ -1808,8 +2355,8 @@ function openBaamTile(idx) {
       if (desc) desc.textContent = tile.desc;
     }
   } else {
-    // Show standard English sentence question
-    playSoundSuccess();
+    // Show standard question with image & English prompt
+    playKahootPowerupSound();
     if (powerupBox) powerupBox.style.display = 'none';
     if (questionContent) questionContent.style.display = 'block';
 
@@ -1820,9 +2367,20 @@ function openBaamTile(idx) {
     const quickScoreRow = document.getElementById('baamQuickScoreRow');
     const resultSuccess = document.getElementById('baamResultSuccess');
     const resultWrong = document.getElementById('baamResultWrong');
+    const imageWrap = document.getElementById('baamImageWrap');
+    const imageEl = document.getElementById('baamQuestionImg');
 
     if (emojiEl) emojiEl.textContent = tile.emoji || "❓";
     if (promptEl) promptEl.textContent = tile.q;
+
+    // Show image if available
+    if (tile.image) {
+      if (imageWrap) imageWrap.style.display = 'block';
+      if (imageEl) imageEl.src = tile.image;
+    } else {
+      if (imageWrap) imageWrap.style.display = 'none';
+      if (imageEl) imageEl.src = '';
+    }
 
     // Reset interactive fields
     if (inputEl) {
@@ -1834,10 +2392,10 @@ function openBaamTile(idx) {
     if (resultSuccess) resultSuccess.style.display = 'none';
     if (resultWrong) resultWrong.style.display = 'none';
 
-    // Pronounce English prompt
+    // Pronounce English prompt automatically
     setTimeout(() => {
       speakWord(tile.q);
-    }, 250);
+    }, 280);
   }
 
   openModal('baamTileModal');
@@ -1859,7 +2417,7 @@ function handleBaamStudentCheck() {
   if (!tile) return;
   const targetAns = (tile.a || "").toLowerCase();
 
-  // Smart matching: contains or partial word match
+  // Smart matching
   const isMatch = targetAns.includes(userText) || userText.includes(targetAns) ||
                   targetAns.split(/[\s,()/-]+/).some(w => w.length > 2 && userText.includes(w));
 
@@ -1870,7 +2428,7 @@ function handleBaamStudentCheck() {
   }
 }
 
-// Reveal Answer button click (Shows answer underneath)
+// Reveal Answer button click
 function handleBaamRevealAnswer() {
   const tile = BaamState.activeTile;
   if (!tile) return;
@@ -1893,23 +2451,20 @@ function handleBaamRevealAnswer() {
   speakWord(tile.q);
 }
 
-// Team Answered Correct (+20 Points) -> HIỆN ĐÁP ÁN Ở DƯỚI CÂU TIẾNG ANH
+// Team Answered Correct (+20 Points or question points) -> Trừ/Cộng trực tiếp + Âm thanh Kahoot
 function handleBaamAnswerCorrect() {
   const tile = BaamState.activeTile;
   if (!tile) return;
 
   const team = BaamState.currentTeam;
-  BaamState.scores[team] += 20;
+  const points = (tile && tile.points) ? tile.points : 20;
 
-  // Sound: "Yeah!" + Crowd Applause
-  playSoundCheerAndApplause();
+  // Cộng trực tiếp với hiệu ứng nảy thẻ điểm và âm thanh Kahoot
+  animateDirectScoreChange(team, points);
   triggerConfetti();
 
-  addXP(20, `Baamboozle: Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'} trả lời chuẩn xác`);
-  showToast(`🎉 Yeahhh! +20 Điểm cho Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'}!`, "success");
-
-  // Update live scoreboard
-  updateBaamScoreboard();
+  addXP(points, `Baamboozle: Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'} trả lời chuẩn xác`);
+  showToast(`🎉 Yeahhh! +${points} Điểm cho Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'}!`, "success");
 
   // Hide input & action controls
   const inputRow = document.getElementById('baamInteractiveInputRow');
@@ -1922,21 +2477,22 @@ function handleBaamAnswerCorrect() {
   if (quickScoreRow) quickScoreRow.style.display = 'none';
   if (resultWrong) resultWrong.style.display = 'none';
 
-  // Hiện đáp án màu xanh rực rỡ ở DƯỚI câu tiếng Anh
   if (resultSuccess) {
     resultSuccess.style.display = 'block';
     if (ansText) ansText.textContent = tile.a;
   }
 }
 
-// Team Answered Wrong (0 Points) -> Hiện đáp án đúng ở dưới
+// Team Answered Wrong (0 Points)
 function handleBaamAnswerWrong() {
   const tile = BaamState.activeTile;
   if (!tile) return;
 
   const team = BaamState.currentTeam;
-  playSoundFunnyBoing();
-  showToast(`Cố gắng hơn ở ô tiếp theo nhé Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'}!`, "warning");
+  animateDirectScoreChange(team, 0);
+
+  const teamName = team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
+  showToast(`Cố gắng hơn ở ô tiếp theo nhé ${teamName}!`, "warning");
 
   const inputRow = document.getElementById('baamInteractiveInputRow');
   const quickScoreRow = document.getElementById('baamQuickScoreRow');
@@ -1948,7 +2504,6 @@ function handleBaamAnswerWrong() {
   if (quickScoreRow) quickScoreRow.style.display = 'none';
   if (resultSuccess) resultSuccess.style.display = 'none';
 
-  // Hiện đáp án chuẩn ở DƯỚI câu tiếng Anh
   if (resultWrong) {
     resultWrong.style.display = 'block';
     const badge = resultWrong.querySelector('.res-badge');
@@ -1957,17 +2512,14 @@ function handleBaamAnswerWrong() {
   }
 }
 
-// Team Answered Wrong & Gets Penalized (-10 Points) -> Cho phép ÂM ĐIỂM luôn nếu chưa có điểm!
+// Team Answered Wrong & Gets Penalized (-10 Points) -> Trừ trực tiếp + Rung thẻ điểm + Âm thanh Kahoot
 function handleBaamAnswerPenalty() {
   const tile = BaamState.activeTile;
   if (!tile) return;
 
   const team = BaamState.currentTeam;
-  // Trừ trực tiếp 10 điểm (nếu đang 0 điểm sẽ thành -10 điểm)
-  BaamState.scores[team] -= 10;
-  updateBaamScoreboard();
+  animateDirectScoreChange(team, -10);
 
-  playSoundFunnyBoing();
   const teamName = team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
   showToast(`⚠️ ${teamName} bị trừ 10 Điểm! (Hiện tại: ${BaamState.scores[team]} điểm)`, "warning");
 
@@ -1981,7 +2533,6 @@ function handleBaamAnswerPenalty() {
   if (quickScoreRow) quickScoreRow.style.display = 'none';
   if (resultSuccess) resultSuccess.style.display = 'none';
 
-  // Hiện đáp án chuẩn ở DƯỚI câu tiếng Anh
   if (resultWrong) {
     resultWrong.style.display = 'block';
     const badge = resultWrong.querySelector('.res-badge');
@@ -1990,21 +2541,18 @@ function handleBaamAnswerPenalty() {
   }
 }
 
-// Manual Score Adjustment for Teachers (+10 / -10) -> Cho phép âm điểm
+// Manual Score Adjustment for Teachers (+10 / -10)
 window.adjustBaamTeamScore = function(team, delta) {
-  BaamState.scores[team] += delta;
-  updateBaamScoreboard();
+  animateDirectScoreChange(team, delta);
   const teamName = team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
   if (delta > 0) {
-    playSoundSuccess();
     showToast(`➕ Đã cộng ${delta} điểm cho ${teamName} (hiện có: ${BaamState.scores[team]} điểm)`, "success");
   } else {
-    playSoundFunnyBoing();
     showToast(`➖ Đã trừ ${Math.abs(delta)} điểm của ${teamName} (hiện có: ${BaamState.scores[team]} điểm)`, "warning");
   }
 };
 
-// Confirm Power-Up Event
+// Confirm Power-Up Event -> Trừ/Cộng trực tiếp
 function handleBaamPowerupConfirm() {
   const tile = BaamState.activeTile;
   if (!tile || tile.type !== 'powerup') return;
@@ -2015,30 +2563,29 @@ function handleBaamPowerupConfirm() {
   const otherTeamName = otherTeam === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
 
   if (tile.powerupType === 'bonus') {
-    BaamState.scores[currentTeam] += tile.points;
-    playSoundPowerup();
+    animateDirectScoreChange(currentTeam, tile.points);
+    playKahootPowerupSound();
     showToast(`🎁 +50 Điểm Thưởng Siêu To Khổng Lồ! (${currentTeamName}: ${BaamState.scores[currentTeam]}đ)`, "success");
   } else if (tile.powerupType === 'swap') {
-    const temp = BaamState.scores[1];
-    BaamState.scores[1] = BaamState.scores[2];
-    BaamState.scores[2] = temp;
+    const temp1 = BaamState.scores[1];
+    const temp2 = BaamState.scores[2];
+    BaamState.scores[1] = temp2;
+    BaamState.scores[2] = temp1;
     playSoundMystery();
+    animateDirectScoreChange(1, 0);
+    animateDirectScoreChange(2, 0);
     showToast(`⚡ Điểm 2 đội đã được hoán đổi cho nhau!`, "info");
   } else if (tile.powerupType === 'steal') {
-    // Cướp trọn vẹn số điểm: Đội kia dù đang 0 điểm vẫn bị trừ xuống âm điểm tương ứng!
     const stolen = tile.points;
-    BaamState.scores[otherTeam] -= stolen; // Ví dụ: 0 - 15 = -15 điểm
-    BaamState.scores[currentTeam] += stolen; // Đội cướp nhận +15 điểm
-    playSoundPowerup();
+    animateDirectScoreChange(otherTeam, -stolen);
+    animateDirectScoreChange(currentTeam, stolen);
+    playKahootPowerupSound();
     showToast(`🔄 Cướp ${stolen} Điểm từ ${otherTeamName}! (${otherTeamName} còn: ${BaamState.scores[otherTeam]}đ)`, "success");
   } else if (tile.powerupType === 'bomb') {
-    // Vỏ chuối: Đội dẫm phải dù đang 0 điểm vẫn bị trừ thẳng thành -20 điểm!
-    BaamState.scores[currentTeam] += tile.points; // tile.points = -20
-    playSoundWrong();
+    animateDirectScoreChange(currentTeam, tile.points);
     showToast(`💣 Bị trừ 20 Điểm vì trượt vỏ chuối! (${currentTeamName}: còn ${BaamState.scores[currentTeam]}đ)`, "warning");
   }
 
-  updateBaamScoreboard();
   markActiveTileCompleted();
 }
 
@@ -3973,6 +4520,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initAddLessonModal();
   initAiStudioUI();
   initCreatorFileInput();
+  initBaamCreatorFileInput();
+  renderBaamCreatorPresets();
+  renderBaamCustomQuestionsList();
 
   const hasVisited = localStorage.getItem('ekm_kids_visited');
   if (!hasVisited) {
