@@ -1593,6 +1593,11 @@ const DEFAULT_BAAMBOOZLE_LESSONS = [
   }
 ];
 
+const DEFAULT_TEAM_NAMES = {
+  1: "🦊 Đội Cáo Đỏ",
+  2: "🦁 Đội Sư Tử Xanh"
+};
+
 // Active Baamboozle State
 const BaamState = {
   currentTeam: 1, // 1 or 2
@@ -1602,8 +1607,128 @@ const BaamState = {
   activeTile: null,
   activeTileIndex: -1,
   selectedLessonId: "baam_grade1",
-  isGameActive: false
+  isGameActive: false,
+  teamNames: {
+    1: localStorage.getItem('ekm_baam_team1_name') || DEFAULT_TEAM_NAMES[1],
+    2: localStorage.getItem('ekm_baam_team2_name') || DEFAULT_TEAM_NAMES[2]
+  }
 };
+
+// Helper: Get formatted team name
+function getTeamName(team) {
+  if (BaamState && BaamState.teamNames && BaamState.teamNames[team]) {
+    return BaamState.teamNames[team];
+  }
+  return team === 1 ? DEFAULT_TEAM_NAMES[1] : DEFAULT_TEAM_NAMES[2];
+}
+
+// Helper: Extract leading emoji or mascot for the wheel center
+function getTeamEmoji(team) {
+  const name = getTeamName(team);
+  const match = name.match(/(\p{Extended_Pictographic}|\p{Emoji_Presentation})/u);
+  if (match) return match[0];
+  return team === 1 ? "🦊" : "🦁";
+}
+
+// Sync team names across scoreboard, wheels, buttons, and modals
+function updateTeamNamesUI() {
+  const name1 = getTeamName(1);
+  const name2 = getTeamName(2);
+
+  const tText1 = document.getElementById('teamNameText1');
+  const tText2 = document.getElementById('teamNameText2');
+  if (tText1) tText1.textContent = name1;
+  if (tText2) tText2.textContent = name2;
+
+  const wTitle1 = document.getElementById('wheelTeamTitle1');
+  const wTitle2 = document.getElementById('wheelTeamTitle2');
+  if (wTitle1) wTitle1.textContent = name1;
+  if (wTitle2) wTitle2.textContent = name2;
+
+  const sBtn1 = document.getElementById('spinWheelBtn1');
+  const sBtn2 = document.getElementById('spinWheelBtn2');
+  if (sBtn1) sBtn1.textContent = `🎯 Quay gọi ${name1}`;
+  if (sBtn2) sBtn2.textContent = `🎯 Quay gọi ${name2}`;
+
+  const rLabel1 = document.getElementById('rosterTeamLabel1');
+  const rLabel2 = document.getElementById('rosterTeamLabel2');
+  if (rLabel1) rLabel1.textContent = name1;
+  if (rLabel2) rLabel2.textContent = name2;
+
+  const inp1 = document.getElementById('editTeamNameInput1');
+  const inp2 = document.getElementById('editTeamNameInput2');
+  if (inp1 && !inp1.matches(':focus')) inp1.value = name1;
+  if (inp2 && !inp2.matches(':focus')) inp2.value = name2;
+
+  const dualTitle1 = document.getElementById('baamDualTeam1Title');
+  const dualTitle2 = document.getElementById('baamDualTeam2Title');
+  if (dualTitle1) dualTitle1.textContent = name1.toUpperCase();
+  if (dualTitle2) dualTitle2.textContent = name2.toUpperCase();
+
+  updateBaamScoreboard();
+}
+
+// Save custom team names from modal
+function saveTeamNamesFromModal() {
+  const inp1 = document.getElementById('editTeamNameInput1');
+  const inp2 = document.getElementById('editTeamNameInput2');
+
+  const n1 = (inp1 && inp1.value.trim()) ? inp1.value.trim() : DEFAULT_TEAM_NAMES[1];
+  const n2 = (inp2 && inp2.value.trim()) ? inp2.value.trim() : DEFAULT_TEAM_NAMES[2];
+
+  BaamState.teamNames[1] = n1;
+  BaamState.teamNames[2] = n2;
+
+  try {
+    localStorage.setItem('ekm_baam_team1_name', n1);
+    localStorage.setItem('ekm_baam_team2_name', n2);
+  } catch (e) {}
+
+  updateTeamNamesUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  closeModal('baamTeamNamesModal');
+  playKahootCorrectSound();
+  showToast(`🎉 Đã đổi tên 2 đội thành: "${n1}" & "${n2}"!`, "success");
+}
+
+// Reset team names to default
+function resetDefaultTeamNames() {
+  BaamState.teamNames[1] = DEFAULT_TEAM_NAMES[1];
+  BaamState.teamNames[2] = DEFAULT_TEAM_NAMES[2];
+  try {
+    localStorage.removeItem('ekm_baam_team1_name');
+    localStorage.removeItem('ekm_baam_team2_name');
+  } catch (e) {}
+
+  const inp1 = document.getElementById('editTeamNameInput1');
+  const inp2 = document.getElementById('editTeamNameInput2');
+  if (inp1) inp1.value = DEFAULT_TEAM_NAMES[1];
+  if (inp2) inp2.value = DEFAULT_TEAM_NAMES[2];
+
+  updateTeamNamesUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  playKahootCorrectSound();
+  showToast("🔄 Đã khôi phục tên đội mặc định!", "info");
+}
+
+// Quick apply team preset name
+function applyTeamPreset(team, name) {
+  const inp = document.getElementById(`editTeamNameInput${team}`);
+  if (inp) {
+    inp.value = name;
+    playKahootTickSound();
+  }
+}
+
+// Window bindings
+window.saveTeamNamesFromModal = saveTeamNamesFromModal;
+window.resetDefaultTeamNames = resetDefaultTeamNames;
+window.applyTeamPreset = applyTeamPreset;
+window.getTeamName = getTeamName;
+window.getTeamEmoji = getTeamEmoji;
+window.updateTeamNamesUI = updateTeamNamesUI;
 
 // Power-Up Sound Effects
 function playSoundPowerup() {
@@ -2312,7 +2437,7 @@ function updateBaamScoreboard() {
       banner.className = "turn-highlight-banner team-1-turn";
     }
     if (turnText) {
-      turnText.innerHTML = `Lượt của: <strong style="color:#DC2626;">Đội Cáo Đỏ 🦊</strong> — Hãy bấm chọn 1 ô số!`;
+      turnText.innerHTML = `Lượt của: <strong style="color:#DC2626;">${getTeamName(1)}</strong> — Hãy bấm chọn 1 ô số!`;
     }
   } else {
     if (card2) {
@@ -2331,7 +2456,7 @@ function updateBaamScoreboard() {
       banner.className = "turn-highlight-banner team-2-turn";
     }
     if (turnText) {
-      turnText.innerHTML = `Lượt của: <strong style="color:#2563EB;">Đội Sư Tử Xanh 🦁</strong> — Hãy bấm chọn 1 ô số!`;
+      turnText.innerHTML = `Lượt của: <strong style="color:#2563EB;">${getTeamName(2)}</strong> — Hãy bấm chọn 1 ô số!`;
     }
   }
 }
@@ -2346,7 +2471,7 @@ function openBaamTile(idx) {
 
   const modalTileNum = document.getElementById('baamModalTileNum');
   const modalTeamTurn = document.getElementById('baamModalTeamTurn') || document.getElementById('baamModalCurrentTeam');
-  const teamName = BaamState.currentTeam === 1 ? "Đội Cáo Đỏ 🦊" : "Đội Sư Tử Xanh 🦁";
+  const teamName = getTeamName(BaamState.currentTeam);
 
   if (modalTileNum) modalTileNum.textContent = `Ô Số #${idx + 1}`;
   if (modalTeamTurn) modalTeamTurn.textContent = `Lượt của: ${teamName}`;
@@ -2637,16 +2762,18 @@ function triggerBaamGameOver() {
 
   const s1 = BaamState.scores[1];
   const s2 = BaamState.scores[2];
+  const name1 = getTeamName(1);
+  const name2 = getTeamName(2);
 
-  if (fScore1) fScore1.textContent = s1;
-  if (fScore2) fScore2.textContent = s2;
+  if (fName1) fName1.textContent = name1;
+  if (fName2) fName2.textContent = name2;
 
   if (s1 > s2) {
-    if (titleEl) titleEl.textContent = "🏆 Đội Cáo Đỏ Chiến Thắng!";
-    if (descEl) descEl.textContent = `Đội Cáo Đỏ xuất sắc dẫn trước với tỉ số ấn tượng ${s1} - ${s2}!`;
+    if (titleEl) titleEl.textContent = `🏆 ${name1} Chiến Thắng!`;
+    if (descEl) descEl.textContent = `${name1} xuất sắc dẫn trước với tỉ số ấn tượng ${s1} - ${s2}!`;
   } else if (s2 > s1) {
-    if (titleEl) titleEl.textContent = "🏆 Đội Sư Tử Xanh Chiến Thắng!";
-    if (descEl) descEl.textContent = `Đội Sư Tử Xanh bứt phá ngoạn mục với tỉ số ${s2} - ${s1}!`;
+    if (titleEl) titleEl.textContent = `🏆 ${name2} Chiến Thắng!`;
+    if (descEl) descEl.textContent = `${name2} bứt phá ngoạn mục với tỉ số ${s2} - ${s1}!`;
   } else {
     if (titleEl) titleEl.textContent = "🤝 Hai Đội Hòa Nhau Tuyệt Vời!";
     if (descEl) descEl.textContent = `Cả 2 đội ngang tài ngang sức với cùng số điểm ${s1}!`;
@@ -2958,7 +3085,7 @@ function drawBaamWheel(team) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.shadowColor = "transparent";
-  ctx.fillText(team === 1 ? "🦊" : "🦁", cx, cy + 1);
+  ctx.fillText(getTeamEmoji(team), cx, cy + 1);
   ctx.restore();
 }
 
@@ -2967,7 +3094,7 @@ function spinBaamWheel(team, onComplete) {
   const state = BaamWheelState[team];
   if (state.isSpinning) return;
   if (!state.students || state.students.length === 0) {
-    showToast(`⚠️ Vui lòng thêm học sinh cho ${team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh'} trước khi quay!`, "warning");
+    showToast(`⚠️ Vui lòng thêm học sinh cho ${getTeamName(team)} trước khi quay!`, "warning");
     openModal('baamStudentRosterModal');
     return;
   }
@@ -3062,12 +3189,11 @@ function showSingleWinnerModal(team, studentName) {
 
   if (nameEl) nameEl.textContent = studentName;
   if (teamEl) {
+    teamEl.textContent = getTeamName(team);
     if (team === 1) {
-      teamEl.textContent = '🦊 Đội Cáo Đỏ';
       teamEl.style.color = '#DC2626';
       teamEl.style.background = '#FEE2E2';
     } else {
-      teamEl.textContent = '🦁 Đội Sư Tử Xanh';
       teamEl.style.color = '#2563EB';
       teamEl.style.background = '#DBEAFE';
     }
@@ -3101,12 +3227,16 @@ function spinBothBaamWheels() {
       const wrapDual = document.getElementById('baamDualWinnerWrap');
       const dualName1 = document.getElementById('baamDualWinner1');
       const dualName2 = document.getElementById('baamDualWinner2');
+      const dualTitle1 = document.getElementById('baamDualTeam1Title');
+      const dualTitle2 = document.getElementById('baamDualTeam2Title');
 
       if (wrapSingle) wrapSingle.style.display = 'none';
       if (wrapDual) wrapDual.style.display = 'block';
 
       if (dualName1) dualName1.textContent = winner1;
       if (dualName2) dualName2.textContent = winner2;
+      if (dualTitle1) dualTitle1.textContent = getTeamName(1).toUpperCase();
+      if (dualTitle2) dualTitle2.textContent = getTeamName(2).toUpperCase();
 
       openModal('baamWinnerModal');
     }
@@ -3137,7 +3267,7 @@ function handleWinnerAction(action) {
 
     syncRosterUI();
     drawBaamWheel(team);
-    showToast(`🗑️ Đã xóa "${student}" khỏi vòng quay ${team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh'}!`, "info");
+    showToast(`🗑️ Đã xóa "${student}" khỏi vòng quay ${getTeamName(team)}!`, "info");
   } else {
     showToast(`💾 Đã giữ lại "${student}" trong vòng quay cho các lượt sau!`, "success");
   }
@@ -3465,6 +3595,7 @@ function initBaamboozleUI() {
   if (!BaamState.isGameActive || BaamState.tiles.length === 0) {
     initBaamboozleGame();
   }
+  updateTeamNamesUI();
   loadStudentRosters();
 }
 
@@ -3472,6 +3603,7 @@ function initBaamboozleEngine() {
   migrateExistingCustomLessons();
   renderBaamLessonSelect();
   initBaamboozleGame();
+  updateTeamNamesUI();
   loadStudentRosters();
   initRosterInputListeners();
 

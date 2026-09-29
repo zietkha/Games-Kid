@@ -1195,6 +1195,36 @@ textarea:focus {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: transform 0.15s ease;
+}
+.team-name:hover {
+  transform: scale(1.04);
+}
+
+.tag-chip {
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 99px;
+  border: 1.5px solid var(--ink);
+  background-color: #FFFFFF;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ink);
+  transition: all 0.1s ease;
+}
+.tag-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--ink);
+  background-color: var(--chalk);
+}
+.tag-chip:active {
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 .team-score-val {

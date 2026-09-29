@@ -438,14 +438,18 @@
         <div class="team-score-card team-1-card active" id="teamCard1">
           <div class="team-turn-badge" id="teamTurnBadge1">🎯 ĐANG ĐẾN LƯỢT</div>
           <div class="team-score-float" id="teamScoreFloat1"></div>
-          <div class="team-name">🦊 Đội Cáo Đỏ</div>
+          <div class="team-name" id="teamName1" onclick="openModal('baamTeamNamesModal')" title="Bấm để đổi tên đội chiều lòng học sinh" style="cursor:pointer;">
+            <span id="teamNameText1">🦊 Đội Cáo Đỏ</span> <span style="font-size:14px; opacity:0.75;">✏️</span>
+          </div>
           <div class="team-score-val" id="teamScore1">0</div>
         </div>
         <div class="vs-box">ĐỐI ĐẦU</div>
         <div class="team-score-card team-2-card" id="teamCard2">
           <div class="team-turn-badge" id="teamTurnBadge2">⏳ CHỜ LƯỢT</div>
           <div class="team-score-float" id="teamScoreFloat2"></div>
-          <div class="team-name">🦁 Đội Sư Tử Xanh</div>
+          <div class="team-name" id="teamName2" onclick="openModal('baamTeamNamesModal')" title="Bấm để đổi tên đội chiều lòng học sinh" style="cursor:pointer;">
+            <span id="teamNameText2">🦁 Đội Sư Tử Xanh</span> <span style="font-size:14px; opacity:0.75;">✏️</span>
+          </div>
           <div class="team-score-val" id="teamScore2">0</div>
         </div>
       </div>
@@ -458,6 +462,9 @@
             <h3 style="margin:4px 0 0 0; font-size:24px;">Vòng quay 2 Đội — Gọi học sinh lên bảng thi đấu</h3>
           </div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary small-btn" onclick="openModal('baamTeamNamesModal')" title="Đổi tên 2 đội theo ý học sinh">
+              🏷️ Đổi tên 2 đội
+            </button>
             <button type="button" class="btn btn-secondary small-btn" onclick="openModal('baamStudentRosterModal')">
               📋 Dán danh sách từ Excel
             </button>
@@ -468,10 +475,10 @@
         </div>
 
         <div class="wheels-arena-grid">
-          <!-- Vòng quay Đội 1: Cáo Đỏ -->
+          <!-- Vòng quay Đội 1 -->
           <div class="wheel-box wheel-box-team1">
             <div class="wheel-header">
-              <span class="wheel-team-title">🦊 Đội Cáo Đỏ</span>
+              <span class="wheel-team-title" id="wheelTeamTitle1">🦊 Đội Cáo Đỏ</span>
               <span class="wheel-roster-count" id="wheelRosterCount1">0 bạn</span>
             </div>
             <div class="wheel-stage-wrap">
@@ -483,10 +490,10 @@
             </button>
           </div>
 
-          <!-- Vòng quay Đội 2: Sư Tử Xanh -->
+          <!-- Vòng quay Đội 2 -->
           <div class="wheel-box wheel-box-team2">
             <div class="wheel-header">
-              <span class="wheel-team-title">🦁 Đội Sư Tử Xanh</span>
+              <span class="wheel-team-title" id="wheelTeamTitle2">🦁 Đội Sư Tử Xanh</span>
               <span class="wheel-roster-count" id="wheelRosterCount2">0 bạn</span>
             </div>
             <div class="wheel-stage-wrap">
@@ -1251,6 +1258,66 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: ĐỔI TÊN 2 ĐỘI THEO Ý HỌC SINH ================= -->
+  <div class="modal-overlay" id="baamTeamNamesModal" aria-hidden="true">
+    <div class="modal-card" style="max-width: 640px;">
+      <button class="modal-close-btn" onclick="closeModal('baamTeamNamesModal')">✕</button>
+      <div style="text-align:center; margin-bottom:18px;">
+        <div style="font-size:48px;">🏷️</div>
+        <h3 style="margin-top:6px; font-size:24px;">Đổi tên 2 Đội theo ý thích học sinh</h3>
+        <p style="color:#64748B; font-size:15px; margin:4px 0 0 0;">
+          Đặt tên đội yêu thích và linh vật vui nhộn để các bé thi đấu hào hứng hơn!
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+        <!-- Đội 1 -->
+        <div style="background:#FFF5F5; border:2.5px solid #DC2626; border-radius:12px; padding:14px; box-shadow:0 3px 0 #DC2626;">
+          <label for="editTeamNameInput1" style="font-weight:800; color:#DC2626; display:block; margin-bottom:6px; font-size:15px;">
+            🦊 Tên Đội 1 (Đỏ):
+          </label>
+          <input type="text" id="editTeamNameInput1" class="glass-input" placeholder="Ví dụ: 🦊 Đội Cáo Đỏ, ⚡ Tia Chớp..." style="font-weight:800; font-size:16px; margin-bottom:10px; width:100%;">
+          <div style="font-size:13px; font-weight:700; color:#64748B; margin-bottom:6px;">💡 Gợi ý tên ngầu:</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(1, '🦊 Đội Cáo Đỏ')">🦊 Cáo Đỏ</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(1, '⚡ Đội Tia Chớp')">⚡ Tia Chớp</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(1, '🦖 Đội Khủng Long')">🦖 Khủng Long</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(1, '🦸 Đội Siêu Nhân')">🦸 Siêu Nhân</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(1, '🐉 Đội Rồng Lửa')">🐉 Rồng Lửa</button>
+          </div>
+        </div>
+
+        <!-- Đội 2 -->
+        <div style="background:#EFF6FF; border:2.5px solid #2563EB; border-radius:12px; padding:14px; box-shadow:0 3px 0 #2563EB;">
+          <label for="editTeamNameInput2" style="font-weight:800; color:#2563EB; display:block; margin-bottom:6px; font-size:15px;">
+            🦁 Tên Đội 2 (Xanh):
+          </label>
+          <input type="text" id="editTeamNameInput2" class="glass-input" placeholder="Ví dụ: 🦁 Đội Sư Tử, 🐺 Sói Xám..." style="font-weight:800; font-size:16px; margin-bottom:10px; width:100%;">
+          <div style="font-size:13px; font-weight:700; color:#64748B; margin-bottom:6px;">💡 Gợi ý tên ngầu:</div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(2, '🦁 Đội Sư Tử Xanh')">🦁 Sư Tử</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(2, '🐺 Đội Sói Xám')">🐺 Sói Xám</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(2, '🐼 Đội Gấu Trúc')">🐼 Gấu Trúc</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(2, '🦅 Đội Đại Bàng')">🦅 Đại Bàng</button>
+            <button type="button" class="tag-chip" onclick="applyTeamPreset(2, '⭐ Đội Ngôi Sao')">⭐ Ngôi Sao</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary small-btn" onclick="resetDefaultTeamNames()">
+          🔄 Khôi phục mặc định
+        </button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('baamTeamNamesModal')">Huỷ</button>
+          <button type="button" class="btn btn-green" onclick="saveTeamNamesFromModal()">
+            💾 Áp dụng tên mới
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL: QUẢN LÝ & DÁN DANH SÁCH HỌC SINH TỪ EXCEL ================= -->
   <div class="modal-overlay" id="baamStudentRosterModal" aria-hidden="true">
     <div class="modal-card" style="max-width:700px;">
@@ -1275,19 +1342,25 @@
       </div>
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;">
-        <!-- Đội 1: Cáo Đỏ -->
+        <!-- Đội 1 -->
         <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:12px; padding:14px; box-shadow:0 3px 0 var(--ink);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong style="color:#DC2626; font-size:16px;">🦊 Đội Cáo Đỏ</strong>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <strong style="color:#DC2626; font-size:16px;" id="rosterTeamLabel1">🦊 Đội Cáo Đỏ</strong>
+              <button type="button" class="btn btn-secondary small-btn" onclick="openModal('baamTeamNamesModal')" style="padding:2px 8px; font-size:12px;" title="Đổi tên đội">✏️ Đổi tên</button>
+            </div>
             <span style="font-size:13px; font-weight:700; color:#64748B;" id="rosterCountTeam1">(0 bạn)</span>
           </div>
           <textarea id="rosterInputTeam1" class="glass-input" rows="8" placeholder="Dán tên học sinh Đội 1 vào đây...&#10;Nguyễn Văn An&#10;Trần Thị Mai&#10;Lê Hoàng Long..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
         </div>
 
-        <!-- Đội 2: Sư Tử Xanh -->
+        <!-- Đội 2 -->
         <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:12px; padding:14px; box-shadow:0 3px 0 var(--ink);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <strong style="color:#2563EB; font-size:16px;">🦁 Đội Sư Tử Xanh</strong>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <strong style="color:#2563EB; font-size:16px;" id="rosterTeamLabel2">🦁 Đội Sư Tử Xanh</strong>
+              <button type="button" class="btn btn-secondary small-btn" onclick="openModal('baamTeamNamesModal')" style="padding:2px 8px; font-size:12px;" title="Đổi tên đội">✏️ Đổi tên</button>
+            </div>
             <span style="font-size:13px; font-weight:700; color:#64748B;" id="rosterCountTeam2">(0 bạn)</span>
           </div>
           <textarea id="rosterInputTeam2" class="glass-input" rows="8" placeholder="Dán tên học sinh Đội 2 vào đây...&#10;Phạm Minh Quân&#10;Đỗ Thu Hà&#10;Vũ Gia Hưng..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
@@ -1335,11 +1408,11 @@
       <div id="baamDualWinnerWrap" style="display:none; margin:16px 0;">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
           <div style="background:#FEE2E2; border:3px solid #1F2A44; border-radius:12px; padding:14px; box-shadow:0 3px 0 #1F2A44;">
-            <div style="font-size:14px; font-weight:900; color:#DC2626; margin-bottom:4px;">🦊 ĐỘI CÁO ĐỎ</div>
+            <div style="font-size:14px; font-weight:900; color:#DC2626; margin-bottom:4px;" id="baamDualTeam1Title">🦊 ĐỘI CÁO ĐỎ</div>
             <div id="baamDualWinner1" style="font-size:22px; font-weight:900; color:#1F2A44;">Nguyễn Văn An</div>
           </div>
           <div style="background:#DBEAFE; border:3px solid #1F2A44; border-radius:12px; padding:14px; box-shadow:0 3px 0 #1F2A44;">
-            <div style="font-size:14px; font-weight:900; color:#2563EB; margin-bottom:4px;">🦁 ĐỘI SƯ TỬ XANH</div>
+            <div style="font-size:14px; font-weight:900; color:#2563EB; margin-bottom:4px;" id="baamDualTeam2Title">🦁 ĐỘI SƯ TỬ XANH</div>
             <div id="baamDualWinner2" style="font-size:22px; font-weight:900; color:#1F2A44;">Trần Thị Bình</div>
           </div>
         </div>
@@ -1371,6 +1444,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20260929_v7"></script>
+  <script src="app.js?v=20260929_v8"></script>
 </body>
 </html>
