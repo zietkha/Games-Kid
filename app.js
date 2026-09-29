@@ -2849,15 +2849,11 @@ function getSavedAiQuestions() {
   try {
     const saved = localStorage.getItem(AI_QUESTIONS_STORAGE_KEY);
     if (saved !== null) {
-      return JSON.parse(saved); // If saved is [] -> returns []
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
     }
-    const wasCleared = localStorage.getItem('ekm_ai_cleared_by_user');
-    if (wasCleared === 'true') {
-      return [];
-    }
-    // First time seed: save default questions to localStorage
-    localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
-    return JSON.parse(JSON.stringify(DEFAULT_AI_PICTURE_QUESTIONS));
+    // Default to empty array so user starts with a completely clean database
+    return [];
   } catch (e) {
     console.warn("Error reading questions bank:", e);
     return [];
@@ -3883,32 +3879,28 @@ function deleteAiQuestion(idx) {
   if (!AiStudioState.questions || idx < 0 || idx >= AiStudioState.questions.length) return;
   const q = AiStudioState.questions[idx];
   const word = q.vocab || `Câu số ${idx + 1}`;
-  if (confirm(`Bạn có chắc muốn xóa câu đố "${word}" khỏi ngân hàng không?`)) {
-    AiStudioState.questions.splice(idx, 1);
-    saveAiQuestionsBank();
-    if (AiStudioState.currentIndex >= AiStudioState.questions.length) {
-      AiStudioState.currentIndex = Math.max(0, AiStudioState.questions.length - 1);
-    }
-    renderCreatorQuestionsList();
-    if (AiStudioState.currentMode === 'play') {
-      loadAiGameQuestion();
-    }
-    showToast(`Đã xóa câu đố "${word}" thành công!`, "info");
+  AiStudioState.questions.splice(idx, 1);
+  saveAiQuestionsBank();
+  if (AiStudioState.currentIndex >= AiStudioState.questions.length) {
+    AiStudioState.currentIndex = Math.max(0, AiStudioState.questions.length - 1);
   }
+  renderCreatorQuestionsList();
+  if (AiStudioState.currentMode === 'play') {
+    loadAiGameQuestion();
+  }
+  showToast(`Đã xóa câu đố "${word}"!`, "info");
 }
 
 // Clear all questions in the bank (Lược bỏ hết bài - xóa sạch khỏi database)
 function clearAllAiQuestions() {
-  if (confirm("Bạn có chắc muốn xóa tất cả câu đố trong hệ thống không?\n\nSau khi xóa, thầy cô có thể tạo câu đố mới hoặc bấm 'Khôi phục mẫu' bất kỳ lúc nào.")) {
-    AiStudioState.questions = [];
-    AiStudioState.currentIndex = 0;
-    localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify([]));
-    localStorage.setItem('ekm_ai_cleared_by_user', 'true');
-    localStorage.removeItem('ekm_ai_image_sentences');
-    renderCreatorQuestionsList();
-    loadAiGameQuestion();
-    showToast("Đã xóa tất cả câu đố trong hệ thống!", "info");
-  }
+  AiStudioState.questions = [];
+  AiStudioState.currentIndex = 0;
+  localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify([]));
+  localStorage.setItem('ekm_ai_cleared_by_user', 'true');
+  localStorage.removeItem('ekm_ai_image_sentences');
+  renderCreatorQuestionsList();
+  loadAiGameQuestion();
+  showToast("Đã xóa sạch tất cả câu đố trong hệ thống!", "success");
 }
 
 // Reset question bank to default samples

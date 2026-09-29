@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260929_g2">
+  <link rel="stylesheet" href="styles.css?v=20260929_v3">
 </head>
 <body>
 
@@ -355,7 +355,57 @@
 
         <!-- Grid các trò chơi kỹ năng -->
         <div class="skill-cards-grid" id="skillCardsGrid">
-          <!-- Populated by JS -->
+          <!-- 1. Flashcard 3D Card -->
+          <div class="skill-card" onclick="openSkillModal('flashcard')" title="Mở Flashcard 3D">
+            <div class="skill-icon-wrap">📖</div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Từ vựng & Đọc</span>
+                <span class="skill-count" id="count-reading">10 thẻ học</span>
+              </div>
+              <h3 class="skill-name">Flashcard 3D & Mẫu câu</h3>
+              <p class="skill-desc">Lật thẻ 3D trực quan hai mặt, tra từ vựng tiếng Anh và nghe phát âm chuẩn bản xứ.</p>
+            </div>
+          </div>
+
+          <!-- 2. Speed Quiz Card -->
+          <div class="skill-card" onclick="openSkillModal('quiz')" title="Mở Đố vui trắc nghiệm">
+            <div class="skill-icon-wrap">🧠</div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Phản xạ nhanh</span>
+                <span class="skill-count" id="count-quiz">5 câu đố vui</span>
+              </div>
+              <h3 class="skill-name">Đố vui trắc nghiệm tốc độ</h3>
+              <p class="skill-desc">Thử thách 15 giây chọn đáp án đúng, phản xạ tức thì và tích lũy thật nhiều điểm thưởng XP.</p>
+            </div>
+          </div>
+
+          <!-- 3. Picture Match Card -->
+          <div class="skill-card" onclick="openSkillModal('picture')" title="Mở Nghe đoán hình">
+            <div class="skill-icon-wrap">🖼️</div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Luyện nghe & Nhìn</span>
+                <span class="skill-count" id="count-listening">Đoán hình vui</span>
+              </div>
+              <h3 class="skill-name">Nghe âm thanh đoán hình</h3>
+              <p class="skill-desc">Nghe giọng đọc từ vựng tiếng Anh và bấm chọn bức tranh minh họa tương ứng chính xác.</p>
+            </div>
+          </div>
+
+          <!-- 4. Word Scramble Card -->
+          <div class="skill-card" onclick="openSkillModal('scramble')" title="Mở Thử thách xếp chữ">
+            <div class="skill-icon-wrap">🔤</div>
+            <div class="skill-body">
+              <div class="skill-header-row">
+                <span class="skill-tag">Chính tả & Ghép từ</span>
+                <span class="skill-count" id="count-writing">Ghép chữ logic</span>
+              </div>
+              <h3 class="skill-name">Thử thách xếp chữ cái</h3>
+              <p class="skill-desc">Trò chơi xáo trộn chữ cái Word Scramble giúp bé rèn luyện trí nhớ và phản xạ chính tả toàn diện.</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1049,6 +1099,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20260929_g2"></script>
+  <script src="app.js?v=20260929_v3"></script>
 </body>
 </html>
