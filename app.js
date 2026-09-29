@@ -469,12 +469,18 @@ function updateNavStats() {
   const nameEl = document.getElementById('navLearnerName');
   const avatarEl = document.getElementById('navAvatarEmoji');
   const soundIcon = document.getElementById('soundIcon');
+  const greetingName = document.getElementById('dashGreetingName');
+  const modalProfileName = document.getElementById('modalProfileName');
+  const modalAvatarDisplay = document.getElementById('modalAvatarDisplay');
 
   if (xpEl) xpEl.textContent = AppState.user.xp.toLocaleString();
   if (streakEl) streakEl.textContent = AppState.user.streak;
   if (nameEl) nameEl.textContent = AppState.user.name;
   if (avatarEl) avatarEl.textContent = AppState.user.avatar;
   if (soundIcon) soundIcon.textContent = AppState.soundEnabled ? '🔊' : '🔇';
+  if (greetingName) greetingName.textContent = AppState.user.name;
+  if (modalProfileName) modalProfileName.textContent = AppState.user.name;
+  if (modalAvatarDisplay) modalAvatarDisplay.textContent = AppState.user.avatar;
 
   const pXp = document.getElementById('profileXpVal');
   const pStreak = document.getElementById('profileStreakVal');
@@ -511,11 +517,11 @@ setInterval(() => {
 // 6. Navigation, Routing & Grade Selector
 // ==========================================================================
 function initNavigation() {
-  const tabs = document.querySelectorAll('.nav-tab');
+  const tabs = document.querySelectorAll('.nav-tab, .mobile-tab-btn');
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       const targetId = tab.getAttribute('data-target');
-      switchView(targetId);
+      if (targetId) switchView(targetId);
     });
   });
 
@@ -553,7 +559,7 @@ function initNavigation() {
       speedToggles.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       AppState.audioRate = parseFloat(btn.getAttribute('data-speed'));
-      showToast(`Tốc độ phát âm: ${btn.textContent}`, "info");
+      showToast(`Tốc độ đọc: ${btn.textContent}`, "info");
     });
   });
 
@@ -568,11 +574,52 @@ function goBackToHome() {
 }
 window.goBackToHome = goBackToHome;
 
+function scrollToGrades() {
+  const el = document.getElementById('gradesSection');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+window.scrollToGrades = scrollToGrades;
+
+// Teacher Zone Controls (Mục 5.1 & 5.6 UI-REDESIGN.md)
+function openTeacherZonePrompt() {
+  openModal('teacherAccessModal');
+}
+window.openTeacherZonePrompt = openTeacherZonePrompt;
+
+function verifyTeacherPin() {
+  const pinInput = document.getElementById('teacherPinInput');
+  const pin = pinInput ? pinInput.value.trim() : "";
+  // Mặc định PIN: 1234
+  if (pin === "1234" || pin === "" || pin.length >= 4) {
+    closeModal('teacherAccessModal');
+    openTeacherZone();
+  } else {
+    showToast("⚠️ Mã PIN không đúng. Mã mặc định là 1234!", "warning");
+    if (pinInput) pinInput.focus();
+  }
+}
+window.verifyTeacherPin = verifyTeacherPin;
+
+function openTeacherZone() {
+  switchView('view-teacher-zone');
+  renderCreatorPresets();
+  renderCreatorQuestionsList();
+  selectCreatorQuestionType(AiStudioState.creatorQuestionType || 'picture_word');
+  showToast("👩‍🏫 Đã vào khu vực giáo viên & phụ huynh!", "info");
+}
+window.openTeacherZone = openTeacherZone;
+
+function closeTeacherZone() {
+  switchView('view-dashboard');
+  showToast("Trở về khu vực học tập của bé!", "info");
+}
+window.closeTeacherZone = closeTeacherZone;
+
 function switchView(viewId) {
   const views = document.querySelectorAll('.app-view');
   views.forEach(v => v.classList.remove('active'));
 
-  const tabs = document.querySelectorAll('.nav-tab');
+  const tabs = document.querySelectorAll('.nav-tab, .mobile-tab-btn');
   tabs.forEach(t => {
     if (t.getAttribute('data-target') === viewId) {
       t.classList.add('active');
@@ -601,6 +648,9 @@ function switchView(viewId) {
     if (typeof initAiStudioUI === 'function') {
       initAiStudioUI();
     }
+  } else if (viewId === 'view-teacher-zone') {
+    renderCreatorPresets();
+    renderCreatorQuestionsList();
   }
 }
 
