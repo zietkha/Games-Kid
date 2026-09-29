@@ -2895,7 +2895,7 @@ function drawBaamWheel(team) {
     ctx.fillStyle = palette[i % palette.length];
     ctx.fill();
 
-    ctx.lineWidth = 2.5;
+    ctx.lineWidth = numSlices > 35 ? 1 : numSlices > 20 ? 1.5 : 2.5;
     ctx.strokeStyle = "#FFFFFF";
     ctx.stroke();
 
@@ -2906,25 +2906,37 @@ function drawBaamWheel(team) {
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
 
-    // Dynamic font sizing
+    // Dynamic responsive font sizing and character truncation for large rosters (10 - 60+ students)
     let fontSize = 14;
-    if (numSlices > 24) fontSize = 10;
-    else if (numSlices > 16) fontSize = 12;
-    else if (numSlices > 10) fontSize = 13;
+    let maxChars = 16;
+    if (numSlices > 45) {
+      fontSize = 8.5;
+      maxChars = 9;
+    } else if (numSlices > 30) {
+      fontSize = 9.5;
+      maxChars = 11;
+    } else if (numSlices > 20) {
+      fontSize = 11;
+      maxChars = 13;
+    } else if (numSlices > 12) {
+      fontSize = 12.5;
+      maxChars = 15;
+    }
 
     ctx.font = `900 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
     ctx.fillStyle = "#FFFFFF";
-    ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
     ctx.shadowBlur = 3;
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
 
     let name = students[i];
-    if (name.length > 15) {
-      name = name.slice(0, 13) + '…';
+    if (name.length > maxChars) {
+      name = name.slice(0, maxChars - 1) + '…';
     }
 
-    ctx.fillText(name, radius - 16, 0);
+    const textOffset = numSlices > 30 ? radius - 12 : radius - 16;
+    ctx.fillText(name, textOffset, 0);
     ctx.restore();
   }
 
