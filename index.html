@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260929_v4">
+  <link rel="stylesheet" href="styles.css?v=20260929_v5">
 </head>
 <body>
 
@@ -435,13 +435,15 @@
 
       <!-- Bảng điểm 2 đội -->
       <div class="baam-scoreboard-row">
-        <div class="team-score-card team-1-card" id="teamCard1">
+        <div class="team-score-card team-1-card active" id="teamCard1">
+          <div class="team-turn-badge" id="teamTurnBadge1">🎯 ĐANG ĐẾN LƯỢT</div>
           <div class="team-score-float" id="teamScoreFloat1"></div>
           <div class="team-name">🦊 Đội Cáo Đỏ</div>
           <div class="team-score-val" id="teamScore1">0</div>
         </div>
         <div class="vs-box">ĐỐI ĐẦU</div>
         <div class="team-score-card team-2-card" id="teamCard2">
+          <div class="team-turn-badge" id="teamTurnBadge2">⏳ CHỜ LƯỢT</div>
           <div class="team-score-float" id="teamScoreFloat2"></div>
           <div class="team-name">🦁 Đội Sư Tử Xanh</div>
           <div class="team-score-val" id="teamScore2">0</div>
@@ -450,8 +452,11 @@
 
       <!-- 16 Ô số bí ẩn -->
       <div class="card card-lg">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h3 id="baamTurnIndicator">Lượt của: Đội Cáo Đỏ</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+          <div class="turn-highlight-banner team-1-turn" id="baamTurnBanner">
+            <span class="turn-dot"></span>
+            <h3 id="baamTurnIndicator" style="margin:0; font-size:22px;">Lượt của: Đội Cáo Đỏ 🦊 — Hãy chọn 1 ô số!</h3>
+          </div>
           <button type="button" class="btn btn-secondary small-btn" onclick="restartBaamboozleGame()">
             🔄 Chơi lại
           </button>
@@ -1211,6 +1216,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20260929_v4"></script>
+  <script src="app.js?v=20260929_v5"></script>
 </body>
 </html>

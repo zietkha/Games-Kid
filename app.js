@@ -2267,12 +2267,15 @@ function renderBaamTiles() {
   }
 }
 
-// Update Active Scoreboard & Turn Display
+// Update Active Scoreboard & Turn Display (Hiện cực kỳ đậm nét đội đang đến lượt)
 function updateBaamScoreboard() {
   const card1 = document.getElementById('teamCard1');
   const card2 = document.getElementById('teamCard2');
   const score1 = document.getElementById('teamScore1') || document.getElementById('baamTeam1Score');
   const score2 = document.getElementById('teamScore2') || document.getElementById('baamTeam2Score');
+  const badge1 = document.getElementById('teamTurnBadge1');
+  const badge2 = document.getElementById('teamTurnBadge2');
+  const banner = document.getElementById('baamTurnBanner');
   const turnText = document.getElementById('baamTurnText') || document.getElementById('baamTurnIndicator');
 
   if (score1) {
@@ -2295,30 +2298,40 @@ function updateBaamScoreboard() {
   if (BaamState.currentTeam === 1) {
     if (card1) {
       card1.classList.add('active');
-      const badge = card1.querySelector('.team-badge');
-      if (badge) badge.textContent = "Đến Lượt! 🎯";
     }
     if (card2) {
       card2.classList.remove('active');
-      const badge = card2.querySelector('.team-badge');
-      if (badge) badge.textContent = "Chờ Lượt ⏳";
+    }
+    if (badge1) {
+      badge1.textContent = "🎯 ĐANG ĐẾN LƯỢT!";
+    }
+    if (badge2) {
+      badge2.textContent = "⏳ Đang chờ lượt...";
+    }
+    if (banner) {
+      banner.className = "turn-highlight-banner team-1-turn";
     }
     if (turnText) {
-      turnText.innerHTML = `Lượt của: <strong class="text-team-1">Đội Cáo Đỏ 🦊</strong> — Hãy chọn 1 ô số!`;
+      turnText.innerHTML = `Lượt của: <strong style="color:#DC2626;">Đội Cáo Đỏ 🦊</strong> — Hãy bấm chọn 1 ô số!`;
     }
   } else {
     if (card2) {
       card2.classList.add('active');
-      const badge = card2.querySelector('.team-badge');
-      if (badge) badge.textContent = "Đến Lượt! 🎯";
     }
     if (card1) {
       card1.classList.remove('active');
-      const badge = card1.querySelector('.team-badge');
-      if (badge) badge.textContent = "Chờ Lượt ⏳";
+    }
+    if (badge2) {
+      badge2.textContent = "🎯 ĐANG ĐẾN LƯỢT!";
+    }
+    if (badge1) {
+      badge1.textContent = "⏳ Đang chờ lượt...";
+    }
+    if (banner) {
+      banner.className = "turn-highlight-banner team-2-turn";
     }
     if (turnText) {
-      turnText.innerHTML = `Lượt của: <strong class="text-team-2">Đội Sư Tử Xanh 🦁</strong> — Hãy chọn 1 ô số!`;
+      turnText.innerHTML = `Lượt của: <strong style="color:#2563EB;">Đội Sư Tử Xanh 🦁</strong> — Hãy bấm chọn 1 ô số!`;
     }
   }
 }

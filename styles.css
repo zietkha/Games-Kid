@@ -1053,6 +1053,136 @@ textarea:focus {
   }
 }
 
+.team-score-card {
+  position: relative;
+  overflow: visible;
+  border: 3.5px solid var(--ink);
+  border-radius: var(--r-m);
+  box-shadow: 0 4px 0 var(--ink);
+  padding: 16px 20px;
+  text-align: center;
+  background-color: #FFFFFF;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ĐỘI ĐANG ĐẾN LƯỢT: Nổi bật, viền 4.5px, bóng 3D dày 10px, hào quang vàng rực rỡ */
+.team-score-card.active {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 0 var(--ink) !important;
+  border-width: 4.5px !important;
+  outline: 4px solid #F59E0B;
+  outline-offset: 4px;
+  z-index: 10;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.team-score-card.team-1-card.active {
+  background-color: #FEE2E2 !important; /* Đỏ sáng rực rỡ */
+}
+
+.team-score-card.team-2-card.active {
+  background-color: #DBEAFE !important; /* Xanh dương sáng rực rỡ */
+}
+
+/* ĐỘI ĐANG CHỜ LƯỢT: Làm mờ nhẹ 55%, thu nhỏ nhẹ để nhận biết ngay */
+.team-score-card:not(.active) {
+  opacity: 0.55;
+  transform: scale(0.97);
+  box-shadow: 0 3px 0 var(--ink);
+  outline: none;
+  filter: grayscale(12%);
+}
+
+.team-score-card:not(.active):hover {
+  opacity: 0.8;
+}
+
+/* Huy hiệu ĐẾN LƯỢT / CHỜ LƯỢT trên đỉnh thẻ */
+.team-turn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  padding: 5px 16px;
+  border-radius: 99px;
+  border: 2.5px solid var(--ink);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.team-score-card.active .team-turn-badge {
+  background-color: #FEF08A; /* Vàng chanh rực rỡ */
+  color: #1F2A44;
+  box-shadow: 0 3px 0 var(--ink);
+  animation: turnBadgePulse 1.3s ease-in-out infinite;
+}
+
+.team-score-card:not(.active) .team-turn-badge {
+  background-color: #E2E8F0;
+  color: #64748B;
+  border-color: #94A3B8;
+  box-shadow: none;
+}
+
+@keyframes turnBadgePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 3px 0 var(--ink);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 6px 0 var(--ink);
+  }
+}
+
+/* Banner thông báo lượt chơi cực kỳ to rõ */
+.turn-highlight-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border: 3.5px solid var(--ink);
+  border-radius: var(--r-s);
+  box-shadow: 0 4px 0 var(--ink);
+  transition: all 0.2s ease;
+}
+
+.turn-highlight-banner.team-1-turn {
+  background-color: #FEE2E2;
+  border-color: #DC2626;
+  color: #991B1B;
+}
+
+.turn-highlight-banner.team-2-turn {
+  background-color: #DBEAFE;
+  border-color: #2563EB;
+  color: #1E40AF;
+}
+
+.turn-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  display: inline-block;
+  background-color: #EF4444;
+  animation: turnDotBlink 1s ease-in-out infinite;
+}
+
+.team-2-turn .turn-dot {
+  background-color: #3B82F6;
+}
+
+@keyframes turnDotBlink {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.7; }
+}
+
 .team-1-card {
   background-color: var(--red-tint);
 }
