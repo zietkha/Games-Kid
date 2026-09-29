@@ -3096,6 +3096,33 @@ body {
   color: #9a3412;
 }
 
+.ai-feedback-banner.info {
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  color: #1e40af;
+}
+
+.q-type-badge-sm {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.q-type-badge-sm.pic-type {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.q-type-badge-sm.cloze-type {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
+
 .fb-icon {
   font-size: 2.2rem;
 }
@@ -3252,6 +3279,140 @@ body {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+/* Question Type Selector Cards in Creator Form */
+.question-type-step {
+  background: rgba(241, 245, 249, 0.85);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.question-type-toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+@media (max-width: 640px) {
+  .question-type-toggle-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.q-type-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.q-type-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.q-type-card.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+}
+
+.q-type-card input[type="radio"] {
+  margin-top: 4px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.q-type-content {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.q-type-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.q-type-text strong {
+  display: block;
+  font-size: 0.92rem;
+  color: #1e3a8a;
+  margin-bottom: 2px;
+}
+
+.q-type-text span {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* Question Title Banner on Top of Picture in Game Player */
+.picture-question-title-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+.picture-question-title-banner .q-icon {
+  font-size: 1.4rem;
+}
+
+.picture-question-title-banner .q-text {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+/* Picture Word Task Card (Right Panel in Play Mode) */
+.picture-word-task-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 249, 255, 0.95));
+  border: 1.5px solid #bfdbfe;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+}
+
+.picture-word-task-card .task-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+.picture-word-task-card .task-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+}
+
+.picture-word-task-card .task-meaning-hint {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0369a1;
+  font-style: italic;
 }
 
 .step-label-with-ai {

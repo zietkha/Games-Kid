@@ -2563,6 +2563,8 @@ function playSoundFunnyBoing() {
 const DEFAULT_AI_PICTURE_QUESTIONS = [
   {
     id: "ai_q_1",
+    type: "picture_word",
+    questionTitle: "What animal is this?",
     image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80",
     vocab: "Cat",
     phonetic: "/kæt/",
@@ -2575,6 +2577,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_2",
+    type: "picture_word",
+    questionTitle: "What fruit is this in English?",
     image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80",
     vocab: "Apple",
     phonetic: "/ˈæp.əl/",
@@ -2587,6 +2591,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_3",
+    type: "picture_word",
+    questionTitle: "What animal is this?",
     image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
     vocab: "Dog",
     phonetic: "/dɒɡ/",
@@ -2599,6 +2605,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_4",
+    type: "picture_word",
+    questionTitle: "What place is this?",
     image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80",
     vocab: "School",
     phonetic: "/skuːl/",
@@ -2611,6 +2619,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_5",
+    type: "picture_word",
+    questionTitle: "What food is this in English?",
     image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
     vocab: "Pizza",
     phonetic: "/ˈpiːt.sə/",
@@ -2623,6 +2633,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_6",
+    type: "picture_word",
+    questionTitle: "What job is this?",
     image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80",
     vocab: "Doctor",
     phonetic: "/ˈdɒk.tər/",
@@ -2635,6 +2647,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_7",
+    type: "picture_word",
+    questionTitle: "Where is this place in English?",
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80",
     vocab: "Beach",
     phonetic: "/biːtʃ/",
@@ -2647,6 +2661,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_8",
+    type: "picture_word",
+    questionTitle: "What object is this in English?",
     image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80",
     vocab: "Book",
     phonetic: "/bʊk/",
@@ -2659,6 +2675,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_9",
+    type: "picture_word",
+    questionTitle: "What vehicle is this in English?",
     image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600&auto=format&fit=crop&q=80",
     vocab: "Bicycle",
     phonetic: "/ˈbaɪ.sɪ.kəl/",
@@ -2671,6 +2689,8 @@ const DEFAULT_AI_PICTURE_QUESTIONS = [
   },
   {
     id: "ai_q_10",
+    type: "picture_word",
+    questionTitle: "What animal is this?",
     image: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80",
     vocab: "Bird",
     phonetic: "/bɜːd/",
@@ -2762,6 +2782,7 @@ const CREATOR_IMAGE_PRESETS = [
 // Active Studio State
 const AiStudioState = {
   currentMode: 'play', // 'play' or 'create'
+  creatorQuestionType: 'picture_word', // 'picture_word' or 'sentence_cloze'
   currentIndex: 0,
   score: 0,
   streak: 0,
@@ -2809,6 +2830,34 @@ function getAllAiQuestions() {
   return getSavedAiQuestions();
 }
 
+// Select question type in Creator Studio: 'picture_word' or 'sentence_cloze'
+function selectCreatorQuestionType(type) {
+  AiStudioState.creatorQuestionType = type;
+
+  const cardPic = document.getElementById('qTypePictureWord');
+  const cardCloze = document.getElementById('qTypeSentenceCloze');
+  const clozeSteps = document.getElementById('clozeModeSteps');
+  const vocabLabel = document.getElementById('creatorVocabStepLabel');
+  const stepQTitle = document.getElementById('stepQuestionTitle');
+  const previewBox = document.getElementById('creatorAiPreviewBox');
+
+  if (type === 'picture_word') {
+    if (cardPic) cardPic.classList.add('active');
+    if (cardCloze) cardCloze.classList.remove('active');
+    if (clozeSteps) clozeSteps.style.display = 'none';
+    if (stepQTitle) stepQTitle.style.display = 'block';
+    if (previewBox) previewBox.style.display = 'none';
+    if (vocabLabel) vocabLabel.textContent = '3. Từ Vựng Đáp Án Đúng (Tiếng Anh):';
+  } else {
+    if (cardCloze) cardCloze.classList.add('active');
+    if (cardPic) cardPic.classList.remove('active');
+    if (clozeSteps) clozeSteps.style.display = 'block';
+    if (stepQTitle) stepQTitle.style.display = 'none';
+    if (vocabLabel) vocabLabel.textContent = '3. Từ Vựng Chính (Tiếng Anh):';
+  }
+}
+window.selectCreatorQuestionType = selectCreatorQuestionType;
+
 // Switch between 'play' and 'create' sub-modes
 function switchStudioMode(mode) {
   AiStudioState.currentMode = mode;
@@ -2829,6 +2878,7 @@ function switchStudioMode(mode) {
     if (btnPlay) btnPlay.classList.remove('active');
     if (viewCreate) viewCreate.classList.add('active');
     if (viewPlay) viewPlay.classList.remove('active');
+    selectCreatorQuestionType(AiStudioState.creatorQuestionType || 'picture_word');
     renderCreatorPresets();
     renderCreatorQuestionsList();
   }
@@ -2878,46 +2928,71 @@ function loadAiGameQuestion() {
   if (scoreEl) scoreEl.textContent = AiStudioState.score;
   if (streakEl) streakEl.textContent = AiStudioState.streak;
 
-  // Update Picture & Vocab Under Image
+  // Update Picture Image
   const imgEl = document.getElementById('aiPlayImage');
-  const vocabEl = document.getElementById('aiPlayVocabWord');
-  const phoneticEl = document.getElementById('aiPlayVocabPhonetic');
-  const meaningEl = document.getElementById('aiPlayVocabMeaning');
-
   if (imgEl) {
     imgEl.src = q.image;
-    imgEl.alt = q.vocab;
-  }
-  if (vocabEl) vocabEl.textContent = q.vocab;
-  if (phoneticEl) phoneticEl.textContent = q.phonetic || "";
-  if (meaningEl) meaningEl.textContent = q.meaning || "";
-
-  // Audio button handlers
-  const speakVocabBtn = document.getElementById('aiPlaySpeakVocabBtn');
-  if (speakVocabBtn) {
-    speakVocabBtn.onclick = () => speakWord(q.vocab);
+    imgEl.alt = q.vocab || "Minh họa câu đố";
   }
 
+  // Determine mode: picture_word vs sentence_cloze
+  const isPictureWord = (q.type === 'picture_word') || (!q.clozeSentence && !q.fullSentence);
+  const qTitleBanner = document.getElementById('aiPlayQuestionTitleBanner');
+  const qTitleEl = document.getElementById('aiPlayQuestionTitle');
+  const wordTaskCard = document.getElementById('aiPlayWordTaskCard');
+  const clozeCard = document.getElementById('aiPlayClozeSentenceCard');
+  const stageTag = document.getElementById('aiPlayStageTag');
   const speakSentenceBtn = document.getElementById('aiPlaySpeakSentenceBtn');
-  if (speakSentenceBtn) {
-    speakSentenceBtn.onclick = () => speakWord(q.fullSentence);
-  }
+  const taskMeaningHint = document.getElementById('aiPlayTaskMeaningHint');
+  const taskTitle = document.getElementById('aiPlayTaskTitle');
+  const inputLabel = document.getElementById('aiAnswerInputLabel');
 
-  // Cloze Sentence Display
-  const sentenceDisplay = document.getElementById('aiPlaySentenceDisplay');
-  const sentenceMeaning = document.getElementById('aiPlaySentenceMeaning');
+  const defaultTitle = isPictureWord ? "What is this in English?" : "Fill in the blank with the correct word";
+  const questionTitle = q.questionTitle || defaultTitle;
 
-  if (sentenceDisplay) {
-    // Render with highlighted pulsing blank slot
-    const clozeFormatted = q.clozeSentence.replace(
-      /\[\s*______+\s*\]/g,
-      `<span class="cloze-blank-slot" id="activeClozeSlot">? ? ?</span>`
-    );
-    sentenceDisplay.innerHTML = clozeFormatted;
-  }
+  if (qTitleBanner) qTitleBanner.style.display = 'flex';
+  if (qTitleEl) qTitleEl.textContent = questionTitle;
 
-  if (sentenceMeaning) {
-    sentenceMeaning.textContent = `"${q.sentenceMeaning}"`;
+  if (isPictureWord) {
+    // Mode: Picture & Vocabulary Input
+    if (wordTaskCard) wordTaskCard.style.display = 'block';
+    if (clozeCard) clozeCard.style.display = 'none';
+    if (stageTag) stageTag.textContent = '🖼️ Thử thách: Chiếu ảnh & Điền từ vựng đúng';
+    if (taskTitle) taskTitle.textContent = questionTitle;
+    if (taskMeaningHint) {
+      if (q.meaning) {
+        taskMeaningHint.innerHTML = `💡 Nghĩa tiếng Việt: <strong>${q.meaning}</strong>`;
+        taskMeaningHint.style.display = 'inline-block';
+      } else {
+        taskMeaningHint.style.display = 'none';
+      }
+    }
+    if (inputLabel) inputLabel.textContent = 'Nhập từ vựng tiếng Anh đúng với bức ảnh:';
+    if (speakSentenceBtn) {
+      speakSentenceBtn.onclick = () => speakWord(q.vocab);
+    }
+  } else {
+    // Mode: Sentence Cloze
+    if (wordTaskCard) wordTaskCard.style.display = 'none';
+    if (clozeCard) clozeCard.style.display = 'block';
+    if (stageTag) stageTag.textContent = '📝 Thử thách: Điền từ khuyết trong mẫu câu';
+    if (inputLabel) inputLabel.textContent = 'Nhập từ vựng thích hợp vào ô trống:';
+
+    const sentenceDisplay = document.getElementById('aiPlaySentenceDisplay');
+    const sentenceMeaning = document.getElementById('aiPlaySentenceMeaning');
+    if (sentenceDisplay && q.clozeSentence) {
+      const clozeFormatted = q.clozeSentence.replace(
+        /\[\s*______+\s*\]/g,
+        `<span class="cloze-blank-slot" id="activeClozeSlot">? ? ?</span>`
+      );
+      sentenceDisplay.innerHTML = clozeFormatted;
+    }
+    if (sentenceMeaning) {
+      sentenceMeaning.textContent = q.sentenceMeaning ? `"${q.sentenceMeaning}"` : "";
+    }
+    if (speakSentenceBtn) {
+      speakSentenceBtn.onclick = () => speakWord(q.fullSentence || q.vocab);
+    }
   }
 
   // Reset Input Box
@@ -2941,7 +3016,11 @@ function loadAiGameQuestion() {
   const wordBankContainer = document.getElementById('aiPlayWordBank');
   if (wordBankContainer) {
     wordBankContainer.innerHTML = '';
-    const chips = [...q.distractors];
+    const distractorsList = (q.distractors && q.distractors.length > 0)
+      ? [...q.distractors]
+      : [q.targetWord || q.vocab, "friend", "happy", "great"];
+
+    const chips = [...distractorsList];
     // Shuffle chips
     for (let i = chips.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -2949,12 +3028,13 @@ function loadAiGameQuestion() {
     }
 
     chips.forEach(w => {
+      if (!w) return;
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'word-chip';
       chip.textContent = w;
       chip.onclick = () => {
-        if (inputEl) {
+        if (inputEl && !inputEl.disabled) {
           inputEl.value = w;
           updateActiveClozeSlotText(w);
         }
@@ -2977,11 +3057,13 @@ function loadAiGameQuestion() {
   const submitBtn = document.getElementById('aiGameSubmitBtn');
   const nextBtn = document.getElementById('aiGameNextBtn');
   const hintBtn = document.getElementById('aiGameHintBtn');
+  const revealBtn = document.getElementById('aiGameRevealBtn');
   const feedbackBanner = document.getElementById('aiFeedbackBanner');
 
   if (submitBtn) submitBtn.style.display = 'block';
   if (nextBtn) nextBtn.style.display = 'none';
   if (hintBtn) hintBtn.disabled = false;
+  if (revealBtn) revealBtn.style.display = 'inline-block';
   if (feedbackBanner) feedbackBanner.style.display = 'none';
 }
 
@@ -2992,19 +3074,68 @@ function updateActiveClozeSlotText(text) {
 
 // Reveal friendly hint
 function revealAiGameHint() {
-  const q = AiStudioState.questions[AiStudioState.currentIndex % AiStudioState.questions.length];
+  const qList = AiStudioState.questions;
+  if (!qList || qList.length === 0) return;
+  const q = qList[AiStudioState.currentIndex % qList.length];
   const inputEl = document.getElementById('aiAnswerInput');
-  const firstLetter = q.targetWord.charAt(0).toUpperCase();
-  showToast(`💡 Gợi ý: Từ bắt đầu bằng chữ cái "${firstLetter}" và có ${q.targetWord.length} chữ cái!`, "info");
+  const target = (q.targetWord || q.vocab || "").trim();
+  if (!target) return;
+
+  const firstLetter = target.charAt(0).toUpperCase();
+  showToast(`💡 Gợi ý: Từ bắt đầu bằng chữ cái "${firstLetter}" và có ${target.length} chữ cái!`, "info");
   if (inputEl && !inputEl.value) {
     inputEl.value = firstLetter;
     updateActiveClozeSlotText(firstLetter + "...");
   }
 }
 
-// Submit answer verification
+// Teacher / Student reveals the correct answer directly
+function revealDirectAnswer() {
+  const qList = AiStudioState.questions;
+  if (!qList || qList.length === 0) return;
+  const q = qList[AiStudioState.currentIndex % qList.length];
+  const inputEl = document.getElementById('aiAnswerInput');
+  const feedbackBanner = document.getElementById('aiFeedbackBanner');
+  const fbIcon = document.getElementById('aiFbIcon');
+  const fbTitle = document.getElementById('aiFbTitle');
+  const fbDesc = document.getElementById('aiFbDesc');
+  const submitBtn = document.getElementById('aiGameSubmitBtn');
+  const nextBtn = document.getElementById('aiGameNextBtn');
+
+  const answer = (q.targetWord || q.vocab || "").trim();
+  if (inputEl) {
+    inputEl.value = answer;
+    inputEl.disabled = true;
+    updateActiveClozeSlotText(answer);
+  }
+
+  if (feedbackBanner) {
+    feedbackBanner.className = 'ai-feedback-banner info';
+    feedbackBanner.style.display = 'flex';
+    if (fbIcon) fbIcon.textContent = '💡';
+    if (fbTitle) fbTitle.textContent = `Đáp Án Đúng: "${answer}"`;
+    if (fbDesc) {
+      if (q.meaning) {
+        fbDesc.textContent = `Nghĩa tiếng Việt: "${q.meaning}" ${q.fullSentence ? `| Câu mẫu: ${q.fullSentence}` : ''}`;
+      } else {
+        fbDesc.textContent = `Từ vựng chính xác cho bức ảnh này là "${answer}".`;
+      }
+    }
+  }
+
+  if (submitBtn) submitBtn.style.display = 'none';
+  if (nextBtn) nextBtn.style.display = 'block';
+
+  speakWord(answer);
+  showToast(`👀 Đáp án là: "${answer}"`, "info");
+}
+window.revealDirectAnswer = revealDirectAnswer;
+
+// Submit answer verification (Check)
 function submitAiGameAnswer() {
-  const q = AiStudioState.questions[AiStudioState.currentIndex % AiStudioState.questions.length];
+  const qList = AiStudioState.questions;
+  if (!qList || qList.length === 0) return;
+  const q = qList[AiStudioState.currentIndex % qList.length];
   const inputEl = document.getElementById('aiAnswerInput');
   const feedbackBanner = document.getElementById('aiFeedbackBanner');
   const fbIcon = document.getElementById('aiFbIcon');
@@ -3015,13 +3146,15 @@ function submitAiGameAnswer() {
 
   if (!inputEl) return;
   const userAns = inputEl.value.trim().toLowerCase();
-  const targetAns = q.targetWord.trim().toLowerCase();
+  const targetAns = (q.targetWord || q.vocab || "").trim().toLowerCase();
 
   if (!userAns) {
-    showToast("⚠️ Bé hãy nhập từ hoặc bấm chọn 1 thẻ từ gợi ý bên dưới nhé!", "warning");
+    showToast("⚠️ Vui lòng nhập từ hoặc bấm chọn 1 thẻ từ gợi ý bên dưới trước khi kiểm tra!", "warning");
     inputEl.focus();
     return;
   }
+
+  const isPictureWord = (q.type === 'picture_word') || (!q.clozeSentence && !q.fullSentence);
 
   if (userAns === targetAns) {
     // CORRECT ANSWER!
@@ -3030,7 +3163,7 @@ function submitAiGameAnswer() {
 
     AiStudioState.score += 20;
     AiStudioState.streak += 1;
-    addXP(25, `Hoàn thành mẫu câu xuất sắc: ${q.vocab}`);
+    addXP(25, `Hoàn thành chính xác từ vựng: ${q.vocab}`);
 
     const scoreEl = document.getElementById('aiGameScore');
     const streakEl = document.getElementById('aiGameStreak');
@@ -3041,16 +3174,23 @@ function submitAiGameAnswer() {
       feedbackBanner.className = 'ai-feedback-banner success';
       feedbackBanner.style.display = 'flex';
       if (fbIcon) fbIcon.textContent = '🎉';
-      if (fbTitle) fbTitle.textContent = 'Yeahhh! Chính xác tuyệt vời! 👏';
-      if (fbDesc) fbDesc.textContent = `Bé đã hoàn thành đúng mẫu câu: "${q.fullSentence}"`;
+      if (fbTitle) fbTitle.textContent = 'Chính Xác Tuyệt Vời! 👏';
+      if (fbDesc) {
+        if (isPictureWord) {
+          fbDesc.textContent = `Học sinh đã trả lời đúng từ: "${q.vocab}" ${q.meaning ? `(${q.meaning})` : ''}`;
+        } else {
+          fbDesc.textContent = `Đã hoàn thành đúng mẫu câu: "${q.fullSentence}"`;
+        }
+      }
     }
 
-    updateActiveClozeSlotText(`✅ ${q.targetWord}`);
+    updateActiveClozeSlotText(`✅ ${q.targetWord || q.vocab}`);
     inputEl.disabled = true;
     if (submitBtn) submitBtn.style.display = 'none';
     if (nextBtn) nextBtn.style.display = 'block';
 
-    showToast("🎉 Yeahhh! Giỏi quá, tiếp tục phát huy nào!", "success");
+    speakWord(q.vocab || q.targetWord);
+    showToast("🎉 Hoan hô! Đáp án hoàn toàn chính xác!", "success");
   } else {
     // WRONG ANSWER!
     playSoundFunnyBoing();
@@ -3059,8 +3199,10 @@ function submitAiGameAnswer() {
       feedbackBanner.className = 'ai-feedback-banner wrong';
       feedbackBanner.style.display = 'flex';
       if (fbIcon) fbIcon.textContent = '🤔';
-      if (fbTitle) fbTitle.textContent = 'Chưa chính xác rồi nè!';
-      if (fbDesc) fbDesc.textContent = `Bé hãy nhìn kỹ hình ảnh gợi ý và đọc kỹ câu để chọn từ đúng nhé!`;
+      if (fbTitle) fbTitle.textContent = 'Chưa chính xác rồi!';
+      if (fbDesc) {
+        fbDesc.textContent = `Hãy quan sát kỹ bức ảnh và thử lại hoặc bấm "Xem Đáp Án" để kiểm tra nhé!`;
+      }
     }
 
     // Shake animation
@@ -3068,7 +3210,7 @@ function submitAiGameAnswer() {
     inputEl.offsetHeight; // reflow
     inputEl.style.animation = 'shake 0.4s ease';
 
-    showToast("Ối chà, bé hãy nhìn kỹ ảnh rồi thử lại nha! 🪀", "warning");
+    showToast("Ối chà, câu trả lời chưa đúng, hãy thử lại nào! 🪀", "warning");
     inputEl.focus();
   }
 }
@@ -3480,7 +3622,9 @@ function previewAiClozeTransform() {
 
 // Save question created by teacher / user
 function saveCreatorQuestion() {
+  const type = AiStudioState.creatorQuestionType || 'picture_word';
   const urlInput = document.getElementById('creatorImageUrlInput');
+  const titleInput = document.getElementById('creatorQuestionTitleInput');
   const vocabInput = document.getElementById('creatorVocabInput');
   const meaningInput = document.getElementById('creatorMeaningInput');
   const sentenceInput = document.getElementById('creatorSentenceInput');
@@ -3488,7 +3632,7 @@ function saveCreatorQuestion() {
 
   const rawVocab = vocabInput ? vocabInput.value.trim() : "";
   if (!rawVocab) {
-    showToast("⚠️ Vui lòng nhập từ vựng tiếng Anh ở Bước 2 trước khi lưu!", "warning");
+    showToast("⚠️ Vui lòng nhập từ vựng tiếng Anh trước khi lưu!", "warning");
     if (vocabInput) vocabInput.focus();
     return;
   }
@@ -3496,24 +3640,66 @@ function saveCreatorQuestion() {
   const imageUrl = AiStudioState.selectedCreatorImage || (urlInput ? urlInput.value.trim() : "") || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80";
   const vocab = rawVocab;
   const meaning = (meaningInput ? meaningInput.value.trim() : "") || "";
-  const sentence = (sentenceInput ? sentenceInput.value.trim() : "") || `I see a ${vocab} in the picture.`;
-  const sentenceMeaning = (sentenceMeaningInput ? sentenceMeaningInput.value.trim() : "") || `Tôi nhìn thấy ${meaning || vocab} trong tranh.`;
+  const questionTitle = (titleInput ? titleInput.value.trim() : "") || (type === 'picture_word' ? "What is this in English?" : "Fill in the blank with the correct word");
 
-  previewAiClozeTransform();
-  const clozeData = AiStudioState.previewClozeData;
+  let newQuestion = null;
 
-  const newQuestion = {
-    id: `custom_ai_q_${Date.now()}`,
-    image: imageUrl,
-    vocab: vocab,
-    meaning: meaning,
-    fullSentence: sentence,
-    sentenceMeaning: sentenceMeaning,
-    targetWord: clozeData.targetWord,
-    clozeSentence: clozeData.clozeSentence,
-    distractors: clozeData.distractors,
-    isCustom: true
-  };
+  if (type === 'picture_word') {
+    // Generate distractors for picture word
+    const commonDistractorsPool = [
+      "apple", "banana", "orange", "grape", "mango", "school", "doctor", "teacher",
+      "hospital", "park", "beach", "book", "pencil", "cat", "dog", "bird", "fish",
+      "tiger", "lion", "elephant", "car", "bus", "train", "plane", "bicycle", "pizza",
+      "water", "house", "garden", "market", "clock", "chair", "table", "window", "door"
+    ];
+    let pool = commonDistractorsPool.filter(w => w.toLowerCase() !== vocab.toLowerCase());
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    // Prefer words of similar length
+    const scored = pool.map(w => ({ w, score: Math.abs(w.length - vocab.length) }));
+    scored.sort((a, b) => a.score - b.score);
+    const distractors = [vocab.toLowerCase(), ...scored.slice(0, 3).map(x => x.w)];
+
+    newQuestion = {
+      id: `custom_ai_q_${Date.now()}`,
+      type: 'picture_word',
+      questionTitle: questionTitle,
+      image: imageUrl,
+      vocab: vocab,
+      meaning: meaning,
+      targetWord: vocab.toLowerCase(),
+      distractors: distractors,
+      isCustom: true
+    };
+  } else {
+    // sentence_cloze mode
+    const sentence = (sentenceInput ? sentenceInput.value.trim() : "") || `I see a ${vocab} in the picture.`;
+    const sentenceMeaning = (sentenceMeaningInput ? sentenceMeaningInput.value.trim() : "") || `Tôi nhìn thấy ${meaning || vocab} trong tranh.`;
+
+    previewAiClozeTransform();
+    const clozeData = AiStudioState.previewClozeData || {
+      targetWord: vocab.toLowerCase(),
+      clozeSentence: sentence.replace(new RegExp(`\\b${vocab}\\b`, 'gi'), '[ _______ ]'),
+      distractors: [vocab.toLowerCase(), "special", "popular", "careful"]
+    };
+
+    newQuestion = {
+      id: `custom_ai_q_${Date.now()}`,
+      type: 'sentence_cloze',
+      questionTitle: questionTitle,
+      image: imageUrl,
+      vocab: vocab,
+      meaning: meaning,
+      fullSentence: sentence,
+      sentenceMeaning: sentenceMeaning,
+      targetWord: clozeData.targetWord,
+      clozeSentence: clozeData.clozeSentence,
+      distractors: clozeData.distractors,
+      isCustom: true
+    };
+  }
 
   // Append question to keep sequential order (Câu 1, Câu 2, Câu 3...)
   if (!Array.isArray(AiStudioState.questions)) {
@@ -3538,13 +3724,14 @@ function resetCreatorFormInputs() {
   const meaningInput = document.getElementById('creatorMeaningInput');
   const urlInput = document.getElementById('creatorImageUrlInput');
   const fileInput = document.getElementById('creatorImageFileInput');
+  const titleInput = document.getElementById('creatorQuestionTitleInput');
   const sentenceInput = document.getElementById('creatorSentenceInput');
   const sentenceMeaningInput = document.getElementById('creatorSentenceMeaningInput');
   const previewWrap = document.getElementById('creatorImagePreviewWrap');
   const previewImg = document.getElementById('creatorImagePreview');
   const resultBox = document.getElementById('aiSentenceResultBox');
   const step4 = document.getElementById('step4ClozeSection');
-  const previewBox = document.getElementById('aiClozePreviewBox');
+  const previewBox = document.getElementById('creatorAiPreviewBox');
 
   if (vocabInput) vocabInput.value = '';
   if (meaningInput) meaningInput.value = '';
@@ -3561,6 +3748,9 @@ function resetCreatorFormInputs() {
   AiStudioState.selectedCreatorImage = '';
   AiStudioState.previewClozeData = null;
 
+  if (titleInput && !titleInput.value) {
+    titleInput.value = "What is this in English?";
+  }
   if (vocabInput) vocabInput.focus();
 }
 
@@ -3606,12 +3796,23 @@ function renderCreatorQuestionsList() {
   questions.forEach((q, idx) => {
     const card = document.createElement('div');
     card.className = 'created-q-card';
+    const isPicWord = q.type === 'picture_word' || (!q.clozeSentence && !q.fullSentence);
+    const typeBadge = isPicWord
+      ? `<span class="q-type-badge-sm pic-type">🖼️ Chiếu ảnh & Điền từ</span>`
+      : `<span class="q-type-badge-sm cloze-type">📝 Mẫu câu AI</span>`;
+    const subtitle = isPicWord
+      ? (q.questionTitle ? `❓ ${q.questionTitle}` : `🎯 Đáp án: ${q.vocab}`)
+      : (q.clozeSentence || q.fullSentence || "");
+
     card.innerHTML = `
       <div class="q-order-badge" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:0.82rem; border-radius:8px; padding:3px 7px; flex-shrink:0;">#${idx + 1}</div>
       <img src="${q.image}" class="created-q-thumb" alt="${q.vocab}" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80'">
       <div class="created-q-info">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:3px;">
+          ${typeBadge}
+        </div>
         <div class="created-q-word">${q.vocab} ${q.meaning ? `<span style="font-size:0.82rem; font-weight:600; color:#0284c7;">(${q.meaning})</span>` : ''}</div>
-        <div class="created-q-cloze" title="${q.clozeSentence}">${q.clozeSentence}</div>
+        <div class="created-q-cloze" title="${subtitle}">${subtitle}</div>
       </div>
       <div class="created-q-actions">
         <button type="button" class="glass-btn small-btn btn-primary" onclick="playSpecificAiQuestion(${idx})" title="Chơi từ câu này">▶ Chơi</button>
