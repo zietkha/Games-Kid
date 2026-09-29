@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>English Kha Master — Học & Chơi Tiếng Anh Tiểu Học (Lớp 1-5)</title>
   <meta name="description" content="Trang web học và chơi Tiếng Anh tương tác cho học sinh Tiểu học Lớp 1 - 5. Gồm đấu đội Baamboozle, flashcard, đố vui, xếp chữ và đoán hình.">
 
@@ -11,12 +11,150 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20260929_redesign">
+  <link rel="stylesheet" href="styles.css?v=20260929_g2">
 </head>
 <body>
 
   <!-- Confetti Canvas -->
   <canvas id="confettiCanvas"></canvas>
+
+  <!-- ================= SVG SYMBOLS SPRITE (Robot Kha + Stroke Icons) ================= -->
+  <svg style="display:none;" xmlns="http://www.w3.org/2000/svg">
+    <!-- 1. Robot Kha Normal (Mặt cười mỉm, mắt to, ăng ten sáng) -->
+    <symbol id="robot-kha-normal" viewBox="0 0 100 100">
+      <line x1="50" y1="26" x2="50" y2="12" stroke="#1F2A44" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="50" cy="10" r="7" fill="#1F6FE0" stroke="#1F2A44" stroke-width="3"/>
+      <circle cx="48" cy="8" r="2" fill="#FFF"/>
+      <rect x="14" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="78" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="20" y="24" width="60" height="54" rx="14" fill="#FFC83D" stroke="#1F2A44" stroke-width="3.5"/>
+      <rect x="27" y="32" width="46" height="38" rx="8" fill="#FFF" stroke="#1F2A44" stroke-width="2.5"/>
+      <circle cx="39" cy="46" r="5" fill="#1F2A44"/>
+      <circle cx="37.5" cy="44.5" r="1.8" fill="#FFF"/>
+      <circle cx="61" cy="46" r="5" fill="#1F2A44"/>
+      <circle cx="59.5" cy="44.5" r="1.8" fill="#FFF"/>
+      <circle cx="33" cy="54" r="3" fill="#F87171" opacity="0.6"/>
+      <circle cx="67" cy="54" r="3" fill="#F87171" opacity="0.6"/>
+      <path d="M44 56 Q50 62 56 56" stroke="#1F2A44" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <rect x="36" y="80" width="28" height="14" rx="6" fill="#1F6FE0" stroke="#1F2A44" stroke-width="3"/>
+      <line x1="50" y1="84" x2="50" y2="90" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- 2. Robot Kha Happy (Mắt cong híp cười, hai má hồng, ăng ten chớp sao) -->
+    <symbol id="robot-kha-happy" viewBox="0 0 100 100">
+      <line x1="50" y1="26" x2="50" y2="12" stroke="#1F2A44" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="50" cy="10" r="8" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <polygon points="50,4 52,8 56,10 52,12 50,16 48,12 44,10 48,8" fill="#FFF"/>
+      <rect x="14" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="78" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="20" y="24" width="60" height="54" rx="14" fill="#FFC83D" stroke="#1F2A44" stroke-width="3.5"/>
+      <rect x="27" y="32" width="46" height="38" rx="8" fill="#FFF" stroke="#1F2A44" stroke-width="2.5"/>
+      <path d="M35 48 Q39 40 43 48" stroke="#1F2A44" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <path d="M57 48 Q61 40 65 48" stroke="#1F2A44" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <circle cx="33" cy="54" r="4.5" fill="#F87171"/>
+      <circle cx="67" cy="54" r="4.5" fill="#F87171"/>
+      <path d="M42 54 Q50 66 58 54 Z" fill="#D93025" stroke="#1F2A44" stroke-width="2.5"/>
+      <path d="M46 58 Q50 63 54 58" fill="#FFF"/>
+      <rect x="36" y="80" width="28" height="14" rx="6" fill="#157A45" stroke="#1F2A44" stroke-width="3"/>
+    </symbol>
+
+    <!-- 3. Robot Kha Sad (Mắt hơi rũ, giọt mồ hôi nhỏ lăn, miệng mếu) -->
+    <symbol id="robot-kha-sad" viewBox="0 0 100 100">
+      <line x1="50" y1="26" x2="50" y2="12" stroke="#1F2A44" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="50" cy="10" r="7" fill="#64748B" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="14" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="78" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="20" y="24" width="60" height="54" rx="14" fill="#FFC83D" stroke="#1F2A44" stroke-width="3.5"/>
+      <rect x="27" y="32" width="46" height="38" rx="8" fill="#FFF" stroke="#1F2A44" stroke-width="2.5"/>
+      <ellipse cx="39" cy="48" rx="4.5" ry="3.5" fill="#1F2A44"/>
+      <ellipse cx="61" cy="48" rx="4.5" ry="3.5" fill="#1F2A44"/>
+      <path d="M34 42 L42 45" stroke="#1F2A44" stroke-width="2" stroke-linecap="round"/>
+      <path d="M66 42 L58 45" stroke="#1F2A44" stroke-width="2" stroke-linecap="round"/>
+      <path d="M22 36 C20 40 20 44 23 44 C25 44 26 42 26 40 C26 38 23 36 22 36 Z" fill="#60A5FA"/>
+      <path d="M44 60 Q50 54 56 60" stroke="#1F2A44" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <rect x="36" y="80" width="28" height="14" rx="6" fill="#64748B" stroke="#1F2A44" stroke-width="3"/>
+    </symbol>
+
+    <!-- 4. Robot Kha Celebrate (Đội vương miện, hai tay giơ cao, ngôi sao rực rỡ) -->
+    <symbol id="robot-kha-celebrate" viewBox="0 0 100 100">
+      <polygon points="36,18 42,26 50,16 58,26 64,18 62,30 38,30" fill="#FFC83D" stroke="#1F2A44" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="50" cy="14" r="2.5" fill="#D93025"/>
+      <rect x="14" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="78" y="44" width="8" height="18" rx="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="3"/>
+      <rect x="20" y="26" width="60" height="52" rx="14" fill="#FFC83D" stroke="#1F2A44" stroke-width="3.5"/>
+      <rect x="27" y="34" width="46" height="36" rx="8" fill="#FFF" stroke="#1F2A44" stroke-width="2.5"/>
+      <polygon points="39,40 40.5,44.5 45,44.5 41.5,47 43,51.5 39,48.5 35,51.5 36.5,47 33,44.5 37.5,44.5" fill="#1F2A44"/>
+      <polygon points="61,40 62.5,44.5 67,44.5 63.5,47 65,51.5 61,48.5 57,51.5 58.5,47 55,44.5 59.5,44.5" fill="#1F2A44"/>
+      <path d="M42 54 Q50 66 58 54 Z" fill="#D93025" stroke="#1F2A44" stroke-width="2.5"/>
+      <circle cx="31" cy="54" r="3.5" fill="#F87171"/>
+      <circle cx="69" cy="54" r="3.5" fill="#F87171"/>
+      <path d="M18 52 Q8 42 12 34" stroke="#1F2A44" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <circle cx="12" cy="34" r="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="2.5"/>
+      <path d="M82 52 Q92 42 88 34" stroke="#1F2A44" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <circle cx="88" cy="34" r="4" fill="#FFC83D" stroke="#1F2A44" stroke-width="2.5"/>
+      <circle cx="10" cy="18" r="2" fill="#D93025"/>
+      <circle cx="90" cy="20" r="2.5" fill="#1F6FE0"/>
+      <rect x="36" y="80" width="28" height="14" rx="6" fill="#1F6FE0" stroke="#1F2A44" stroke-width="3"/>
+    </symbol>
+
+    <!-- Stroke Icons (2.5px stroke, fill="none", stroke="currentColor") -->
+    <symbol id="icon-book" viewBox="0 0 24 24">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-trophy" viewBox="0 0 24 24">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M4 4h16v6a7 7 0 0 1-14 0V4z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M12 17v4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M8 21h8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-gamepad" viewBox="0 0 24 24">
+      <rect x="2" y="6" width="20" height="12" rx="6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M6 12h4m-2-2v4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="15" cy="13" r="1.2" fill="currentColor"/>
+      <circle cx="17" cy="11" r="1.2" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="icon-leaderboard" viewBox="0 0 24 24">
+      <path d="M18 20V10M12 20V4M6 20v6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-flame" viewBox="0 0 24 24">
+      <path d="M12 2c1.5 3 6 5.5 6 11a6 6 0 0 1-12 0c0-4 3-6.5 6-11z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-bolt" viewBox="0 0 24 24">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-volume" viewBox="0 0 24 24">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+      <line x1="19" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="12 19 5 12 12 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-check" viewBox="0 0 24 24">
+      <polyline points="20 6 9 17 4 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </symbol>
+
+    <symbol id="icon-x" viewBox="0 0 24 24">
+      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="icon-teacher" viewBox="0 0 24 24">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2.5" fill="none"/>
+      <circle cx="12" cy="8" r="2.5" stroke="currentColor" stroke-width="2.5" fill="none"/>
+    </symbol>
+  </svg>
 
   <!-- ================= TOP BLACKBOARD NAVBAR ================= -->
   <header class="navbar">
@@ -24,28 +162,8 @@
       <!-- Left: Mascot & Brand Title -->
       <div class="nav-brand" id="brandBtn" title="Về trang chủ">
         <div class="brand-mascot-wrap">
-          <!-- Mascot Bé Kha SVG -->
-          <svg viewBox="0 0 100 100" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="46" fill="#FFC83D" stroke="#1F2A44" stroke-width="4"/>
-            <!-- Tai cáo -->
-            <polygon points="22,34 32,10 46,28" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5" stroke-linejoin="round"/>
-            <polygon points="28,30 34,16 42,28" fill="#FFF7ED"/>
-            <polygon points="78,34 68,10 54,28" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5" stroke-linejoin="round"/>
-            <polygon points="72,30 66,16 58,28" fill="#FFF7ED"/>
-            <!-- Khuôn mặt cam -->
-            <circle cx="50" cy="54" r="32" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5"/>
-            <!-- Má trắng -->
-            <path d="M26 60 C26 44 38 42 50 52 C62 42 74 44 74 60 C74 76 62 82 50 82 C38 82 26 76 26 60 Z" fill="#FFFFFF" stroke="#1F2A44" stroke-width="2.5"/>
-            <!-- Mắt -->
-            <ellipse cx="40" cy="56" rx="4.5" ry="6" fill="#1F2A44"/>
-            <circle cx="42" cy="54" r="1.5" fill="#FFFFFF"/>
-            <ellipse cx="60" cy="56" rx="4.5" ry="6" fill="#1F2A44"/>
-            <circle cx="62" cy="54" r="1.5" fill="#FFFFFF"/>
-            <!-- Mũi & miệng -->
-            <polygon points="50,63 46,60 54,60" fill="#1F2A44"/>
-            <path d="M46 66 Q50 71 54 66" stroke="#1F2A44" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-            <!-- Ngôi sao nhỏ trên trán -->
-            <polygon points="50,36 51.5,40.5 56,40.5 52.5,43 54,47.5 50,44.5 46,47.5 47.5,43 44,40.5 48.5,40.5" fill="#FFC83D" stroke="#1F2A44" stroke-width="1.5"/>
+          <svg viewBox="0 0 100 100" width="38" height="38">
+            <use href="#robot-kha-normal"></use>
           </svg>
         </div>
         <div class="brand-text">
@@ -86,40 +204,47 @@
       </div>
     </div>
 
-    <!-- Desktop Navigation Tabs (Mục 5.3: Gộp 4 mục) -->
+    <!-- Desktop Navigation Tabs (5 tabs rõ ràng) -->
     <nav class="sub-nav">
       <button class="nav-tab active" data-target="view-dashboard">
-        <span>📖</span> Bài học
+        <svg width="18" height="18" style="vertical-align:middle; margin-right:4px;"><use href="#icon-book"></use></svg> Bài học
+      </button>
+      <button class="nav-tab" data-target="view-ai-studio">
+        <svg width="18" height="18" style="vertical-align:middle; margin-right:4px;"><use href="#icon-gamepad"></use></svg> Đoán hình
       </button>
       <button class="nav-tab" data-target="view-baamboozle">
-        <span>🏆</span> Đấu đội
+        <svg width="18" height="18" style="vertical-align:middle; margin-right:4px;"><use href="#icon-trophy"></use></svg> Đấu đội
       </button>
       <button class="nav-tab" data-target="view-games">
-        <span>🎮</span> Chơi một mình
+        <svg width="18" height="18" style="vertical-align:middle; margin-right:4px;"><use href="#icon-gamepad"></use></svg> Chơi một mình
       </button>
       <button class="nav-tab" data-target="view-leaderboard">
-        <span>🥇</span> Xếp hạng
+        <svg width="18" height="18" style="vertical-align:middle; margin-right:4px;"><use href="#icon-leaderboard"></use></svg> Xếp hạng
       </button>
     </nav>
   </header>
 
-  <!-- Mobile Bottom Navigation Bar (Mục 5.3) -->
+  <!-- Mobile Bottom Navigation Bar -->
   <nav class="mobile-bottom-nav">
     <div class="mobile-nav-grid">
       <button class="mobile-tab-btn active" data-target="view-dashboard" onclick="switchView('view-dashboard')">
-        <span>📖</span>
+        <svg width="20" height="20"><use href="#icon-book"></use></svg>
         <span>Bài học</span>
       </button>
+      <button class="mobile-tab-btn" data-target="view-ai-studio" onclick="switchView('view-ai-studio')">
+        <svg width="20" height="20"><use href="#icon-gamepad"></use></svg>
+        <span>Đoán hình</span>
+      </button>
       <button class="mobile-tab-btn" data-target="view-baamboozle" onclick="switchView('view-baamboozle')">
-        <span>🏆</span>
+        <svg width="20" height="20"><use href="#icon-trophy"></use></svg>
         <span>Đấu đội</span>
       </button>
       <button class="mobile-tab-btn" data-target="view-games" onclick="switchView('view-games')">
-        <span>🎮</span>
+        <svg width="20" height="20"><use href="#icon-gamepad"></use></svg>
         <span>Trò chơi</span>
       </button>
       <button class="mobile-tab-btn" data-target="view-leaderboard" onclick="switchView('view-leaderboard')">
-        <span>🥇</span>
+        <svg width="20" height="20"><use href="#icon-leaderboard"></use></svg>
         <span>Xếp hạng</span>
       </button>
     </div>
@@ -131,35 +256,34 @@
     <!-- ================= VIEW 1: TRANG CHỦ CỦA BÉ ================= -->
     <section id="view-dashboard" class="app-view active">
       
-      <!-- Lời chào của bé và mascot (Mục 5.4 UI-REDESIGN.md) -->
+      <!-- Lời chào của bé và mascot Bé Kha Robot -->
       <div class="kid-welcome-row">
         <div class="kid-greeting">
           <div class="greeting-mascot">
-            <!-- Mascot Bé Kha SVG -->
-            <svg viewBox="0 0 100 100" width="46" height="46" fill="none">
-              <circle cx="50" cy="50" r="46" fill="#FFC83D" stroke="#1F2A44" stroke-width="4"/>
-              <polygon points="22,34 32,10 46,28" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5" stroke-linejoin="round"/>
-              <polygon points="28,30 34,16 42,28" fill="#FFF7ED"/>
-              <polygon points="78,34 68,10 54,28" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5" stroke-linejoin="round"/>
-              <polygon points="72,30 66,16 58,28" fill="#FFF7ED"/>
-              <circle cx="50" cy="54" r="32" fill="#F0453A" stroke="#1F2A44" stroke-width="3.5"/>
-              <path d="M26 60 C26 44 38 42 50 52 C62 42 74 44 74 60 C74 76 62 82 50 82 C38 82 26 76 26 60 Z" fill="#FFFFFF" stroke="#1F2A44" stroke-width="2.5"/>
-              <ellipse cx="40" cy="56" rx="4.5" ry="6" fill="#1F2A44"/>
-              <circle cx="42" cy="54" r="1.5" fill="#FFFFFF"/>
-              <ellipse cx="60" cy="56" rx="4.5" ry="6" fill="#1F2A44"/>
-              <circle cx="62" cy="54" r="1.5" fill="#FFFFFF"/>
-              <polygon points="50,63 46,60 54,60" fill="#1F2A44"/>
-              <path d="M46 66 Q50 71 54 66" stroke="#1F2A44" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <svg viewBox="0 0 100 100" width="52" height="52">
+              <use href="#robot-kha-normal"></use>
             </svg>
           </div>
           <div>
-            <h1 class="kid-greeting-title">Chào <span id="dashGreetingName">Bé Siêu Nhân</span>! Hôm nay chơi gì?</h1>
+            <h1 class="kid-greeting-title">Chào <span id="dashGreetingName">Bé Siêu Nhân</span>! Hôm nay học gì nào?</h1>
             <p class="kid-greeting-sub">Bé hãy chọn một trò chơi để luyện tiếng Anh và tích luỹ thêm XP nhé.</p>
           </div>
         </div>
       </div>
 
-      <!-- Khung trò chơi chính (Kid Game Hub Grid - Mục 5.4 UI-REDESIGN.md) -->
+      <!-- Khu vực chọn khối lớp học (Dạng viên kẹo nổi bật - Mục 5.3 UI-REDESIGN.md) -->
+      <div class="grade-selector-section" id="gradesSection">
+        <div class="section-header-block">
+          <h2>🎒 Chọn khối lớp của bé</h2>
+          <p>Bấm chọn lớp để xem toàn bộ bài học và từ vựng tương ứng</p>
+        </div>
+
+        <div class="grade-cards-grid" id="gradeCardsGrid">
+          <!-- Grade cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- Khung trò chơi chính (Kid Game Hub Grid - Bất đối xứng) -->
       <div class="kid-game-hub-grid">
         <!-- Ô LỚN: TIẾP TỤC BÀI ĐANG HỌC (Vàng phấn) -->
         <div class="hero-continue-card">
@@ -170,7 +294,7 @@
           </div>
           <div class="continue-action-row">
             <button type="button" class="btn btn-primary" onclick="openSkillModal('flashcard')">
-              <span>🚀</span> Chơi tiếp
+              Chơi tiếp
             </button>
             <button type="button" class="btn btn-secondary" onclick="scrollToGrades()">
               Đổi lớp khác
@@ -215,18 +339,6 @@
         </div>
       </div>
 
-      <!-- Khu vực chọn khối lớp học -->
-      <div class="grade-selector-section" id="gradesSection">
-        <div class="section-header-block">
-          <h2>🎒 Chọn khối lớp của bé</h2>
-          <p>Bấm chọn lớp để xem toàn bộ bài học và từ vựng tương ứng</p>
-        </div>
-
-        <div class="grade-cards-grid" id="gradeCardsGrid">
-          <!-- Grade cards populated by JS -->
-        </div>
-      </div>
-
       <!-- Danh sách bài học của lớp đang chọn -->
       <div class="skills-section">
         <div class="section-header-block" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
@@ -246,14 +358,24 @@
           <!-- Populated by JS -->
         </div>
       </div>
+
+      <!-- Liên kết dành cho thầy cô ở cuối trang (Mục 5.3 UI-REDESIGN.md) -->
+      <div class="card teacher-callout-card" style="margin-top:28px; text-align:center; padding:18px 24px; background:var(--tint-blue);">
+        <p style="margin:0; font-size:16px; font-weight:600; color:var(--ink);">
+          👩‍🏫 Thầy cô muốn soạn bài hoặc câu đố mới?
+          <button type="button" class="btn btn-secondary small-btn" onclick="openTeacherZonePrompt()" style="margin-left:12px;">
+            Vào khu vực giáo viên
+          </button>
+        </p>
+      </div>
     </section>
 
     <!-- ================= VIEW 2: BAAMBOOZLE (ĐẤU ĐỘI) ================= -->
     <section id="view-baamboozle" class="app-view">
       <div class="card card-lg" style="margin-bottom: 24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-          <button type="button" class="btn btn-secondary small-btn" onclick="goBackToHome()">
-            ← Trang chủ
+          <button type="button" class="back-btn" onclick="goBackToHome()">
+            <svg width="18" height="18"><use href="#icon-arrow-left"></use></svg> Quay lại
           </button>
           <div class="continue-badge">🔥 Trò chơi lớp học kịch tính</div>
         </div>
@@ -277,7 +399,7 @@
       <!-- 16 Ô số bí ẩn -->
       <div class="card card-lg">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h3 id="baamTurnIndicator">Lượt chơi: 🦊 Đội Cáo Đỏ chọn ô</h3>
+          <h3 id="baamTurnIndicator">Lượt của: Đội Cáo Đỏ</h3>
           <button type="button" class="btn btn-secondary small-btn" onclick="restartBaamboozleGame()">
             🔄 Chơi lại
           </button>
@@ -292,8 +414,8 @@
     <section id="view-ai-studio" class="app-view">
       <div class="card card-lg" style="margin-bottom: 20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <button type="button" class="btn btn-secondary small-btn" onclick="goBackToHome()">
-            ← Trang chủ
+          <button type="button" class="back-btn" onclick="goBackToHome()">
+            <svg width="18" height="18"><use href="#icon-arrow-left"></use></svg> Quay lại
           </button>
           <button type="button" class="btn btn-secondary small-btn" onclick="openTeacherZonePrompt()">
             👩‍🏫 Soạn câu mới (Giáo viên)
@@ -401,7 +523,7 @@
                   🔍 Kiểm tra đáp án
                 </button>
                 <button type="button" class="btn btn-green" id="aiGameNextBtn" onclick="nextAiGameQuestion()" style="display:none;">
-                  Câu tiếp theo ➔
+                  Câu tiếp theo
                 </button>
                 <button type="button" class="btn btn-secondary" id="aiGameRevealBtn" onclick="revealDirectAnswer()">
                   👀 Xem đáp án
@@ -431,14 +553,14 @@
         <div class="teacher-title-area">
           <div class="continue-badge">👩‍🏫 Dành cho giáo viên & phụ huynh</div>
           <h2>Khu vực soạn câu đố & bài học</h2>
-          <p>Tạo câu đố chiếu ảnh lên bảng lớp, tạo mẫu câu AI và quản lý kho câu hỏi cho học sinh.</p>
+          <p>Tạo câu đố chiếu ảnh lên bảng lớp, tạo câu mẫu và quản lý kho câu hỏi cho học sinh.</p>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
           <button type="button" class="btn btn-primary" onclick="openModal('addLessonModal')">
             ✨ Thêm bài học mới
           </button>
-          <button type="button" class="btn btn-secondary" onclick="closeTeacherZone()">
-            ← Quay lại khu của bé
+          <button type="button" class="back-btn" onclick="closeTeacherZone()">
+            <svg width="18" height="18"><use href="#icon-arrow-left"></use></svg> Quay lại khu của bé
           </button>
         </div>
       </div>
@@ -462,7 +584,7 @@
                 <input type="radio" name="creatorQType" value="sentence_cloze">
                 <div>
                   <strong>📝 Mẫu câu khuyết từ</strong>
-                  <div style="font-size:15px; color:#64748B;">AI tạo mẫu câu ẩn từ khóa</div>
+                  <div style="font-size:15px; color:#64748B;">Tạo câu mẫu ẩn từ khóa</div>
                 </div>
               </label>
             </div>
@@ -507,12 +629,12 @@
             </div>
           </div>
 
-          <!-- Phần mẫu câu AI (chỉ hiện khi chọn loại Mẫu câu khuyết từ) -->
+          <!-- Phần mẫu câu tự động (chỉ hiện khi chọn loại Mẫu câu khuyết từ) -->
           <div id="clozeModeSteps" style="display:none;">
             <div class="form-step">
-              <label class="step-label">4. AI tự động tạo mẫu câu:</label>
+              <label class="step-label">4. Tự động tạo câu mẫu:</label>
               <button type="button" class="btn btn-secondary full-width" onclick="aiAutoGenerateSentence()">
-                🤖 AI tạo mẫu câu & dịch nghĩa ngay
+                ✨ Tự động tạo câu mẫu & dịch nghĩa ngay
               </button>
 
               <div id="aiSentenceResultBox" style="display:none; margin-top:12px; background:var(--tint-green); padding:14px; border:2px solid var(--grass-green); border-radius:12px;">
@@ -524,15 +646,15 @@
             </div>
 
             <div class="form-step" id="step4ClozeSection">
-              <label class="step-label">5. Cách AI ẩn từ trong câu:</label>
+              <label class="step-label">5. Cách ẩn từ trong câu:</label>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <label style="display:flex; align-items:center; gap:8px; font-weight:600;">
                   <input type="radio" name="aiClozeMode" value="vocab" checked>
-                  <span>🎯 AI ẩn đúng từ vựng chính</span>
+                  <span>🎯 Ẩn đúng từ vựng chính</span>
                 </label>
                 <label style="display:flex; align-items:center; gap:8px; font-weight:600;">
                   <input type="radio" name="aiClozeMode" value="random_word">
-                  <span>🎲 AI ẩn ngẫu nhiên 1 từ quan trọng</span>
+                  <span>🎲 Ẩn ngẫu nhiên 1 từ quan trọng</span>
                 </label>
               </div>
               <button type="button" class="btn btn-secondary small-btn" style="margin-top:10px;" onclick="previewAiClozeTransform()">
@@ -555,7 +677,7 @@
               💾 Lưu và tạo câu mới
             </button>
             <button type="button" class="btn btn-primary" onclick="startPlayingFromFirstQuestion()">
-              🚀 Chơi thử từ đầu
+              Chơi thử từ đầu
             </button>
           </div>
         </div>
@@ -565,8 +687,8 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
             <h3>📚 Ngân hàng câu đố (<span id="creatorQuestionsCount">0</span>)</h3>
             <div style="display:flex; gap:8px;">
-              <button type="button" class="btn btn-danger small-btn" onclick="clearAllAiQuestions()" title="Lược bỏ hết bài trong database">
-                🗑️ Lược bỏ hết
+              <button type="button" class="btn btn-danger small-btn" onclick="clearAllAiQuestions()" title="Xóa tất cả câu đố trong hệ thống">
+                🗑️ Xóa tất cả
               </button>
               <button type="button" class="btn btn-secondary small-btn" onclick="resetToDefaultAiQuestions()" title="Khôi phục 10 câu mẫu mặc định">
                 🔄 Khôi phục mẫu
@@ -575,7 +697,7 @@
           </div>
 
           <button type="button" class="btn btn-primary full-width" onclick="startPlayingFromFirstQuestion()" style="margin-bottom:16px;">
-            🎮 Bắt đầu chơi từ câu 1 ➔
+            🎮 Bắt đầu chơi từ câu 1
           </button>
 
           <!-- Danh sách câu đố cuộn -->
@@ -590,8 +712,8 @@
     <section id="view-games" class="app-view">
       <div class="card card-lg" style="margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <button type="button" class="btn btn-secondary small-btn" onclick="goBackToHome()">
-            ← Trang chủ
+          <button type="button" class="back-btn" onclick="goBackToHome()">
+            <svg width="18" height="18"><use href="#icon-arrow-left"></use></svg> Quay lại
           </button>
         </div>
         <h2>Trò chơi trí tuệ cá nhân</h2>
@@ -642,9 +764,9 @@
 
           <!-- Điều hướng thẻ -->
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
-            <button class="btn btn-secondary" id="prevCardBtn">← Thẻ trước</button>
+            <button class="btn btn-secondary" id="prevCardBtn">Thẻ trước</button>
             <span style="font-weight:800; font-family:var(--font-display); font-size:20px;" id="cardPaginationText">Thẻ 1 / 10</span>
-            <button class="btn btn-primary" id="nextCardBtn">Thẻ kế tiếp →</button>
+            <button class="btn btn-primary" id="nextCardBtn">Thẻ kế tiếp</button>
           </div>
         </div>
       </div>
@@ -708,8 +830,8 @@
     <section id="view-leaderboard" class="app-view">
       <div class="card card-lg" style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-          <button type="button" class="btn btn-secondary small-btn" onclick="goBackToHome()">
-            ← Trang chủ
+          <button type="button" class="back-btn" onclick="goBackToHome()">
+            <svg width="18" height="18"><use href="#icon-arrow-left"></use></svg> Quay lại
           </button>
           <button type="button" class="btn btn-primary small-btn" onclick="openModal('checkinModal')">
             🎁 Điểm danh hôm nay
@@ -745,7 +867,7 @@
       </div>
       <div style="display:flex; gap:10px;">
         <button type="button" class="btn btn-secondary flex-1" onclick="closeModal('teacherAccessModal')">Huỷ</button>
-        <button type="button" class="btn btn-primary flex-1" onclick="verifyTeacherPin()">Vào khu giáo viên ➔</button>
+        <button type="button" class="btn btn-primary flex-1" onclick="verifyTeacherPin()">Vào khu giáo viên</button>
       </div>
     </div>
   </div>
@@ -789,16 +911,16 @@
 
         <!-- Kết quả hiện khi đúng -->
         <div class="ai-feedback-banner success" id="baamResultSuccess" style="display:none; margin-top:14px; flex-direction:column; align-items:stretch;">
-          <div style="font-weight:800;">🎉 CHÍNH XÁC TUYỆT VỜI! (+20 ĐIỂM)</div>
+          <div style="font-weight:800;">🎉 Đúng rồi! +20 điểm</div>
           <div id="baamCorrectAnswerText" style="font-size:18px; margin:6px 0;">Đáp án đúng</div>
-          <button class="btn btn-green full-width" id="baamProceedTurnBtn">Đổi lượt tiếp theo ➔</button>
+          <button class="btn btn-green full-width" id="baamProceedTurnBtn">Đổi lượt tiếp theo</button>
         </div>
 
         <!-- Kết quả hiện khi sai hoặc xem đáp án -->
         <div class="ai-feedback-banner wrong" id="baamResultWrong" style="display:none; margin-top:14px; flex-direction:column; align-items:stretch;">
-          <div style="font-weight:800;">💡 ĐÁP ÁN CHUẨN:</div>
-          <div id="baamWrongAnswerText" style="font-size:18px; margin:6px 0;">Đáp án chuẩn</div>
-          <button class="btn btn-secondary full-width" id="baamProceedWrongTurnBtn">Đổi lượt tiếp theo ➔</button>
+          <div style="font-weight:800;">💡 Đáp án đúng:</div>
+          <div id="baamWrongAnswerText" style="font-size:18px; margin:6px 0;">Đáp án đúng</div>
+          <button class="btn btn-secondary full-width" id="baamProceedWrongTurnBtn">Đổi lượt tiếp theo</button>
         </div>
       </div>
     </div>
@@ -814,7 +936,7 @@
         <div class="stat-pill" id="finalName1">🦊 Cáo Đỏ: <span id="finalScore1">140</span></div>
         <div class="stat-pill" id="finalName2">🦁 Sư Tử: <span id="finalScore2">110</span></div>
       </div>
-      <button class="btn btn-primary full-width" onclick="restartBaamboozleGame()">Chơi lại trận mới 🚀</button>
+      <button class="btn btn-primary full-width" onclick="restartBaamboozleGame()">Chơi lại trận mới</button>
     </div>
   </div>
 
@@ -829,7 +951,7 @@
       </div>
       <div id="checkinCalendarGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:20px;"></div>
       <button class="btn btn-primary full-width" id="claimCheckinRewardBtn" onclick="claimDailyCheckin()">
-        Điểm danh hôm nay (+30 XP) 🚀
+        Điểm danh hôm nay (+30 XP)
       </button>
     </div>
   </div>
@@ -919,7 +1041,7 @@
       <div style="font-size:64px; margin-bottom:12px;">🌟</div>
       <h2>Chào mừng bé đến với English Kha Master!</h2>
       <p style="margin:12px 0 20px 0;">Cùng vừa học vừa chơi tiếng Anh qua các trò chơi thú vị và tích luỹ thật nhiều điểm thưởng nhé!</p>
-      <button class="btn btn-primary full-width" onclick="startLearningAdventure()">Bắt đầu chơi ngay 🚀</button>
+      <button class="btn btn-primary full-width" onclick="startLearningAdventure()">Bắt đầu chơi ngay</button>
     </div>
   </div>
 
@@ -927,6 +1049,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20260929_redesign"></script>
+  <script src="app.js?v=20260929_g2"></script>
 </body>
 </html>

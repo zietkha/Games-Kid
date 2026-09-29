@@ -1,246 +1,268 @@
-# Kế hoạch đổi giao diện: English Kha Master
+# Kế hoạch đổi giao diện: English Kha Master Kids (bản 2, đã đối chiếu code)
 
-Dành cho: học sinh tiểu học lớp 1–5 (6–11 tuổi), chơi trên máy tính, tablet và điện thoại.
-Người dùng thứ hai: giáo viên / phụ huynh tạo câu đố (AI Studio).
+Dự án: `zietkha/Games-Kid` (HTML + CSS thuần + JavaScript thuần, lưu bằng `localStorage`, không có build).
+Người chơi: học sinh lớp 1–5. Người soạn bài: giáo viên / phụ huynh.
+Ngữ cảnh dùng thật: cá nhân trên máy tính/tablet/điện thoại, và **chiếu lên màn hình lớp học** (Baamboozle, AI đoán hình). Nhiều máy trường yếu.
+
+> Ghi chú phạm vi: bản này dựa trên ảnh chụp màn hình, `README.md` và khoảng 1.000 dòng đầu của `index.html`. Chưa đọc được `styles.css`, `app.js` và phần cuối `index.html` (GitHub chặn). Vì vậy prompt kèm theo bắt AI đọc hết các file đó trước khi sửa.
 
 ---
 
-## 1. Giao diện hiện tại đang sai ở đâu
+## 0. Những gì đã sửa so với bản 1
 
-Nhìn ảnh chụp màn hình, các vấn đề chính là:
+| Chỗ sửa | Lý do |
+|---|---|
+| Đổi mã màu xanh dương và đỏ | Bản 1 ghi tương phản ≥ 4.5:1 nhưng chữ trắng trên `#2F80ED` chỉ đạt khoảng 3.9:1 và trên `#F0453A` khoảng 3.7:1. Đã đổi sang `#1F6FE0` (4.8:1) và `#D93025` (4.8:1) |
+| Linh vật dùng **Robot Kha** thay vì cáo/gấu | Code đã có "Robot Kha" ở banner. Hai đội đã là Cáo Đỏ và Sư Tử Xanh nên không thêm nhân vật thứ ba |
+| Bỏ sơ đồ "Tiếp tục bài đang học" | App chưa có dữ liệu tiến độ theo bài. Luồng thật là chọn lớp, rồi chọn trò chơi. Trang chủ vẽ lại theo luồng này |
+| Bỏ đề xuất "PIN cho khu giáo viên" làm bước đầu | App không có tài khoản, PIN lưu trong trình duyệt ai cũng gỡ được. Chỉ tách bằng bố cục và tên gọi, PIN để sau |
+| Sửa lỗi chính tả ở bảng nội dung ("Tài ảnh" thành "Tải ảnh") và dùng đúng chuỗi trong code | Bản 1 viết lại theo ảnh chụp nên vài chỗ không khớp code |
+| Thêm mục chiếu lớp học, máy yếu, ràng buộc kỹ thuật | Bản 1 chưa nói tới |
+| Màu đỏ và xanh dương dành riêng cho hai đội và đúng/sai | Bản 1 dùng đỏ cho ô game, dễ nhầm với "sai" |
 
-| Vấn đề | Biểu hiện | Vì sao là lỗi |
+---
+
+## 1. Những gì thấy trong code
+
+| Vị trí | Vấn đề | Cách sửa |
 |---|---|---|
-| Chữ quá nhỏ, quá nhạt | Mô tả, nhãn, tên tab cỡ khoảng 10–12px, màu xám xanh nhạt trên nền trắng | Trẻ 6–11 tuổi đọc chậm hơn người lớn. Chữ nhạt khó đọc ngay cả với người lớn |
-| Mọi thứ là thẻ bo tròn giống nhau | Header, tiêu đề, form đều là thẻ trắng, cùng độ bo góc, cùng bóng mờ | Không có thứ tự ưu tiên. Mắt không biết nhìn vào đâu trước |
-| Nền gradient pastel xanh–hồng | Nền loang màu, chữ tiêu đề đổ gradient | Đây là dấu hiệu quen thuộc của giao diện do AI sinh ra |
-| Emoji làm icon | 🎨 ✨ 🎯 🚀 🎮 mỗi chỗ một kiểu, kích thước khác nhau | Không đồng nhất, nhìn rẻ tiền, hiển thị khác nhau tuỳ hệ điều hành |
-| Nhãn IN HOA cỡ siêu nhỏ | "AI GAME CREATOR & VISUAL ARENA", "KIDS" | Chữ trang trí, không giúp người dùng hiểu thêm điều gì |
-| Nhiều kiểu nút lẫn lộn | Nút xanh lá, nút xanh dương, nút tím gradient, nút viền trắng | Không rõ nút nào là chính |
-| Trộn khu chơi và khu soạn bài | Bé đang chơi nhưng thấy form "Tạo câu đố mới" | Trẻ không cần và không hiểu phần này |
-| Quá nhiều thứ ở header | Logo, 3 nút, streak, XP, âm thanh, avatar, rồi 6 tab | Trẻ bị choáng, phần chính bị đẩy xuống |
-| Chữ Hoa Đầu Mỗi Từ | "Trò Chơi Tiếng Anh Tiểu Học Lớp 1 – 5", "Bảng Xếp Hạng & Điểm Danh" | Tiếng Việt viết hoa theo kiểu tiếng Anh, đọc không tự nhiên |
-| Lỗi nhỏ nhưng lộ | Form đánh số "1." rồi nhảy sang "3."; viền hồng bên trái thẻ; hai nút to lơ lửng bên phải, không liên quan tới form | Nhìn vào là biết chưa ai xem lại |
-| Nội dung dài dòng | "Tải ảnh hoặc chọn ảnh có sẵn, từ vựng bên dưới. AI sẽ tự động phân tích và xóa từ/chữ cái để học sinh vừa nhìn ảnh vừa điền câu chuẩn xác!" | Trẻ không đọc hết. Giáo viên cũng không cần |
+| `<meta viewport>` | Có `maximum-scale=1.0, user-scalable=no`, khoá zoom | Xoá hai giá trị này. Giữ `viewport-fit=cover` |
+| `.mesh-bg` + `.blob-1..4` | 4 khối màu chuyển động nền suốt thời gian chơi, nặng máy yếu, là kiểu nền "liquid glass" điển hình | Xoá hẳn khối HTML và CSS. Nền là một màu phẳng `--paper` |
+| `.glass-panel`, `.glass-btn`, `.glass-input`, `.glass-select`, `.glass-textarea` | Mọi khối, nút, ô nhập đều là kính mờ, cùng một kiểu | Thay bằng thẻ / nút / ô nhập viền dày (mục 6). Bỏ `backdrop-filter` |
+| Rất nhiều `style="..."` trong HTML | Gradient, màu, khoảng cách viết thẳng vào thẻ, không thể đổi giao diện từ một chỗ | Chuyển vào `styles.css`. **Giữ** các `style="display:none"` và `style="width: …%"` vì JS bật/tắt và cập nhật chúng |
+| Badge `KIDS 🎈`, `🌈 Học mà Chơi — Vui Từng Giây!`, ruy-băng `⭐ MỚI ĐỘC ĐÁO`, `🔥 HOT NHẤT LỚP HỌC` | Lời quảng cáo chung chung, không giúp trẻ làm gì | Xoá |
+| Hero banner + 5 chip (`hl-chip`) | 5 chip lặp lại đúng 5 thẻ trò chơi bên dưới | Xoá hero. Thay bằng dòng chào ngắn + Robot Kha |
+| 5 thẻ trò chơi cùng khuôn: tag, số lượng, tên, mô tả dài, nút "… ➔" | Bộ thẻ SaaS: giống hệt nhau, nút nào cũng có mũi tên | Thẻ khác kích thước, mô tả một dòng, nút chỉ ghi "Chơi" |
+| Nút gradient tím–hồng (`btn-primary` ghi đè inline) | Lệch hệ màu, khác các nút còn lại | Chỉ còn 3 loại nút (mục 6.2) |
+| 6+ nút "Quay lại Trang Chủ" với `style` khác nhau ở từng màn | Lặp, không đồng nhất | Một component `.back-btn` dùng chung |
+| Tab "Khám Phá Bài Học" (dashboard) và tab "Mini-Games Cá Nhân" | Ba trong bốn mini-game đã có ngay ở thẻ trên dashboard | Giai đoạn đầu chỉ đổi tên và giao diện. Gộp là tuỳ chọn (mục 12) |
+| Chữ "AI" xuất hiện ở hầu hết nhãn (`AI Sinh Nhanh…`, `AI Phân Tích…`, `Trí tuệ nhân tạo AI 🪄`) | README nói AI, nhưng app chạy trong trình duyệt không có máy chủ. Nếu chỉ là mẫu câu ghép sẵn thì gọi là AI là sai | Kiểm tra `app.js`. Nếu không gọi dịch vụ AI thật thì đổi thành "Tạo tự động", "Gợi ý mẫu câu" |
+| "Baamboozle" dùng làm tên chức năng | Trùng tên một trang game có sẵn | Nên đặt tên riêng, ví dụ "Lật ô đấu đội" (mục 8). Việc cuối cùng do bạn quyết |
+| `#aiPlayEmptyState`: "Toàn bộ câu đố trong database đã được xóa sạch" | Nói ngôn ngữ kỹ thuật với người dùng | "Chưa có câu đố nào" + việc cần làm |
+| Bảng xếp hạng có tên mẫu (Minh Khang, Bảo Trâm) và huy chương emoji kép `🥈 🐰` | Dữ liệu giả trông như thật, emoji chồng emoji | Ghi rõ "Dữ liệu mẫu" hoặc bỏ. Thay huy chương bằng số trong vòng tròn |
+| Emoji làm icon giao diện (🌟 ✨ 🎁 🔥 ⚡ 🔊 🏠 🎨 🎲 🎮 🏆 ➔ ⬅️) | Không đồng nhất, đổi hình theo hệ điều hành | Một bộ icon SVG thống nhất. Emoji chỉ giữ ở nội dung từ vựng (🍎, 🐶…) |
+| Chữ Hoa Đầu Mỗi Từ | Không đúng cách viết tiếng Việt | Chỉ hoa chữ đầu câu và tên riêng |
+| Phông `Quicksand` + `Plus Jakarta Sans` | Hai phông phổ biến, không có cá tính | `Baloo 2` + `Lexend` (mục 4) |
+| Số bước trong form tạo câu đố nhảy 1, 2, 3, 4, 5 nhưng bước 0 không đánh số, bước 4–5 chỉ hiện ở chế độ khác | Đánh số lộn xộn | Chia thành 3 bước cố định, đánh số theo thứ tự hiển thị |
 
 ---
 
-## 2. Hướng thiết kế: "Sổ bài lớp học có sticker"
+## 2. Hướng thiết kế: "Vở bài tập có sticker"
 
-Ý tưởng: giao diện giống một cuốn vở và bảng lớp, với màu đặc, viền dày, nút nổi khối như bàn phím game. Không dùng gradient, không dùng kính mờ, không dùng bóng mờ.
+Màu đặc, viền dày `3px`, bóng cứng (không mờ), nút nổi khối như bàn phím game. Không gradient, không kính mờ, không hạt sáng, không nền chuyển động.
 
-Điều này hợp với trẻ em vì:
-- Màu đặc, viền rõ giúp nhìn ra nút bấm ngay.
-- Nút "nhấn xuống" có cảm giác vật lý, giống game thật.
-- Không giống mẫu SaaS/dashboard mà AI hay sinh ra.
+Lý do hợp với dự án:
+- Chiếu lên bảng lớp vẫn đọc rõ từ cuối lớp.
+- Nhẹ trên máy yếu: không blur, không animation nền.
+- Nút bấm nhìn là biết bấm được.
+- Không giống mẫu web AI thường sinh ra.
 
-**Một điểm nhấn duy nhất: linh vật (mascot).** Một nhân vật do chính bạn chọn hoặc vẽ (ví dụ một chú cáo hoặc gấu tên Kha). Nhân vật này xuất hiện ở logo, màn hình chào, khi trả lời đúng/sai, khi hết bài. Mọi thứ khác giữ yên tĩnh để linh vật nổi bật.
+**Điểm nhấn duy nhất: Robot Kha.** Vẽ một lần bằng SVG (hộp vuông, hai mắt, ăng-ten), có 4 nét mặt: bình thường, vui, tiếc ("thử lại nhé"), ăn mừng. Xuất hiện ở logo, dòng chào trang chủ, khung phản hồi đúng/sai, màn hình trống, ô quà bất ngờ. Mọi thứ khác giữ yên tĩnh để Robot Kha nổi bật. Hai đội giữ nguyên Cáo Đỏ và Sư Tử Xanh.
 
 ---
 
 ## 3. Bảng màu
 
-Dùng màu đặc, ít màu, mỗi màu có một việc.
+| Tên | Mã | Dùng cho | Tương phản với chữ |
+|---|---|---|---|
+| Mực | `#1F2A44` | Chữ chính, viền | Trên `--paper`: 14:1 |
+| Giấy | `#F7F9FC` | Nền trang (một màu phẳng) | Chữ mực |
+| Xanh bảng | `#17594A` | Thanh đầu trang | Chữ trắng 8:1 |
+| Vàng phấn | `#FFC83D` | Nút chính, XP, ô đang chọn | Chữ mực 9:1 |
+| Đỏ | `#D93025` | Đội Cáo Đỏ, sai, xoá | Chữ trắng 4.8:1 |
+| Xanh dương | `#1F6FE0` | Đội Sư Tử Xanh, liên kết, focus, đang chọn | Chữ trắng 4.8:1 |
+| Xanh lá | `#157A45` | Đúng, lưu, hoàn thành | Chữ trắng 5.4:1 |
 
-| Tên | Mã | Dùng cho |
-|---|---|---|
-| Mực | `#1F2A44` | Chữ chính, viền dày quanh thẻ và nút |
-| Giấy | `#F7F9FC` | Nền trang (một màu phẳng, không gradient) |
-| Xanh bảng | `#17594A` | Thanh đầu trang, khu tiêu đề |
-| Vàng phấn | `#FFC83D` | Nút chính "Chơi ngay", điểm XP |
-| Đỏ cà chua | `#F0453A` | Streak, trả lời sai, cảnh báo |
-| Xanh dương | `#2F80ED` | Nút phụ, liên kết, trạng thái đang chọn |
+Màu nhạt làm nền (luôn đi với chữ mực): `--yellow-tint #FFF1C7`, `--blue-tint #E3EEFD`, `--green-tint #DDF3E6`, `--red-tint #FDE7E5`.
 
 Quy tắc:
-- Chữ chính trên nền sáng luôn là Mực `#1F2A44` (không dùng xám nhạt).
-- Tỉ lệ tương phản chữ/nền tối thiểu 4.5:1.
-- Mỗi trò chơi có một màu riêng lấy từ bảng trên (Baamboozle = xanh dương, Mini-game = vàng, v.v.) để trẻ nhận ra bằng màu.
-- Không dùng gradient làm nền, làm chữ hay làm nút.
+- Đỏ **chỉ** dùng cho Đội Cáo Đỏ, trả lời sai và hành động xoá. Không dùng đỏ để làm màu nhận diện một trò chơi.
+- Xanh dương dùng cho Đội Sư Tử Xanh, liên kết, viền focus và trạng thái đang chọn.
+- Thẻ trò chơi: nền trắng, viền mực, một mảng minh hoạ tô màu nhạt (vàng, xanh lá, xanh dương, giấy). Phân biệt bằng hình minh hoạ chứ không bằng màu đậm.
+- Không gradient ở bất kỳ đâu. Pháo giấy (`#confettiCanvas`) dùng đúng các màu ở bảng này.
+- Không dùng chữ xám nhạt. Chữ phụ vẫn là mực, nhỏ hơn hoặc mỏng hơn, không nhạt hơn.
 
 ---
 
 ## 4. Chữ
 
-Chọn font hỗ trợ đầy đủ dấu tiếng Việt (kiểm tra kỹ dấu ở, ẫ, ộ, ữ).
-
-| Vai trò | Font (Google Fonts) | Ghi chú |
+| Vai trò | Phông | Ghi chú |
 |---|---|---|
-| Tiêu đề, nút, tên game | **Baloo 2** (700–800) | Tròn, vui, có tiếng Việt |
-| Nội dung, hướng dẫn | **Lexend** (400–500) | Thiết kế để dễ đọc, giãn chữ rộng |
+| Tiêu đề, nút, số điểm, từ vựng lớn | **Baloo 2** 700–800 | Tròn, có đủ dấu tiếng Việt |
+| Nội dung, hướng dẫn, ô nhập | **Lexend** 400–500 | Thiết kế để dễ đọc |
 
-Thay thế nếu muốn: **Be Vietnam Pro** cho nội dung.
-
-Thang cỡ chữ (không có chữ nào dưới 16px):
+Nhúng bằng Google Fonts (thay dòng `<link>` hiện tại). Đặt phông dự phòng `system-ui, sans-serif`.
 
 | Loại | Cỡ |
 |---|---|
-| Nội dung, nhãn | 16–18px |
+| Nội dung, nhãn, ô nhập | 16–18px (không có chữ nào dưới 16px) |
 | Nút | 18–20px |
-| Tiêu đề trang | 32–40px |
+| Tiêu đề màn hình | 32–40px |
 | Từ vựng trong game | 48–72px |
+| Chế độ chiếu lớp (màn ≥ 1280px, trong Baamboozle và Đoán hình) | Đáp án, câu hỏi, điểm: 64–96px. Nhãn phụ: ≥ 24px |
 
-Quy tắc:
-- Viết hoa theo kiểu tiếng Việt: chỉ hoa chữ đầu câu. Ví dụ "Bảng xếp hạng", không phải "Bảng Xếp Hạng".
-- Không dùng chữ IN HOA cho nhãn nhỏ.
-- Không tô màu riêng một từ trong tiêu đề.
-- Mỗi dòng nội dung tối đa khoảng 60 ký tự.
+Không dùng chữ IN HOA cho nhãn nhỏ. Không tô riêng một từ trong tiêu đề. Dòng chữ dài tối đa khoảng 60 ký tự.
 
 ---
 
-## 5. Bố cục
+## 5. Bố cục từng màn hình
 
-### 5.1. Tách hai khu vực
+### 5.1. Header
+Chỉ giữ: logo Robot Kha + tên `English Kha Master` (bỏ badge KIDS và dòng phụ) ở trái; streak, XP, nút âm thanh, avatar ở phải.
+Chuyển xuống dưới trang chủ (khu "Dành cho thầy cô"): `#openAddLessonBtn` và nội dung soạn bài. `#dailyCheckinBtn` giữ ở header nhưng là nút icon có nhãn.
+Header nền `--board`, chữ trắng, không kính mờ, không bóng mờ.
 
-**Khu của bé** (mặc định): chỉ có chơi, điểm, phần thưởng.
-**Khu giáo viên** (nút nhỏ "Dành cho giáo viên" ở góc, có thể đặt mã PIN): toàn bộ phần AI Studio, Thêm bài học, tạo câu đố.
-
-Trẻ không bao giờ nhìn thấy form soạn bài.
-
-### 5.2. Header gọn
-
-Chỉ giữ:
-- Trái: logo + linh vật.
-- Phải: streak (số ngày), XP, nút âm thanh, avatar.
-
-Bỏ "Thêm bài học" và "Điểm danh" khỏi header. Điểm danh chuyển thành một thẻ trên trang chủ khi có phần thưởng chưa nhận.
-
-### 5.3. Điều hướng
-
-- Máy tính: thanh tab ngang, tối đa 4 mục.
-- Điện thoại/tablet: **thanh tab dưới đáy màn hình**, icon lớn kèm chữ.
-
-Gộp 6 mục thành 4:
+### 5.2. Thanh điều hướng (`.sub-nav`)
+Giữ 5 tab và giữ `data-target`. Chỉ đổi tên và giao diện:
 
 | Hiện tại | Đổi thành |
 |---|---|
-| Khám phá bài học | Bài học |
-| Trò chơi Baamboozle (đấu đội) | Đấu đội |
-| Mini-games cá nhân | Chơi một mình |
-| Bảng xếp hạng & điểm danh | Xếp hạng |
-| AI Studio (ảnh & mẫu câu) | Chuyển vào khu giáo viên |
+| Khám Phá Bài Học | Bài học |
+| AI Studio (Ảnh & Mẫu Câu) | Đoán hình |
+| Trò Chơi Baamboozle (Đấu Đội) | Đấu đội |
+| Mini-Games Cá Nhân | Chơi một mình |
+| Bảng Xếp Hạng & Điểm Danh | Xếp hạng |
 
-### 5.4. Trang chủ của bé
+Màn hình ≤ 720px: chuyển thành thanh tab cố định ở đáy màn hình, icon 28px + chữ, chừa `env(safe-area-inset-bottom)` và thêm `padding-bottom` cho `body` để không che nội dung.
 
-Không chia thành các thẻ giống hệt nhau. Dùng các ô game có kích thước khác nhau, mỗi ô một màu:
+### 5.3. Trang chủ (`#view-dashboard`)
 
 ```
-+-------------------------------------------+
-| [Logo+mascot]        🔥3   ⚡630   🔊  (avatar) |   <- xanh bảng
-+-------------------------------------------+
+[header xanh bảng]
 
-  Chào Bé Siêu Nhân! Hôm nay chơi gì?
+ (Robot Kha)  Chào Bé Siêu Nhân! Chọn lớp rồi chọn trò chơi.
 
-+---------------------+  +----------------+
-|                     |  |  Đoán hình     |
-|   TIẾP TỤC BÀI     |  |  (xanh dương)  |
-|   Unit 3: Animals   |  +----------------+
-|   [ Chơi tiếp ]     |  +----------------+
-|      (vàng)         |  |  Đấu đội       |
-+---------------------+  |  (đỏ)          |
-                         +----------------+
-+---------------------+  +----------------+
-|  Chơi một mình      |  |  Xếp hạng      |
-+---------------------+  +----------------+
+ [ Lớp 1 ][ Lớp 2 ][ Lớp 3 ][ Lớp 4 ][ Lớp 5 ]     <- nút lớn, lớp đang chọn tô vàng
+ Lớp 1: chữ cái, màu sắc, số đếm, động vật          Tốc độ đọc: [Chậm] [Thường]
+
+ +------------------------------+ +----------------+
+ | Lật ô đấu đội   (ô lớn)      | | Đoán hình,     |
+ | Hai đội lật ô, ghi điểm.     | | điền từ        |
+ | [ Chơi ]                     | | [ Chơi ]       |
+ +------------------------------+ +----------------+
+ +------------+ +--------------+ +----------------+
+ | Thẻ từ vựng| | Trắc nghiệm  | | Xếp chữ        |
+ +------------+ +--------------+ +----------------+
+
+ Dành cho thầy cô:  Thêm bài học   Soạn câu đố
 ```
 
-- Ô lớn nhất là "Tiếp tục bài đang học". Đây là hành động chính.
-- Mỗi ô có một hình minh hoạ riêng, không dùng chung emoji.
-- Căn trái toàn bộ. Không căn giữa tiêu đề rồi căn trái nội dung.
+- Bỏ hero banner, 5 chip, hai ruy-băng, dòng gợi ý dài.
+- Ô "Lật ô đấu đội" to nhất vì là hoạt động chính của lớp.
+- Căn trái toàn bộ.
+- Thẻ lớp (`#gradeCardsGrid`, do JS tạo) giữ nguyên cách tạo, chỉ đổi giao diện thành nút lớn có số lớp.
 
-### 5.5. Màn hình game
+### 5.4. Đấu đội (`#view-baamboozle`)
 
-- Từ/hình chiếm gần hết màn hình.
-- Chỉ một nút chính ở dưới cùng, rộng, cao 56px trở lên.
-- Nút thoát nhỏ ở góc trái trên, có nhãn chữ "Thoát".
+```
+[ Trang chủ ]                       Bộ bài: [ v ]  [Thêm bài] [Ván mới]
 
-### 5.6. Form tạo câu đố (khu giáo viên)
+ +-----------------+            +------------------+
+ | Đội Cáo Đỏ      |     VS     | Đội Sư Tử Xanh   |
+ |      40         |            |       20         |
+ | Đến lượt        |            |                  |
+ | [-10]   [+10]   |            | [-10]   [+10]    |
+ +-----------------+            +------------------+
 
-- Đánh số lại đúng thứ tự 1, 2, 3 (hoặc bỏ số nếu không cần).
-- Chia làm 3 bước rõ: **Chọn ảnh → Nhập từ → Xem trước & lưu**.
-- Hai nút "Lưu" và "Chơi thử" đặt cố định ở cuối form, không lơ lửng bên phải.
-- Chọn loại câu đố bằng hai thẻ lớn có ảnh xem trước, không dùng radio nhỏ.
+ Đội Cáo Đỏ chọn một ô số                    Còn 12/16 ô
+ [ 1 ][ 2 ][ 3 ][ 4 ]
+ [ 5 ][ 6 ][ 7 ][ 8 ]   ...
+```
+
+- Điểm số cỡ 72–96px, đội đang có lượt: nền nhạt của đội + bóng cứng dày hơn. Đội chờ: phẳng, không bóng.
+- Ô số: vuông lớn, chữ số Baloo 2. Ô đã lật tô nhạt màu đội ăn được ô đó (đỏ nhạt / xanh nhạt), ô chưa lật màu trắng.
+- Popup câu hỏi (`#baamTileModal`): từ khoá cỡ 64px trở lên, bốn nút chấm điểm cùng hàng, thứ tự cố định: Xem đáp án, Sai, Sai −10, Đúng +20 (Đúng dùng xanh lá, Sai dùng trắng viền, Sai −10 dùng đỏ).
+- Ô quà bất ngờ: Robot Kha ăn mừng, không dùng emoji 🎁.
+
+### 5.5. Đoán hình (`#view-ai-studio`)
+- Hai chế độ: tên mới **Chơi** và **Soạn câu đố (thầy cô)**. Mặc định Chơi. Giữ id `btnModeAiPlay`, `btnModeAiCreate`.
+- Màn chơi: ảnh lớn bên trái (viền mực, bo 16px), câu hỏi làm tiêu đề trên ảnh; bên phải ô nhập, thẻ gợi ý và nút. Hàng nút cố định thứ tự: Gợi ý, Xem đáp án, Kiểm tra (nút chính vàng). Sau khi kiểm tra, nút "Tiếp" thay chỗ "Kiểm tra".
+- Thanh tiến độ: thanh đặc viền mực, phần đã xong tô xanh lá.
+- Khung phản hồi đúng/sai: Robot Kha đổi nét mặt + chữ + màu nhạt (xanh lá / đỏ), không chỉ dựa vào màu.
+- Màn trống (`#aiPlayEmptyState`): Robot Kha, "Chưa có câu đố nào. Nhờ thầy cô thêm câu đố nhé.", nút "Soạn câu đố" và "Khôi phục bài mẫu".
+
+### 5.6. Soạn câu đố (`#aiStudioCreateMode`)
+- Ba bước cố định, đánh số theo đúng thứ tự thấy trên màn hình: **1 Ảnh, 2 Từ và câu hỏi, 3 Xem trước và lưu**.
+- Chọn loại câu đố bằng hai thẻ lớn có hình xem trước (giữ radio thật ẩn bên trong để JS đọc được).
+- Ô nhập cao ≥ 48px, nhãn nằm phía trên ô, không dùng placeholder làm nhãn.
+- Nút "Lưu và tạo câu mới" và "Chơi từ đầu" nằm cố định dưới form. Nút nguy hiểm ("Xoá tất cả") viền đỏ, luôn hỏi xác nhận.
+- Ngân hàng câu đố bên phải: mỗi dòng có hình nhỏ, từ, nút xoá 44px.
+
+### 5.7. Chơi một mình (`#view-games`)
+- **Thẻ từ vựng**: thẻ lớn viền mực, mặt trước: hình + từ 64px + phiên âm; mặt sau: nghĩa + câu ví dụ + nút nghe. Bỏ icon ✨ 📖 ở góc thẻ. Giữ hiệu ứng lật 3D vì đó là hành động của bé.
+- **Trắc nghiệm**: 4 đáp án dạng nút lớn 2×2 có ký hiệu A B C D. Đồng hồ là thanh chạy ngắn dần, 5 giây cuối chuyển đỏ. Đúng: nền xanh lá nhạt + dấu tích. Sai: nền đỏ nhạt + dấu chéo + rung một lần.
+- **Nghe đoán hình**: nút loa 96px ở giữa, 4 hình chọn 2×2.
+- **Xếp chữ**: chữ cái là ô vuông ≥ 56px như quân cờ chữ; ô đáp án là khung nét đứt.
+
+### 5.8. Xếp hạng (`#view-leaderboard`)
+- Bục top 3 dạng khối: hạng 2 – 1 – 3, chiều cao khác nhau, viền mực. Thay huy chương emoji bằng số trong vòng tròn, vương miện bằng SVG.
+- Bảng: bọc trong khung `overflow-x: auto`, hàng của bé tô `--yellow-tint`, tiêu đề cột cố định. Chữ ≥ 16px.
+- Dữ liệu mẫu phải ghi rõ "Dữ liệu mẫu" hoặc bỏ đi.
+
+### 5.9. Hộp thoại (modal)
+Lớp phủ màu mực 60%, không blur. Thẻ hộp thoại viền 3px, nút đóng 44px có nhãn `aria-label="Đóng"`. Trả focus về nút đã mở khi đóng. Bấm Esc để đóng (nếu JS chưa có thì thêm).
 
 ---
 
-## 6. Thành phần giao diện
+## 6. Thành phần
 
 ### 6.1. Thẻ
-
 ```css
 .card {
   background: #fff;
   border: 3px solid var(--ink);
-  border-radius: 16px;          /* dùng 3 mức: 12 / 16 / 24, không dùng một mức cho tất cả */
-  box-shadow: 0 4px 0 var(--ink); /* bóng cứng, không mờ */
+  border-radius: var(--r-m);      /* 12 / 16 / 24: dùng theo cấp bậc, không dùng một mức cho tất cả */
+  box-shadow: 0 4px 0 var(--ink);
 }
 ```
+Thẻ chính (ô trò chơi lớn, khung game) dùng `--r-l`. Thẻ thông tin nhỏ dùng `--r-s`. Không bóng mờ, không `backdrop-filter`.
 
-- Ô game lớn dùng bo 24px, thẻ thông tin dùng 12px. Phân cấp bằng kích thước, không chỉ bằng độ mờ.
-- Bỏ viền màu bên trái thẻ, bỏ hiệu ứng kính mờ (backdrop-filter).
-
-### 6.2. Nút
-
+### 6.2. Nút: chỉ 3 loại
 ```css
 .btn {
-  min-height: 52px;
-  padding: 0 28px;
-  font: 800 20px/1 "Baloo 2", sans-serif;
-  border: 3px solid var(--ink);
-  border-radius: 14px;
+  min-height: 52px; padding: 0 28px;
+  font: 800 20px/1 var(--font-display);
+  border: 3px solid var(--ink); border-radius: 14px;
   box-shadow: 0 5px 0 var(--ink);
   transition: transform .08s, box-shadow .08s;
 }
 .btn:active { transform: translateY(5px); box-shadow: 0 0 0 var(--ink); }
-.btn-primary   { background: var(--chalk-yellow); color: var(--ink); }
+.btn-primary   { background: var(--chalk); color: var(--ink); }   /* mỗi màn chỉ một nút chính */
 .btn-secondary { background: #fff; color: var(--ink); }
-.btn-blue      { background: var(--blue); color: #fff; }
+.btn-danger    { background: #fff; color: var(--red); border-color: var(--red); box-shadow: 0 5px 0 var(--red); }
 ```
+Nút "đúng / lưu / tiếp" dùng `--green` với chữ trắng. Nút trong các thẻ đội dùng màu đội. Không có nút gradient.
 
-Chỉ có **3 loại nút**: chính (vàng), phụ (trắng), và nhấn mạnh (xanh dương). Mỗi màn hình chỉ có một nút chính.
+### 6.3. Ô nhập
+Cao ≥ 48px, viền 3px mực, nền trắng, chữ 18px. Khi focus: viền `--blue` + `outline: 4px solid var(--blue-tint)`.
 
-### 6.3. Icon
+### 6.4. Icon
+Một bộ SVG nét đều 2.5px (Lucide hoặc Phosphor), nhúng dạng sprite trong `index.html` để chạy được khi mở file trực tiếp. Không dùng emoji làm icon giao diện.
 
-- Bỏ toàn bộ emoji dùng làm icon giao diện.
-- Dùng **một bộ icon** thống nhất (Lucide hoặc Phosphor, nét dày 2.5px), hoặc tự vẽ SVG cho các mục chính.
-- Emoji chỉ được dùng trong nội dung học (ví dụ hình con vật, trái cây) và phần thưởng.
-
-### 6.4. Huy hiệu và nhãn
-
-- Bỏ nhãn "KIDS", "AI GAME CREATOR & VISUAL ARENA".
-- Streak và XP: icon + số to (24px trở lên), bỏ chữ "Ngày", "XP" nhỏ bên cạnh nếu icon đã rõ nghĩa.
-
-### 6.5. Trạng thái đúng / sai
+### 6.5. Trạng thái
 
 | Trạng thái | Cách thể hiện |
 |---|---|
-| Đúng | Nền xanh lá nhạt, viền xanh lá, linh vật nhảy, âm "ting", +10 XP bay lên |
-| Sai | Rung nhẹ 1 lần, nền đỏ nhạt, chữ "Thử lại nhé", hiện gợi ý chữ cái đầu |
-| Hoàn thành | Pháo giấy một lần, linh vật ăn mừng, nút "Chơi tiếp" |
+| Đúng | Nền xanh lá nhạt, viền xanh lá, dấu tích, Robot Kha vui, "+10 XP" bay lên, âm báo |
+| Sai | Rung nhẹ một lần, nền đỏ nhạt, dấu chéo, "Thử lại nhé", Robot Kha tiếc |
+| Hoàn thành | Pháo giấy một lần (`#confettiCanvas`), Robot Kha ăn mừng |
+| Đang chọn | Nền vàng nhạt + viền xanh dương |
+| Vô hiệu | Nền giấy, chữ mực nhạt 60%, không bóng |
 
-Không chỉ dùng màu để báo đúng/sai. Luôn thêm icon hoặc chữ.
+Không chỉ dùng màu để báo trạng thái: luôn kèm icon hoặc chữ.
 
 ---
 
 ## 7. Chuyển động
 
-Chuyển động chỉ để trả lời hành động của bé.
+Chỉ để phản hồi hành động của bé.
 
-**Giữ:**
-- Nút nhấn xuống khi bấm.
-- Đáp án đúng nhảy lên, đáp án sai rung nhẹ.
-- Số XP đếm tăng lên.
-- Pháo giấy một lần khi hoàn thành bài.
-
-**Bỏ:**
-- Hiệu ứng mờ dần và trượt lên khi cuộn cho từng khối.
-- Thẻ nổi lên khi rê chuột.
-- Nền chuyển động, hạt lấp lánh.
-
-Tôn trọng cài đặt của thiết bị:
+**Giữ:** nút nhấn xuống; lật thẻ 3D; đáp án đúng nhảy lên, sai rung một lần; số XP đếm lên; pháo giấy một lần khi xong bài.
+**Bỏ:** 4 khối `blob` chuyển động nền; hiệu ứng mờ dần/trượt lên khi vào màn; thẻ nổi lên khi rê chuột; hạt lấp lánh; mọi hiệu ứng tự chạy lặp mãi.
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 ```
 
@@ -248,76 +270,137 @@ Tôn trọng cài đặt của thiết bị:
 
 ## 8. Viết lại nội dung
 
-Câu chữ ngắn, động từ rõ ràng, dùng đúng một tên cho một hành động.
+Dùng động từ rõ ràng, một hành động một tên gọi. Sửa cả trong `index.html` lẫn các chuỗi JS tạo ra giao diện (dashboard, ô số, bảng xếp hạng, danh sách câu đố).
 
+### Chung
 | Hiện tại | Đổi thành |
 |---|---|
-| English Kha Master — Trò Chơi Tiếng Anh Tiểu Học Lớp 1 – 5 | English Kha Master (bỏ dòng phụ, hoặc "Tiếng Anh lớp 1–5") |
-| AI Đoán Hình & Điền Mẫu Câu Tiếng Anh | Đoán hình, điền từ |
-| Tải ảnh hoặc chọn ảnh có sẵn, từ vựng bên dưới. AI sẽ tự động phân tích… | Nhìn hình, gõ từ còn thiếu. |
-| Bắt Đầu Chơi Từ Đầu → | Chơi ngay |
-| Lưu Câu Đố (Tiếp tục tạo câu khác) | Lưu và tạo câu mới |
-| Quay lại Trang Chủ | Trang chủ (kèm icon mũi tên quay lại) |
-| Chơi Thử Thách | Chơi thử |
-| AI Sinh Nhanh Bộ Câu Hỏi Mẫu | Tạo câu hỏi mẫu |
-| Tài ảnh từ máy tính / Dán link ảnh online (https://...) | Chọn ảnh từ máy / Dán link ảnh |
-| Ví dụ: School, Doctor, Beach… | Từ tiếng Anh (ví dụ: school) |
+| English Kha Master `KIDS 🎈` / Trò Chơi Tiếng Anh Tiểu Học Lớp 1 – 5 | English Kha Master / Tiếng Anh lớp 1–5 |
+| Thêm Bài Học | Thêm bài học (đặt ở khu "Dành cho thầy cô") |
+| Điểm Danh | Điểm danh |
+| Chọn Khối Lớp Của Bé Để Khám Phá! | Chọn lớp của bé |
+| 🎒 Chọn Khối Lớp Học: | Chọn lớp |
+| Bài Học & Trò Chơi Lớp 1 / Chủ đề: … | Lớp 1: chữ cái, màu sắc, số đếm, động vật |
+| Tốc độ đọc mẫu: Chậm dễ nghe 🐢 / Tự nhiên 🐰 | Tốc độ đọc: Chậm / Thường |
+| Quay lại Trang Chủ / Về Trang Chủ | Trang chủ (icon mũi tên quay lại) |
+| Dòng chào Robot Kha "Bé ơi, hôm nay sẵn sàng…" | "Chào bé! Hôm nay mình chơi gì?" |
+
+### Thẻ trò chơi (nút nào cũng chỉ ghi "Chơi")
+| Hiện tại | Đổi thành |
+|---|---|
+| Đoán Hình & Điền Mẫu Câu AI + mô tả 2 dòng | Đoán hình, điền từ: "Nhìn ảnh, gõ từ còn thiếu." |
+| Trò Chơi Baamboozle Lật Ô Số | Lật ô đấu đội: "Hai đội lật ô, trả lời để ghi điểm." |
+| Flashcard 3D & Mẫu Câu | Thẻ từ vựng: "Lật thẻ, xem nghĩa, nghe đọc." |
+| Đố Vui Trắc Nghiệm Tốc Độ | Trắc nghiệm: "Chọn đáp án đúng trong 15 giây." |
+| Xếp Chữ & Nghe Đoán Hình | Xếp chữ: "Sắp xếp chữ cái thành từ." |
+| ⭐ MỚI ĐỘC ĐÁO, 🔥 HOT NHẤT LỚP HỌC, "16 ô số bí ẩn", "Ghép từ logic" | Xoá |
+
+### Đấu đội
+| Hiện tại | Đổi thành |
+|---|---|
+| Đấu Trường Baamboozle Lật Ô Số Bí Mật + mô tả | Lật ô đấu đội |
+| Tạo Bài Mới / Chơi Ván Mới | Thêm bài / Ván mới |
+| Đến Lượt! 🎯 / Chờ Lượt ⏳ | Đến lượt / Chờ |
+| Lượt của: Đội Cáo Đỏ 🦊 — Hãy chọn 1 ô số! | Đội Cáo Đỏ chọn một ô số |
+| Còn lại: 16 / 16 ô | Còn 16/16 ô |
+| Câu tiếng Anh / Từ khóa: (nhãn) | Xoá nhãn |
+| Nghe Phát Âm Tiếng Anh | Nghe |
+| Kiểm Tra Đáp Án Ngay! | Kiểm tra |
+| Sai (0đ) / Sai Trừ (-10đ) / Đúng (+20đ) | Sai / Sai −10 / Đúng +20 |
+| 🎉 CHÍNH XÁC TUYỆT VỜI! (+20 ĐIỂM) | Đúng rồi! +20 điểm |
+| Nhận Quà & Đổi Lượt ➔ | Nhận và đổi lượt |
+
+### Đoán hình và soạn câu đố
+| Hiện tại | Đổi thành |
+|---|---|
+| AI Đoán Hình & Điền Mẫu Câu Tiếng Anh + mô tả dài | Đoán hình, điền từ: "Nhìn ảnh, gõ từ còn thiếu." |
+| ✨ AI Game Creator & Visual Arena | Xoá |
+| Chơi Thử Thách / AI Studio Tạo Game | Chơi / Soạn câu đố (thầy cô) |
+| Ảnh Thử Thách, 🔍 Quan sát hình ảnh và điền… | Xoá (ảnh và ô nhập đã đủ rõ) |
+| Gõ từ đáp án hoặc bấm chọn thẻ từ bên dưới... | Gõ đáp án hoặc chọn thẻ bên dưới |
+| Thẻ từ vựng gợi ý (Bấm để chọn nhanh): | Gợi ý |
+| Kiểm Tra (Check) / Tiếp Tục ➔ | Kiểm tra / Tiếp |
+| Chuỗi Đúng / Điểm | Liên tiếp / Điểm |
+| Chính xác tuyệt vời! | Đúng rồi! |
+| Chưa Có Câu Đố Nào Được Tạo + "…trong database đã được xóa sạch…" | Chưa có câu đố nào. Nhờ thầy cô thêm câu đố nhé. |
+| Tạo Câu Đố Mới Nhanh Chóng | Tạo câu đố mới |
+| AI Sinh Nhanh Bộ Câu Hỏi Mẫu | Tạo bộ câu mẫu (đổi "AI" nếu không dùng AI thật) |
+| 1. Thêm Ảnh Minh Họa Cho Từ Vựng: | 1. Chọn ảnh |
+| Tải ảnh từ máy tính / Dán link ảnh online (https://...) | Chọn ảnh từ máy / Dán link ảnh |
+| 3. Từ Vựng Đáp Án Đúng (Tiếng Anh): | Từ tiếng Anh |
 | Nghĩa TV: Trường học (tuỳ chọn) | Nghĩa tiếng Việt (không bắt buộc) |
-| Mẫu Câu Khuyết Từ Với AI | Câu điền từ (AI viết giúp) |
-| Bé Siêu Nhân | Tên của bé (do bé tự đặt) |
+| Lưu Câu Đố (Tiếp tục tạo câu khác) | Lưu và tạo câu mới |
+| Bắt Đầu Chơi Từ Đầu ➔ | Chơi từ đầu |
+| Lược bỏ hết bài / Khôi phục mẫu | Xoá tất cả / Khôi phục bài mẫu |
 
-Lỗi và trạng thái trống cần chỉ rõ việc phải làm:
-- Chưa có ảnh: "Chọn một ảnh để bắt đầu."
-- Ảnh tải lỗi: "Không tải được ảnh này. Thử ảnh khác hoặc dán link mới."
-- Chưa có bài: "Chưa có bài nào. Nhờ thầy cô thêm bài nhé."
+### Xếp hạng và hộp thoại
+| Hiện tại | Đổi thành |
+|---|---|
+| Bảng Vàng Vinh Danh Học Sinh Xuất Sắc + mô tả dài | Xếp hạng: "Xếp theo thời gian học, số bài xong và số ngày học liên tục." |
+| Bé Siêu Nhân (Bạn) | Bạn |
+| ✨ AI Lesson Creator (nhãn) | Xoá |
+| Thêm Bài Học & Mẫu Câu Mới + mô tả | Thêm bài học |
+| Tạo Trò Chơi Baamboozle Ngay! | Lưu bài học |
+| Hủy Bỏ | Huỷ |
 
----
-
-## 9. Khả năng truy cập và thiết bị
-
-- Vùng bấm tối thiểu **48×48px**, khoảng cách giữa các nút tối thiểu 8px.
-- Có viền focus rõ khi dùng bàn phím: `outline: 4px solid var(--blue); outline-offset: 3px;`
-- Nút âm thanh có nhãn chữ khi rê chuột / đọc màn hình (`aria-label`).
-- Mọi hình ảnh có `alt` bằng từ tiếng Anh, để trình đọc màn hình đọc được.
-- Chạy tốt từ 360px chiều rộng. Bảng và nội dung rộng cuộn trong khung riêng, không làm cả trang cuộn ngang.
-- Cho phép bé nghe phát âm từ ở mọi chỗ có từ vựng (nút loa lớn cạnh từ).
+Lỗi và trạng thái trống phải chỉ rõ việc cần làm, ví dụ: "Chưa có ảnh. Chọn một ảnh để bắt đầu." / "Không tải được ảnh này. Thử ảnh khác hoặc dán link mới."
 
 ---
 
-## 10. Danh sách kiểm tra để tránh "AI slop"
+## 9. Truy cập và thiết bị
 
-Trước khi coi là xong, tự hỏi từng mục:
-
-- [ ] Có gradient làm nền, chữ hoặc nút không? → bỏ.
-- [ ] Có nhãn IN HOA nhỏ phía trên tiêu đề không? → bỏ.
-- [ ] Có mũi tên "→" gắn sau mọi nút không? → bỏ.
-- [ ] Mọi khối có cùng bo góc, cùng bóng mờ không? → đổi theo cấp bậc.
-- [ ] Có thẻ nào chỉ để trang trí, không chứa nội dung không? → bỏ.
-- [ ] Có dòng chữ nào giải thích công nghệ ("AI sẽ tự động phân tích…") thay vì nói việc bé làm không? → viết lại.
-- [ ] Có emoji làm icon giao diện không? → thay bộ icon thống nhất.
-- [ ] Có chữ nào dưới 16px không? → tăng.
-- [ ] Có Hiệu Ứng Hover Trên Mọi Thẻ hoặc hiệu ứng xuất hiện khi cuộn không? → bỏ.
-- [ ] Tiêu đề có tô màu riêng một từ không? → bỏ.
-- [ ] Có đánh số, viền, đường kẻ chỉ để trang trí không? → bỏ.
-- [ ] Nếu che logo đi, người lạ có nhận ra đây là trang dành cho trẻ em Việt Nam học tiếng Anh không? → nếu không, thêm linh vật và nội dung riêng.
+- Vùng bấm ≥ 48×48px, cách nhau ≥ 8px.
+- Viền focus rõ: `outline: 4px solid var(--blue); outline-offset: 3px;`.
+- Mọi nút chỉ có icon phải có `aria-label`. Ảnh có `alt` bằng từ tiếng Anh.
+- Cho phép zoom (đã bỏ khoá ở mục 1).
+- Chạy tốt từ 360px. Bảng và nội dung rộng cuộn trong khung riêng, không làm cả trang cuộn ngang.
+- Có nút nghe (loa lớn) ở mọi nơi có từ vựng. Giữ Web Speech API.
+- Tôn trọng `prefers-reduced-motion`.
 
 ---
 
-## 11. Thứ tự làm (từ dễ đến khó)
+## 10. Danh sách kiểm tra "AI slop"
 
-1. **Đổi token**: khai báo biến CSS cho màu, font, bo góc, bóng. Xoá gradient và backdrop-filter.
-2. **Đổi font và cỡ chữ**: Baloo 2 + Lexend, nâng tối thiểu 16px, sửa lại cách viết hoa tiếng Việt.
-3. **Làm lại nút và thẻ** theo mục 6.
-4. **Thay emoji bằng bộ icon** thống nhất.
-5. **Gọn header, gộp tab, thêm thanh tab dưới đáy** cho điện thoại.
-6. **Tách khu giáo viên** khỏi khu của bé.
-7. **Làm lại trang chủ** theo mục 5.4.
-8. **Thêm linh vật** và trạng thái đúng / sai / hoàn thành.
-9. **Viết lại nội dung** theo mục 8.
-10. **Kiểm tra** trên điện thoại 360px, bàn phím, và với 2–3 bé thật. Quan sát bé bấm vào đâu đầu tiên và bé có đọc được chữ không.
+- [ ] Còn gradient nào (nền, chữ, nút) không? Bỏ.
+- [ ] Còn nhãn IN HOA nhỏ phía trên tiêu đề không? Bỏ.
+- [ ] Còn mũi tên ➔ ở cuối nút không? Bỏ.
+- [ ] Mọi khối vẫn cùng một độ bo, cùng một bóng? Phân cấp lại.
+- [ ] Còn thẻ chỉ để trang trí không? Bỏ.
+- [ ] Còn câu quảng cáo ("HOT NHẤT", "MỚI ĐỘC ĐÁO", "Vui Từng Giây") không? Bỏ.
+- [ ] Còn mô tả kỹ thuật ("AI sẽ tự động phân tích…", "database") không? Viết lại thành việc bé làm.
+- [ ] Còn "AI" trên chức năng không phải AI thật không? Đổi tên.
+- [ ] Còn emoji làm icon giao diện không? Thay bằng SVG.
+- [ ] Còn chữ dưới 16px không? Tăng.
+- [ ] Còn nền chuyển động, kính mờ, hiệu ứng hover mọi thẻ không? Bỏ.
+- [ ] Còn tiêu đề tô màu riêng một từ không? Bỏ.
+- [ ] Còn Chữ Hoa Đầu Mỗi Từ không? Sửa.
+- [ ] Che logo đi, có nhận ra đây là game tiếng Anh cho trẻ tiểu học Việt Nam không? Nếu không, Robot Kha và nội dung chưa đủ riêng.
 
 ---
 
-## 12. Câu lệnh gợi ý để đưa cho AI viết code
+## 11. Ràng buộc kỹ thuật (không được phá)
 
-> Viết lại giao diện của trang web học tiếng Anh cho trẻ lớp 1–5 theo file UI-REDESIGN.md. Giữ nguyên logic JavaScript hiện có, chỉ đổi HTML/CSS. Dùng biến CSS cho màu, font Baloo 2 và Lexend, nút và thẻ có viền dày 3px màu #1F2A44 và bóng cứng, không dùng gradient, không dùng emoji làm icon giao diện, không có chữ nào dưới 16px. Tách phần AI Studio thành khu giáo viên riêng. Làm từng bước theo mục 11 và cho tôi xem kết quả sau mỗi bước.
+- Giữ cấu trúc: `index.html`, `styles.css`, `app.js`. Không thêm framework, không thêm bước build.
+- Giữ nguyên **mọi `id`**, mọi `data-*` (`data-target`, `data-game`, `data-skill`, `data-speed`), tên hàm trong `onclick="..."` và tên khoá `localStorage`.
+- Không đổi logic điểm, XP, streak, lưu câu đố, phát âm.
+- Nếu đổi tên class mà `app.js` dùng (`querySelector`, `classList`, chuỗi HTML tạo động) thì phải sửa cả hai nơi. Cách an toàn: giữ tên class cũ, viết lại kiểu dáng của nó.
+- Các `style="display:none"` mà JS bật/tắt và `style="width:…%"` do JS cập nhật thì giữ nguyên.
+- Mỗi lần sửa `styles.css`, tăng số ở `styles.css?v=…` trong `index.html` để trình duyệt tải lại.
+- Phải chạy được khi mở trực tiếp `index.html` và qua `python -m http.server 8080`.
+
+---
+
+## 12. Thứ tự làm
+
+1. **Đọc và kiểm kê** (chưa sửa): liệt kê id, class, `data-*`, hàm `onclick`, các chuỗi HTML tạo trong `app.js`.
+2. **Nền tảng**: biến CSS (mục 3, 4, 6), xoá `.mesh-bg`/blob, bỏ `backdrop-filter`, sửa viewport, đổi phông.
+3. **Thành phần**: thẻ, 3 loại nút, ô nhập, modal, `.back-btn` dùng chung, icon SVG.
+4. **Header và điều hướng**: gọn header, đổi tên tab, thanh tab đáy trên điện thoại.
+5. **Trang chủ**: bỏ hero, dòng chào + Robot Kha, nút lớp, lưới trò chơi bất đối xứng, khu "Dành cho thầy cô".
+6. **Đấu đội**, sau đó **Đoán hình + Soạn câu đố**.
+7. **Chơi một mình** (4 game) và **Xếp hạng**.
+8. **Robot Kha** và trạng thái đúng/sai/hoàn thành.
+9. **Viết lại nội dung** (mục 8), kể cả các chuỗi trong `app.js`.
+10. **Kiểm tra**: 1440px, 1024px, 390px; bàn phím; không có lỗi console; chơi thử một vòng mỗi game; nhờ 2–3 bé dùng thử.
+
+**Tuỳ chọn, chỉ làm khi bạn đồng ý:** gộp tab "Chơi một mình" với thẻ trên trang chủ để không có hai đường vào cùng một game; thêm mã PIN cho phần soạn bài (chỉ để tránh bấm nhầm, không phải bảo mật).

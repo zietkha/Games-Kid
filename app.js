@@ -1952,7 +1952,7 @@ function handleBaamAnswerWrong() {
   if (resultWrong) {
     resultWrong.style.display = 'block';
     const badge = resultWrong.querySelector('.res-badge');
-    if (badge) badge.textContent = `💡 ĐÁP ÁN CHUẨN (0 Điểm)`;
+    if (badge) badge.textContent = `💡 Đáp án đúng: (0 điểm)`;
     if (ansText) ansText.textContent = tile.a;
   }
 }
@@ -1985,7 +1985,7 @@ function handleBaamAnswerPenalty() {
   if (resultWrong) {
     resultWrong.style.display = 'block';
     const badge = resultWrong.querySelector('.res-badge');
-    if (badge) badge.textContent = `⚠️ BỊ TRỪ 10 ĐIỂM (${teamName}: ${BaamState.scores[team]}đ)`;
+    if (badge) badge.textContent = `⚠️ Trừ 10 điểm (${teamName}: còn ${BaamState.scores[team]}đ)`;
     if (ansText) ansText.textContent = tile.a;
   }
 }
@@ -3223,8 +3223,8 @@ function submitAiGameAnswer() {
     if (feedbackBanner) {
       feedbackBanner.className = 'ai-feedback-banner success';
       feedbackBanner.style.display = 'flex';
-      if (fbIcon) fbIcon.textContent = '🎉';
-      if (fbTitle) fbTitle.textContent = 'Chính Xác Tuyệt Vời! 👏';
+      if (fbIcon) fbIcon.innerHTML = '<svg width="40" height="40"><use href="#robot-kha-happy"></use></svg>';
+      if (fbTitle) fbTitle.textContent = 'Chính xác tuyệt vời! 👏';
       if (fbDesc) {
         if (isPictureWord) {
           fbDesc.textContent = `Học sinh đã trả lời đúng từ: "${q.vocab}" ${q.meaning ? `(${q.meaning})` : ''}`;
@@ -3248,7 +3248,7 @@ function submitAiGameAnswer() {
     if (feedbackBanner) {
       feedbackBanner.className = 'ai-feedback-banner wrong';
       feedbackBanner.style.display = 'flex';
-      if (fbIcon) fbIcon.textContent = '🤔';
+      if (fbIcon) fbIcon.innerHTML = '<svg width="40" height="40"><use href="#robot-kha-sad"></use></svg>';
       if (fbTitle) fbTitle.textContent = 'Chưa chính xác rồi!';
       if (fbDesc) {
         fbDesc.textContent = `Hãy quan sát kỹ bức ảnh và thử lại hoặc bấm "Xem Đáp Án" để kiểm tra nhé!`;
@@ -3831,13 +3831,13 @@ function renderCreatorQuestionsList() {
 
   if (questions.length === 0) {
     container.innerHTML = `
-      <div class="empty-bank-box" style="background:#f8fafc; border:2px dashed #94a3b8; border-radius:16px; padding:32px 18px; text-align:center;">
+      <div class="empty-bank-box" style="background:#f8fafc; border:2.5px dashed #94a3b8; border-radius:16px; padding:32px 18px; text-align:center;">
         <div style="font-size:2.8rem; margin-bottom:8px;">📭</div>
-        <div style="font-weight:800; font-size:1.1rem; color:#1e293b; margin-bottom:6px;">Chưa có bài nào được tạo</div>
-        <p style="font-size:0.9rem; line-height:1.6; color:#64748b; margin-bottom:14px;">
-          Toàn bộ câu đố trong database đã được xóa sạch. Bây giờ bạn có thể nhập ảnh và từ vựng ở form bên trái để tạo bài từ từ cho học sinh chơi!
+        <div style="font-weight:800; font-size:1.1rem; color:#1e293b; margin-bottom:6px;">Chưa có câu đố nào. Thầy cô hãy tạo câu đố mới nhé!</div>
+        <p style="font-size:0.95rem; line-height:1.6; color:#64748b; margin-bottom:14px;">
+          Toàn bộ câu đố trong database đã được dọn sạch. Bây giờ thầy cô có thể nhập ảnh và từ vựng ở form bên trái để tạo bài từ từ cho học sinh chơi!
         </p>
-        <button type="button" class="glass-btn small-btn" onclick="resetToDefaultAiQuestions()" style="font-weight:700; color:#2563eb;">🔄 Khôi phục 10 câu mẫu</button>
+        <button type="button" class="btn btn-secondary small-btn" onclick="resetToDefaultAiQuestions()" style="font-weight:700;">🔄 Khôi phục 10 câu mẫu</button>
       </div>
     `;
     return;
@@ -3899,7 +3899,7 @@ function deleteAiQuestion(idx) {
 
 // Clear all questions in the bank (Lược bỏ hết bài - xóa sạch khỏi database)
 function clearAllAiQuestions() {
-  if (confirm("⚠️ Bạn có chắc muốn LƯỢC BỎ VÀ XÓA SẠCH toàn bộ bài trong database không?\n\nSau khi xóa, web sẽ hiện 'Chưa có bài nào được tạo' để bạn tự tạo bài từ từ cho học sinh.")) {
+  if (confirm("Bạn có chắc muốn xóa tất cả câu đố trong hệ thống không?\n\nSau khi xóa, thầy cô có thể tạo câu đố mới hoặc bấm 'Khôi phục mẫu' bất kỳ lúc nào.")) {
     AiStudioState.questions = [];
     AiStudioState.currentIndex = 0;
     localStorage.setItem(AI_QUESTIONS_STORAGE_KEY, JSON.stringify([]));
@@ -3907,7 +3907,7 @@ function clearAllAiQuestions() {
     localStorage.removeItem('ekm_ai_image_sentences');
     renderCreatorQuestionsList();
     loadAiGameQuestion();
-    showToast("🧹 Đã xóa sạch bài trong database! Hiện chưa có bài nào được tạo.", "success");
+    showToast("Đã xóa tất cả câu đố trong hệ thống!", "info");
   }
 }
 
@@ -3989,6 +3989,14 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('ekm_kids_visited', 'true');
     }, 600);
   }
+
+  // Keyboard accessibility: Close modals on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const activeModals = document.querySelectorAll('.modal-overlay.active');
+      activeModals.forEach(m => m.classList.remove('active'));
+    }
+  });
 });
 
 
