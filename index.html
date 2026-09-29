@@ -450,6 +450,56 @@
         </div>
       </div>
 
+      <!-- ================= KHU VỰC 2 VÒNG QUAY MAY MẮN GỌI HỌC SINH 2 ĐỘI ================= -->
+      <div class="card card-lg baam-wheels-card" id="baamWheelsSection" style="margin-bottom: 24px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="continue-badge">🎡 Vòng quay may mắn gọi tên học sinh</div>
+            <h3 style="margin:4px 0 0 0; font-size:24px;">Vòng quay 2 Đội — Gọi học sinh lên bảng thi đấu</h3>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary small-btn" onclick="openModal('baamStudentRosterModal')">
+              📋 Dán danh sách từ Excel
+            </button>
+            <button type="button" class="btn btn-primary small-btn" onclick="spinBothBaamWheels()">
+              ⚡ Quay cả 2 đội cùng lúc
+            </button>
+          </div>
+        </div>
+
+        <div class="wheels-arena-grid">
+          <!-- Vòng quay Đội 1: Cáo Đỏ -->
+          <div class="wheel-box wheel-box-team1">
+            <div class="wheel-header">
+              <span class="wheel-team-title">🦊 Đội Cáo Đỏ</span>
+              <span class="wheel-roster-count" id="wheelRosterCount1">0 bạn</span>
+            </div>
+            <div class="wheel-stage-wrap">
+              <div class="wheel-pointer">▼</div>
+              <canvas id="wheelCanvas1" width="300" height="300" class="wheel-canvas"></canvas>
+            </div>
+            <button type="button" class="btn btn-red full-width wheel-spin-btn" id="spinWheelBtn1" onclick="spinBaamWheel(1)">
+              🎯 Quay gọi Đội Cáo Đỏ
+            </button>
+          </div>
+
+          <!-- Vòng quay Đội 2: Sư Tử Xanh -->
+          <div class="wheel-box wheel-box-team2">
+            <div class="wheel-header">
+              <span class="wheel-team-title">🦁 Đội Sư Tử Xanh</span>
+              <span class="wheel-roster-count" id="wheelRosterCount2">0 bạn</span>
+            </div>
+            <div class="wheel-stage-wrap">
+              <div class="wheel-pointer">▼</div>
+              <canvas id="wheelCanvas2" width="300" height="300" class="wheel-canvas"></canvas>
+            </div>
+            <button type="button" class="btn btn-blue full-width wheel-spin-btn" id="spinWheelBtn2" onclick="spinBaamWheel(2)">
+              🎯 Quay gọi Đội Sư Tử Xanh
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- 16 Ô số bí ẩn -->
       <div class="card card-lg">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
@@ -1201,6 +1251,111 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: QUẢN LÝ & DÁN DANH SÁCH HỌC SINH TỪ EXCEL ================= -->
+  <div class="modal-overlay" id="baamStudentRosterModal" aria-hidden="true">
+    <div class="modal-card" style="max-width:700px;">
+      <button class="modal-close-btn" onclick="closeModal('baamStudentRosterModal')">✕</button>
+      <div class="modal-header" style="margin-bottom:14px;">
+        <span class="continue-badge">📋 Dán danh sách từ Excel</span>
+        <h3 style="margin-top:6px; font-size:24px;">Danh sách học sinh 2 Vòng quay Baamboozle</h3>
+        <p style="color:#64748B; font-size:15px; margin:4px 0 0 0;">
+          💡 Thầy cô chỉ cần mở file Excel, copy cột họ tên học sinh rồi dán vào ô dưới đây (mỗi dòng 1 tên).
+        </p>
+      </div>
+
+      <!-- Quick paste entire class & split in half -->
+      <div style="background:var(--yellow-tint); border:2.5px dashed var(--ink); border-radius:12px; padding:14px; margin-bottom:16px;">
+        <div style="font-weight:800; margin-bottom:6px; color:var(--ink);">🎲 Dán danh sách cả lớp & tự động chia đều 2 đội ngẫu nhiên:</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <input type="text" id="rosterQuickPasteInput" class="glass-input" placeholder="Dán danh sách cả lớp (cách nhau bởi dấu phẩy hoặc dán nhiều tên)..." style="flex:1; min-width:240px;">
+          <button type="button" class="btn btn-primary small-btn" onclick="autoSplitRosterFromQuickPaste()" style="white-space:nowrap;">
+            🎲 Tự động chia 2 đội
+          </button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:18px;">
+        <!-- Đội 1: Cáo Đỏ -->
+        <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:12px; padding:14px; box-shadow:0 3px 0 var(--ink);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:#DC2626; font-size:16px;">🦊 Đội Cáo Đỏ</strong>
+            <span style="font-size:13px; font-weight:700; color:#64748B;" id="rosterCountTeam1">(0 bạn)</span>
+          </div>
+          <textarea id="rosterInputTeam1" class="glass-input" rows="8" placeholder="Dán tên học sinh Đội 1 vào đây...&#10;Nguyễn Văn An&#10;Trần Thị Mai&#10;Lê Hoàng Long..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
+        </div>
+
+        <!-- Đội 2: Sư Tử Xanh -->
+        <div style="background:#FFF; border:2.5px solid var(--ink); border-radius:12px; padding:14px; box-shadow:0 3px 0 var(--ink);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="color:#2563EB; font-size:16px;">🦁 Đội Sư Tử Xanh</strong>
+            <span style="font-size:13px; font-weight:700; color:#64748B;" id="rosterCountTeam2">(0 bạn)</span>
+          </div>
+          <textarea id="rosterInputTeam2" class="glass-input" rows="8" placeholder="Dán tên học sinh Đội 2 vào đây...&#10;Phạm Minh Quân&#10;Đỗ Thu Hà&#10;Vũ Gia Hưng..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-secondary small-btn" onclick="loadDefaultStudentRosters()">
+          🔄 Nạp danh sách mẫu 20 bạn
+        </button>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('baamStudentRosterModal')">Đóng</button>
+          <button type="button" class="btn btn-green" onclick="saveStudentRosters()">
+            💾 Lưu danh sách & Cập nhật 2 vòng quay
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: KẾT QUẢ QUAY TRÚNG HỌC SINH LÊN BẢNG ================= -->
+  <div class="modal-overlay" id="baamWinnerModal" aria-hidden="true">
+    <div class="modal-card" style="text-align:center; max-width:540px;">
+      <button class="modal-close-btn" onclick="closeModal('baamWinnerModal')">✕</button>
+      <div style="font-size:56px; margin-bottom:8px;">🎉</div>
+      <span class="continue-badge" id="baamWinnerBadge">Đã chọn được học sinh lên bảng!</span>
+      
+      <!-- Kết quả khi quay đơn 1 đội -->
+      <div id="baamSingleWinnerWrap" style="margin:16px 0;">
+        <h2 id="baamWinnerName" style="font-size:38px; color:var(--ink); margin-bottom:6px; line-height:1.15;">Nguyễn Văn An</h2>
+        <div id="baamWinnerTeam" class="stat-pill" style="display:inline-flex; font-size:17px; margin-bottom:14px; font-weight:800;">🦊 Đội Cáo Đỏ</div>
+        <p style="font-size:16px; color:#475569; margin:0 0 18px 0;">Mời bạn bước lên bảng trả lời câu hỏi và giành điểm cho đội mình!</p>
+        
+        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+          <button type="button" class="btn btn-danger flex-1" onclick="handleWinnerAction('remove')">
+            🗑️ Xóa tên khỏi vòng quay
+          </button>
+          <button type="button" class="btn btn-secondary flex-1" onclick="handleWinnerAction('keep')">
+            💾 Giữ tên trong vòng quay
+          </button>
+        </div>
+      </div>
+
+      <!-- Kết quả khi quay cả 2 đội cùng lúc -->
+      <div id="baamDualWinnerWrap" style="display:none; margin:16px 0;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+          <div style="background:#FEE2E2; border:3px solid #1F2A44; border-radius:12px; padding:14px; box-shadow:0 3px 0 #1F2A44;">
+            <div style="font-size:14px; font-weight:900; color:#DC2626; margin-bottom:4px;">🦊 ĐỘI CÁO ĐỎ</div>
+            <div id="baamDualWinner1" style="font-size:22px; font-weight:900; color:#1F2A44;">Nguyễn Văn An</div>
+          </div>
+          <div style="background:#DBEAFE; border:3px solid #1F2A44; border-radius:12px; padding:14px; box-shadow:0 3px 0 #1F2A44;">
+            <div style="font-size:14px; font-weight:900; color:#2563EB; margin-bottom:4px;">🦁 ĐỘI SƯ TỬ XANH</div>
+            <div id="baamDualWinner2" style="font-size:22px; font-weight:900; color:#1F2A44;">Trần Thị Bình</div>
+          </div>
+        </div>
+        <p style="font-size:16px; color:#475569; margin-bottom:16px;">Hai bạn cùng bước lên bảng thi đấu đối kháng trực tiếp!</p>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-danger flex-1" onclick="handleDualWinnerAction('remove_both')">
+            🗑️ Xóa cả 2 khỏi vòng quay
+          </button>
+          <button type="button" class="btn btn-secondary flex-1" onclick="handleDualWinnerAction('keep_both')">
+            💾 Giữ lại cả 2 tên
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal: Chào mừng -->
   <div class="modal-overlay" id="welcomeModal" aria-hidden="true">
     <div class="modal-card" style="text-align:center;">
@@ -1216,6 +1371,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20260929_v5"></script>
+  <script src="app.js?v=20260929_v6"></script>
 </body>
 </html>

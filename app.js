@@ -2663,6 +2663,533 @@ function restartBaamboozleGame() {
   showToast("🚀 Trận đấu Baamboozle mới đã sẵn sàng!", "info");
 }
 
+// ==========================================================================
+// 12.1. Lucky Wheels Engine for Baamboozle (2 Vòng quay may mắn gọi học sinh 2 đội)
+// ==========================================================================
+
+const DEFAULT_TEAM1_ROSTER = [
+  "Minh Khang", "Bảo Trâm", "Tuấn Kiệt", "Gia Bảo", "Khánh An",
+  "Hải Đăng", "Bảo Ngọc", "Phương Thảo", "Hoàng Nam", "Thảo My"
+];
+
+const DEFAULT_TEAM2_ROSTER = [
+  "Đăng Khoa", "Thanh Trúc", "Việt Hoàng", "Quỳnh Anh", "Đức Anh",
+  "Hương Giang", "Quang Huy", "Ngọc Diệp", "Anh Dũng", "Cẩm Ly"
+];
+
+const WHEEL_PALETTES = {
+  1: ["#EF4444", "#F97316", "#F59E0B", "#10B981", "#06B6D4", "#8B5CF6", "#EC4899", "#3B82F6"],
+  2: ["#3B82F6", "#06B6D4", "#10B981", "#8B5CF6", "#EC4899", "#F59E0B", "#F97316", "#EF4444"]
+};
+
+const BaamWheelState = {
+  1: {
+    students: [],
+    rotation: 0,
+    isSpinning: false,
+    lastWinner: null,
+    lastWinnerIndex: -1,
+    lastTickSlice: -1
+  },
+  2: {
+    students: [],
+    rotation: 0,
+    isSpinning: false,
+    lastWinner: null,
+    lastWinnerIndex: -1,
+    lastTickSlice: -1
+  },
+  isDualSpinning: false,
+  activeWinnerTeam: 1
+};
+
+// Load student rosters from localStorage
+function loadStudentRosters() {
+  let r1 = null;
+  let r2 = null;
+  try {
+    const s1 = localStorage.getItem('ekm_baam_team1_students');
+    const s2 = localStorage.getItem('ekm_baam_team2_students');
+    if (s1) r1 = JSON.parse(s1);
+    if (s2) r2 = JSON.parse(s2);
+  } catch (e) {
+    console.warn("Error loading student rosters:", e);
+  }
+
+  BaamWheelState[1].students = (Array.isArray(r1) && r1.length > 0) ? r1 : [...DEFAULT_TEAM1_ROSTER];
+  BaamWheelState[2].students = (Array.isArray(r2) && r2.length > 0) ? r2 : [...DEFAULT_TEAM2_ROSTER];
+
+  syncRosterUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+}
+
+// Sync textareas and count badges
+function syncRosterUI() {
+  const t1 = document.getElementById('rosterInputTeam1');
+  const t2 = document.getElementById('rosterInputTeam2');
+  const c1 = document.getElementById('wheelRosterCount1');
+  const c2 = document.getElementById('wheelRosterCount2');
+  const mc1 = document.getElementById('rosterCountTeam1');
+  const mc2 = document.getElementById('rosterCountTeam2');
+
+  const count1 = BaamWheelState[1].students.length;
+  const count2 = BaamWheelState[2].students.length;
+
+  if (t1) t1.value = BaamWheelState[1].students.join('\n');
+  if (t2) t2.value = BaamWheelState[2].students.join('\n');
+  if (c1) c1.textContent = `${count1} bạn`;
+  if (c2) c2.textContent = `${count2} bạn`;
+  if (mc1) mc1.textContent = `(${count1} bạn)`;
+  if (mc2) mc2.textContent = `(${count2} bạn)`;
+}
+
+// Save student rosters from modal textareas
+function saveStudentRosters() {
+  const t1 = document.getElementById('rosterInputTeam1');
+  const t2 = document.getElementById('rosterInputTeam2');
+
+  const parseLines = (text) => {
+    if (!text) return [];
+    return text
+      .split('\n')
+      .map(line => line.replace(/^[\s\d\.\-\*•]+/, '').trim())
+      .filter(line => line.length > 0);
+  };
+
+  const list1 = t1 ? parseLines(t1.value) : [];
+  const list2 = t2 ? parseLines(t2.value) : [];
+
+  BaamWheelState[1].students = list1;
+  BaamWheelState[2].students = list2;
+
+  try {
+    localStorage.setItem('ekm_baam_team1_students', JSON.stringify(list1));
+    localStorage.setItem('ekm_baam_team2_students', JSON.stringify(list2));
+  } catch (e) {
+    console.warn("Error saving student rosters:", e);
+  }
+
+  syncRosterUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  closeModal('baamStudentRosterModal');
+  playKahootCorrectSound();
+  showToast(`🎉 Đã lưu danh sách: Đội 1 (${list1.length} bạn) — Đội 2 (${list2.length} bạn)!`, "success");
+}
+
+// Restore default rosters
+function loadDefaultStudentRosters() {
+  BaamWheelState[1].students = [...DEFAULT_TEAM1_ROSTER];
+  BaamWheelState[2].students = [...DEFAULT_TEAM2_ROSTER];
+  syncRosterUI();
+  try {
+    localStorage.setItem('ekm_baam_team1_students', JSON.stringify(BaamWheelState[1].students));
+    localStorage.setItem('ekm_baam_team2_students', JSON.stringify(BaamWheelState[2].students));
+  } catch (e) {}
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  playKahootCorrectSound();
+  showToast("🔄 Đã nạp lại danh sách mẫu 20 học sinh!", "info");
+}
+
+// Auto split single Excel pasted list into 2 teams
+function autoSplitRosterFromQuickPaste() {
+  const input = document.getElementById('rosterQuickPasteInput');
+  const raw = input ? input.value.trim() : "";
+  if (!raw) {
+    showToast("⚠️ Vui lòng dán danh sách học sinh từ Excel vào ô trên trước!", "warning");
+    if (input) input.focus();
+    return;
+  }
+
+  // Split by line break or comma/semicolon/tab
+  const items = raw
+    .split(/[\r\n\t,;]+/)
+    .map(name => name.replace(/^[\s\d\.\-\*•]+/, '').trim())
+    .filter(name => name.length > 0);
+
+  if (items.length === 0) {
+    showToast("⚠️ Không tìm thấy tên hợp lệ trong nội dung đã dán!", "warning");
+    return;
+  }
+
+  // Split into 2 halves
+  const half = Math.ceil(items.length / 2);
+  const team1List = items.slice(0, half);
+  const team2List = items.slice(half);
+
+  const t1 = document.getElementById('rosterInputTeam1');
+  const t2 = document.getElementById('rosterInputTeam2');
+  if (t1) t1.value = team1List.join('\n');
+  if (t2) t2.value = team2List.join('\n');
+
+  const mc1 = document.getElementById('rosterCountTeam1');
+  const mc2 = document.getElementById('rosterCountTeam2');
+  if (mc1) mc1.textContent = `(${team1List.length} bạn)`;
+  if (mc2) mc2.textContent = `(${team2List.length} bạn)`;
+
+  if (input) input.value = '';
+  playKahootTickSound();
+  showToast(`✨ Đã tự động chia đều ${items.length} học sinh: Đội 1 (${team1List.length}), Đội 2 (${team2List.length})! Bấm "Lưu danh sách" để hoàn tất.`, "success");
+}
+
+// Draw Lucky Wheel on Canvas
+function drawBaamWheel(team) {
+  const canvas = document.getElementById(`wheelCanvas${team}`);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = width / 2 - 8;
+
+  ctx.clearRect(0, 0, width, height);
+
+  const students = BaamWheelState[team].students || [];
+  const numSlices = students.length;
+
+  if (numSlices === 0) {
+    // Empty state
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = "#F8FAFC";
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#CBD5E1";
+    ctx.stroke();
+
+    ctx.fillStyle = "#64748B";
+    ctx.font = "bold 15px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Chưa có học sinh", cx, cy - 10);
+    ctx.font = "13px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    ctx.fillText("Bấm 'Dán từ Excel'", cx, cy + 14);
+    ctx.restore();
+    return;
+  }
+
+  const palette = WHEEL_PALETTES[team] || WHEEL_PALETTES[1];
+  const sliceAngle = (2 * Math.PI) / numSlices;
+  const rotation = BaamWheelState[team].rotation;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+
+  // Draw slices
+  for (let i = 0; i < numSlices; i++) {
+    const startAngle = i * sliceAngle;
+    const endAngle = (i + 1) * sliceAngle;
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, radius, startAngle, endAngle);
+    ctx.closePath();
+
+    ctx.fillStyle = palette[i % palette.length];
+    ctx.fill();
+
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#FFFFFF";
+    ctx.stroke();
+
+    // Draw text (name)
+    ctx.save();
+    const midAngle = startAngle + sliceAngle / 2;
+    ctx.rotate(midAngle);
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+
+    // Dynamic font sizing
+    let fontSize = 14;
+    if (numSlices > 24) fontSize = 10;
+    else if (numSlices > 16) fontSize = 12;
+    else if (numSlices > 10) fontSize = 13;
+
+    ctx.font = `900 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    let name = students[i];
+    if (name.length > 15) {
+      name = name.slice(0, 13) + '…';
+    }
+
+    ctx.fillText(name, radius - 16, 0);
+    ctx.restore();
+  }
+
+  ctx.restore();
+
+  // Draw Center Hub
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 32, 0, 2 * Math.PI);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.25)";
+  ctx.shadowBlur = 8;
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = team === 1 ? "#EF4444" : "#3B82F6";
+  ctx.stroke();
+
+  ctx.font = "24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.shadowColor = "transparent";
+  ctx.fillText(team === 1 ? "🦊" : "🦁", cx, cy + 1);
+  ctx.restore();
+}
+
+// Spin a Single Wheel
+function spinBaamWheel(team, onComplete) {
+  const state = BaamWheelState[team];
+  if (state.isSpinning) return;
+  if (!state.students || state.students.length === 0) {
+    showToast(`⚠️ Vui lòng thêm học sinh cho ${team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh'} trước khi quay!`, "warning");
+    openModal('baamStudentRosterModal');
+    return;
+  }
+
+  state.isSpinning = true;
+  BaamWheelState.activeWinnerTeam = team;
+
+  // Disable spin buttons during spin
+  const btn1 = document.getElementById('spinWheelBtn1');
+  const btn2 = document.getElementById('spinWheelBtn2');
+  if (btn1) btn1.disabled = true;
+  if (btn2) btn2.disabled = true;
+
+  const numSlices = state.students.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+
+  // Spin parameters
+  const minRotations = 6;
+  const extraRotations = Math.floor(Math.random() * 4);
+  const randomTargetAngle = Math.random() * 2 * Math.PI;
+  const totalSpinAngle = (minRotations + extraRotations) * 2 * Math.PI + randomTargetAngle;
+
+  const startRotation = state.rotation;
+  const targetRotation = startRotation + totalSpinAngle;
+  const duration = 3800 + Math.random() * 400; // ~4s
+  const startTime = performance.now();
+
+  state.lastTickSlice = -1;
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function frame(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeOutCubic(progress);
+
+    state.rotation = startRotation + totalSpinAngle * eased;
+    drawBaamWheel(team);
+
+    // Audio tick when slice crosses the top pointer (12 o'clock = 1.5 * Math.PI)
+    const pointerAngle = 1.5 * Math.PI;
+    const normalizedAngle = ((pointerAngle - (state.rotation % (2 * Math.PI))) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+    const currentSlice = Math.floor(normalizedAngle / sliceAngle) % numSlices;
+    if (currentSlice !== state.lastTickSlice) {
+      state.lastTickSlice = currentSlice;
+      playKahootTickSound();
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      state.rotation = targetRotation % (2 * Math.PI);
+      state.isSpinning = false;
+      drawBaamWheel(team);
+
+      // Calculate winner
+      const finalNormAngle = ((pointerAngle - (state.rotation % (2 * Math.PI))) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      const winnerIndex = Math.floor(finalNormAngle / sliceAngle) % numSlices;
+      const winnerStudent = state.students[winnerIndex];
+
+      state.lastWinner = winnerStudent;
+      state.lastWinnerIndex = winnerIndex;
+
+      if (btn1) btn1.disabled = false;
+      if (btn2) btn2.disabled = false;
+
+      if (typeof onComplete === 'function') {
+        onComplete(winnerStudent, winnerIndex);
+      } else {
+        showSingleWinnerModal(team, winnerStudent);
+      }
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+// Show Single Winner Modal
+function showSingleWinnerModal(team, studentName) {
+  playKahootCorrectSound();
+  triggerConfetti();
+
+  const wrapSingle = document.getElementById('baamSingleWinnerWrap');
+  const wrapDual = document.getElementById('baamDualWinnerWrap');
+  const nameEl = document.getElementById('baamWinnerName');
+  const teamEl = document.getElementById('baamWinnerTeam');
+
+  if (wrapSingle) wrapSingle.style.display = 'block';
+  if (wrapDual) wrapDual.style.display = 'none';
+
+  if (nameEl) nameEl.textContent = studentName;
+  if (teamEl) {
+    if (team === 1) {
+      teamEl.textContent = '🦊 Đội Cáo Đỏ';
+      teamEl.style.color = '#DC2626';
+      teamEl.style.background = '#FEE2E2';
+    } else {
+      teamEl.textContent = '🦁 Đội Sư Tử Xanh';
+      teamEl.style.color = '#2563EB';
+      teamEl.style.background = '#DBEAFE';
+    }
+  }
+
+  openModal('baamWinnerModal');
+}
+
+// Spin both wheels simultaneously (Dual 1 vs 1)
+function spinBothBaamWheels() {
+  const s1 = BaamWheelState[1].students;
+  const s2 = BaamWheelState[2].students;
+
+  if (!s1 || s1.length === 0 || !s2 || s2.length === 0) {
+    showToast("⚠️ Vui lòng thêm học sinh cho cả 2 đội trước khi quay song song!", "warning");
+    openModal('baamStudentRosterModal');
+    return;
+  }
+
+  let winner1 = null;
+  let winner2 = null;
+  let completedCount = 0;
+
+  function checkDone() {
+    completedCount++;
+    if (completedCount === 2) {
+      playKahootPowerupSound();
+      triggerConfetti();
+
+      const wrapSingle = document.getElementById('baamSingleWinnerWrap');
+      const wrapDual = document.getElementById('baamDualWinnerWrap');
+      const dualName1 = document.getElementById('baamDualWinner1');
+      const dualName2 = document.getElementById('baamDualWinner2');
+
+      if (wrapSingle) wrapSingle.style.display = 'none';
+      if (wrapDual) wrapDual.style.display = 'block';
+
+      if (dualName1) dualName1.textContent = winner1;
+      if (dualName2) dualName2.textContent = winner2;
+
+      openModal('baamWinnerModal');
+    }
+  }
+
+  spinBaamWheel(1, (student) => {
+    winner1 = student;
+    checkDone();
+  });
+
+  spinBaamWheel(2, (student) => {
+    winner2 = student;
+    checkDone();
+  });
+}
+
+// Handle action from single winner modal: 'remove' or 'keep'
+function handleWinnerAction(action) {
+  const team = BaamWheelState.activeWinnerTeam || 1;
+  const state = BaamWheelState[team];
+  const student = state.lastWinner;
+
+  if (action === 'remove' && student) {
+    state.students = state.students.filter(name => name !== student);
+    try {
+      localStorage.setItem(`ekm_baam_team${team}_students`, JSON.stringify(state.students));
+    } catch (e) {}
+
+    syncRosterUI();
+    drawBaamWheel(team);
+    showToast(`🗑️ Đã xóa "${student}" khỏi vòng quay ${team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh'}!`, "info");
+  } else {
+    showToast(`💾 Đã giữ lại "${student}" trong vòng quay cho các lượt sau!`, "success");
+  }
+
+  closeModal('baamWinnerModal');
+}
+
+// Handle action from dual winner modal: 'remove_both' or 'keep_both'
+function handleDualWinnerAction(action) {
+  const w1 = BaamWheelState[1].lastWinner;
+  const w2 = BaamWheelState[2].lastWinner;
+
+  if (action === 'remove_both') {
+    if (w1) {
+      BaamWheelState[1].students = BaamWheelState[1].students.filter(n => n !== w1);
+      try {
+        localStorage.setItem('ekm_baam_team1_students', JSON.stringify(BaamWheelState[1].students));
+      } catch (e) {}
+    }
+    if (w2) {
+      BaamWheelState[2].students = BaamWheelState[2].students.filter(n => n !== w2);
+      try {
+        localStorage.setItem('ekm_baam_team2_students', JSON.stringify(BaamWheelState[2].students));
+      } catch (e) {}
+    }
+
+    syncRosterUI();
+    drawBaamWheel(1);
+    drawBaamWheel(2);
+    showToast(`🗑️ Đã xóa 2 bạn ("${w1}" & "${w2}") khỏi 2 vòng quay!`, "info");
+  } else {
+    showToast("💾 Đã giữ lại cả 2 bạn trong vòng quay!", "success");
+  }
+
+  closeModal('baamWinnerModal');
+}
+
+// Attach live input listeners for rosters in modal
+function initRosterInputListeners() {
+  const t1 = document.getElementById('rosterInputTeam1');
+  const t2 = document.getElementById('rosterInputTeam2');
+  const mc1 = document.getElementById('rosterCountTeam1');
+  const mc2 = document.getElementById('rosterCountTeam2');
+
+  const updateCount = (textarea, countBadge) => {
+    if (!textarea || !countBadge) return;
+    const count = textarea.value.split('\n').filter(l => l.trim().length > 0).length;
+    countBadge.textContent = `(${count} bạn)`;
+  };
+
+  if (t1) t1.addEventListener('input', () => updateCount(t1, mc1));
+  if (t2) t2.addEventListener('input', () => updateCount(t2, mc2));
+}
+
+// Global window bindings
+window.spinBaamWheel = spinBaamWheel;
+window.spinBothBaamWheels = spinBothBaamWheels;
+window.loadStudentRosters = loadStudentRosters;
+window.saveStudentRosters = saveStudentRosters;
+window.loadDefaultStudentRosters = loadDefaultStudentRosters;
+window.autoSplitRosterFromQuickPaste = autoSplitRosterFromQuickPaste;
+window.handleWinnerAction = handleWinnerAction;
+window.handleDualWinnerAction = handleDualWinnerAction;
+
 // AI Sentence Synthesizer Engine
 const AI_TOPIC_TEMPLATES = {
   1: [
@@ -2926,12 +3453,15 @@ function initBaamboozleUI() {
   if (!BaamState.isGameActive || BaamState.tiles.length === 0) {
     initBaamboozleGame();
   }
+  loadStudentRosters();
 }
 
 function initBaamboozleEngine() {
   migrateExistingCustomLessons();
   renderBaamLessonSelect();
   initBaamboozleGame();
+  loadStudentRosters();
+  initRosterInputListeners();
 
   // Restart match button
   const restartBtn = document.getElementById('baamRestartGameBtn');
