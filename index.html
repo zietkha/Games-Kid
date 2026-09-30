@@ -356,21 +356,20 @@
           </div>
         </div>
 
-        <!-- 3 Tabs trong Teacher Zone -->
+        <!-- 2 Tabs chính trong Teacher Zone (Tích hợp luôn Cài đặt 2 đội & Vòng quay may mắn vào từng trò chơi) -->
         <div class="teacher-tabs-row" style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
           <button type="button" class="teacher-tab-btn active" id="teacherTabBtnBaam" onclick="switchTeacherMode('baam')">
-            🏆 Soạn Trò Chơi Baamboozle Đấu Đội
+            🏆 Soạn Trò Chơi Baamboozle Đấu Đội & Cài Đặt 2 Đội (Excel)
           </button>
           <button type="button" class="teacher-tab-btn" id="teacherTabBtnAi" onclick="switchTeacherMode('ai')">
-            🖼️ Soạn Câu Đố Đoán Hình Chiếu Bảng
-          </button>
-          <button type="button" class="teacher-tab-btn" id="teacherTabBtnTeams" onclick="switchTeacherMode('teams')">
-            👥 Cài Đặt 2 Đội & Vòng Quay May Mắn (Excel)
+            🖼️ Soạn Câu Đố Đoán Hình Chiếu Bảng & Cài Đặt 2 Đội (Excel)
           </button>
         </div>
 
-        <!-- ================= PHÂN HỆ 1: SOẠN BÀI BAAMBOOZLE ĐẤU ĐỘI ================= -->
-      <div id="teacherModeBaam" class="creator-studio-grid" style="display:grid;">
+                <!-- ================= PHÂN HỆ 1: SOẠN BÀI BAAMBOOZLE ĐẤU ĐỘI & CÀI ĐẶT 2 ĐỘI ================= -->
+        <div id="teacherModeBaam" style="display:block;">
+<!-- ================= PHÂN HỆ 1: SOẠN BÀI BAAMBOOZLE ĐẤU ĐỘI ================= -->
+      <div class="creator-studio-grid">
         <!-- Form soạn Baamboozle bên trái -->
         <div class="card card-lg">
           <div class="continue-badge" style="margin-bottom:12px;">🏆 Soạn câu hỏi Baamboozle</div>
@@ -464,8 +463,124 @@
         </div>
       </div>
 
-        <!-- ================= PHÂN HỆ 2: SOẠN CÂU ĐỐ ĐOÁN HÌNH (CHIẾU BẢNG) ================= -->
-      <div id="teacherModeAi" class="creator-studio-grid" style="display:none;">
+          <!-- Cài đặt 2 Đội & Vòng Quay May Mắn cho Baamboozle Đấu Đội -->
+          <div class="card card-lg" style="margin-top: 24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <div class="continue-badge" style="background:#FEE2E2; color:#DC2626; border-color:var(--ink); margin-bottom:6px;">
+                  🎲 Cài đặt 2 Đội & Vòng Quay (Baamboozle Đấu Đội)
+                </div>
+                <h3 style="margin:0; font-size:22px;">Tinh Chỉnh Tên 2 Đội & Nhập Học Sinh Từ Excel</h3>
+                <p style="margin:4px 0 0 0; color:#64748B; font-size:15px;">
+                  Đổi tên đội theo sở thích của học sinh, dán danh sách cả lớp từ Excel vào hệ thống để quay số lên bảng chơi Baamboozle Đấu Đội.
+                </p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary small-btn" onclick="loadDefaultTeacherZoneTeams()">
+                  🔄 Nạp danh sách mẫu (20 em)
+                </button>
+                <button type="button" class="btn btn-green small-btn" onclick="saveTeacherZoneTeams('baam')">
+                  💾 Lưu cấu hình 2 Đội
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Presets for Team Names -->
+            <div style="background:#F8FAFC; border:2.5px solid #CBD5E1; border-radius:12px; padding:12px 16px; margin-bottom:16px;">
+              <div style="font-weight:800; font-size:14px; color:#475569; margin-bottom:8px;">
+                ⚡ Chọn nhanh cặp tên đội đối kháng kinh điển:
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦁 Đội Sư Tử Vàng', '🦅 Đội Đại Bàng')">🦁 Sư Tử vs 🦅 Đại Bàng</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🐉 Rồng Đỏ (Dragons)', '🐯 Cọp Xanh (Tigers)')">🐉 Rồng Đỏ vs 🐯 Cọp Xanh</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('⚡ Đội Tia Chớp', '🚀 Đội Phi Thuyền')">⚡ Tia Chớp vs 🚀 Phi Thuyền</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦊 Đội Cáo Đỏ', '🦁 Đội Sư Tử Xanh')">🦊 Cáo Đỏ vs 🦁 Sư Tử Xanh</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🔴 Đội 1 (Đỏ)', '🔵 Đội 2 (Xanh)')">🔴 Đội 1 vs 🔵 Đội 2</button>
+              </div>
+            </div>
+
+            <!-- Quick paste Excel whole class and auto split -->
+            <div style="background:var(--yellow-tint); border:2.5px dashed var(--ink); border-radius:12px; padding:16px; margin-bottom:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <div style="font-weight:800; color:var(--ink); font-size:15px;">
+                  📋 Dán danh sách học sinh từ Excel (Mỗi tên 1 dòng):
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#B45309; background:#FEF3C7; padding:2px 8px; border-radius:6px; border:1px solid #F59E0B;">
+                  💡 Copy 1 cột từ Excel / Google Sheets rồi dán vào đây
+                </span>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <textarea id="baamTzRosterQuickPasteInput" class="glass-input" rows="3" placeholder="Dán danh sách học sinh cả lớp vào đây... (Ví dụ: Nguyễn Văn An, Trần Thị Mai, Lê Hoàng Long...)" style="flex:1; min-width:280px; font-size:14px; line-height:1.4; resize:vertical;"></textarea>
+                <div style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
+                  <button type="button" class="btn btn-primary" onclick="autoSplitRosterFromTzQuickPaste('baam')" style="white-space:nowrap; padding:12px 18px;">
+                    ⚡ Tự động chia đều 2 đội
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Two team roster editing columns -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:20px;">
+              <!-- Column Team 1 -->
+              <div style="background:#FFF5F5; border:3px solid #DC2626; border-radius:14px; padding:16px; box-shadow:0 4px 0 #DC2626;">
+                <div style="margin-bottom:12px;">
+                  <label for="baamTzTeamNameInput1" style="font-weight:800; color:#DC2626; display:block; margin-bottom:6px; font-size:15px;">
+                    🔴 Tên Đội 1:
+                  </label>
+                  <input type="text" id="baamTzTeamNameInput1" class="glass-input" placeholder="Nhập tên Đội 1..." style="font-weight:800; font-size:16px; width:100%; border-color:#DC2626;" oninput="syncTzTeamName(1, 'baam')">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <label for="baamTzRosterInputTeam1" style="font-weight:800; font-size:14px; color:#991B1B;">
+                    👥 Danh sách học sinh Đội 1:
+                  </label>
+                  <span id="baamTzRosterCountTeam1" style="font-weight:800; font-size:13px; color:#DC2626; background:#FEE2E2; padding:2px 8px; border-radius:6px;">
+                    (0 học sinh)
+                  </span>
+                </div>
+                <textarea id="baamTzRosterInputTeam1" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 1 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;" oninput="updateTzRosterCounts()"></textarea>
+              </div>
+
+              <!-- Column Team 2 -->
+              <div style="background:#EFF6FF; border:3px solid #2563EB; border-radius:14px; padding:16px; box-shadow:0 4px 0 #2563EB;">
+                <div style="margin-bottom:12px;">
+                  <label for="baamTzTeamNameInput2" style="font-weight:800; color:#2563EB; display:block; margin-bottom:6px; font-size:15px;">
+                    🔵 Tên Đội 2:
+                  </label>
+                  <input type="text" id="baamTzTeamNameInput2" class="glass-input" placeholder="Nhập tên Đội 2..." style="font-weight:800; font-size:16px; width:100%; border-color:#2563EB;" oninput="syncTzTeamName(2, 'baam')">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <label for="baamTzRosterInputTeam2" style="font-weight:800; font-size:14px; color:#1E40AF;">
+                    👥 Danh sách học sinh Đội 2:
+                  </label>
+                  <span id="baamTzRosterCountTeam2" style="font-weight:800; font-size:13px; color:#2563EB; background:#DBEAFE; padding:2px 8px; border-radius:6px;">
+                    (0 học sinh)
+                  </span>
+                </div>
+                <textarea id="baamTzRosterInputTeam2" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 2 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;" oninput="updateTzRosterCounts()"></textarea>
+              </div>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div style="display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary" onclick="loadDefaultTeacherZoneTeams()">
+                🔄 Khôi phục danh sách mặc định
+              </button>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-green" onclick="saveTeacherZoneTeams('baam')">
+                  💾 Lưu cài đặt 2 Đội & Vòng Quay
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveTeacherZoneTeamsAndPlay('baam')">
+                  🎲 Lưu & Vào Đấu Đội Baamboozle Ngay
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PHÂN HỆ 2: SOẠN CÂU ĐỐ ĐOÁN HÌNH & CÀI ĐẶT 2 ĐỘI ================= -->
+        <div id="teacherModeAi" style="display:none;">
+<!-- ================= PHÂN HỆ 2: SOẠN CÂU ĐỐ ĐOÁN HÌNH (CHIẾU BẢNG) ================= -->
+      <div class="creator-studio-grid">
         <!-- Form bên trái -->
         <div class="card card-lg">
           <!-- Chọn loại câu đố -->
@@ -606,115 +721,116 @@
         </div>
       </div>
 
-        <!-- ================= PHÂN HỆ 3: CÀI ĐẶT 2 ĐỘI & VÒNG QUAY MAY MẮN (EXCEL) ================= -->
-        <div id="teacherModeTeams" class="card card-lg" style="display:none;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
-            <div>
-              <div class="continue-badge" style="background:#DBEAFE; color:#1D4ED8; border-color:var(--ink); margin-bottom:6px;">
-                👥 Quản lý 2 Đội & Vòng Quay May Mắn
+          <!-- Cài đặt 2 Đội & Vòng Quay May Mắn cho Đoán Hình Chiếu Bảng -->
+          <div class="card card-lg" style="margin-top: 24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <div class="continue-badge" style="background:#DBEAFE; color:#1D4ED8; border-color:var(--ink); margin-bottom:6px;">
+                  🖼️ Cài đặt 2 Đội & Vòng Quay (Đoán Hình Chiếu Bảng)
+                </div>
+                <h3 style="margin:0; font-size:22px;">Tinh Chỉnh Tên 2 Đội & Nhập Học Sinh Từ Excel</h3>
+                <p style="margin:4px 0 0 0; color:#64748B; font-size:15px;">
+                  Đổi tên đội theo sở thích của học sinh, dán danh sách cả lớp từ Excel vào hệ thống để quay số lên bảng chơi Đoán Hình Chiếu Bảng.
+                </p>
               </div>
-              <h3 style="margin:0; font-size:24px;">Tinh Chỉnh Tên Đội & Nhập Học Sinh Từ Excel</h3>
-              <p style="margin:4px 0 0 0; color:#64748B; font-size:15px;">
-                Đổi tên đội theo ý học sinh, dán danh sách cả lớp từ Excel vào hệ thống để quay số lên bảng chơi Baamboozle.
-              </p>
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-secondary small-btn" onclick="loadDefaultTeacherZoneTeams()">
-                🔄 Nạp danh sách mẫu (20 em)
-              </button>
-              <button type="button" class="btn btn-green small-btn" onclick="saveTeacherZoneTeams()">
-                💾 Lưu cấu hình 2 Đội
-              </button>
-            </div>
-          </div>
-
-          <!-- Quick Presets for Team Names -->
-          <div style="background:#F8FAFC; border:2.5px solid #CBD5E1; border-radius:12px; padding:12px 16px; margin-bottom:16px;">
-            <div style="font-weight:800; font-size:14px; color:#475569; margin-bottom:8px;">
-              ⚡ Chọn nhanh cặp tên đội đối kháng kinh điển:
-            </div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦁 Đội Sư Tử Vàng', '🦅 Đội Đại Bàng')">🦁 Sư Tử vs 🦅 Đại Bàng</button>
-              <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🐉 Rồng Đỏ (Dragons)', '🐯 Cọp Xanh (Tigers)')">🐉 Rồng Đỏ vs 🐯 Cọp Xanh</button>
-              <button type="button" class="tag-chip" onclick="applyTzTeamPreset('⚡ Đội Tia Chớp', '🚀 Đội Phi Thuyền')">⚡ Tia Chớp vs 🚀 Phi Thuyền</button>
-              <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦊 Đội Cáo Đỏ', '🦁 Đội Sư Tử Xanh')">🦊 Cáo Đỏ vs 🦁 Sư Tử Xanh</button>
-              <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🔴 Đội 1 (Đỏ)', '🔵 Đội 2 (Xanh)')">🔴 Đội 1 vs 🔵 Đội 2</button>
-            </div>
-          </div>
-
-          <!-- Quick paste Excel whole class and auto split -->
-          <div style="background:var(--yellow-tint); border:2.5px dashed var(--ink); border-radius:12px; padding:16px; margin-bottom:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-              <div style="font-weight:800; color:var(--ink); font-size:15px;">
-                📋 Dán danh sách học sinh từ Excel (Mỗi tên 1 dòng):
-              </div>
-              <span style="font-size:13px; font-weight:700; color:#B45309; background:#FEF3C7; padding:2px 8px; border-radius:6px; border:1px solid #F59E0B;">
-                💡 Hỗ trợ copy 1 cột từ Excel hoặc Google Sheets
-              </span>
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <textarea id="tzRosterQuickPasteInput" class="glass-input" rows="3" placeholder="Dán danh sách học sinh cả lớp vào đây... (Ví dụ: Nguyễn Văn An, Trần Thị Mai, Lê Hoàng Long...)" style="flex:1; min-width:280px; font-size:14px; line-height:1.4; resize:vertical;"></textarea>
-              <div style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
-                <button type="button" class="btn btn-primary" onclick="autoSplitRosterFromTzQuickPaste()" style="white-space:nowrap; padding:12px 18px;">
-                  ⚡ Tự động chia đều 2 đội
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary small-btn" onclick="loadDefaultTeacherZoneTeams()">
+                  🔄 Nạp danh sách mẫu (20 em)
+                </button>
+                <button type="button" class="btn btn-green small-btn" onclick="saveTeacherZoneTeams('ai')">
+                  💾 Lưu cấu hình 2 Đội
                 </button>
               </div>
             </div>
-          </div>
 
-          <!-- Two team roster editing columns -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:20px;">
-            <!-- Column Team 1 -->
-            <div style="background:#FFF5F5; border:3px solid #DC2626; border-radius:14px; padding:16px; box-shadow:0 4px 0 #DC2626;">
-              <div style="margin-bottom:12px;">
-                <label for="tzTeamNameInput1" style="font-weight:800; color:#DC2626; display:block; margin-bottom:6px; font-size:15px;">
-                  🔴 Tên Đội 1:
-                </label>
-                <input type="text" id="tzTeamNameInput1" class="glass-input" placeholder="Nhập tên Đội 1..." style="font-weight:800; font-size:16px; width:100%; border-color:#DC2626;">
+            <!-- Quick Presets for Team Names -->
+            <div style="background:#F8FAFC; border:2.5px solid #CBD5E1; border-radius:12px; padding:12px 16px; margin-bottom:16px;">
+              <div style="font-weight:800; font-size:14px; color:#475569; margin-bottom:8px;">
+                ⚡ Chọn nhanh cặp tên đội đối kháng kinh điển:
               </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <label for="tzRosterInputTeam1" style="font-weight:800; font-size:14px; color:#991B1B;">
-                  👥 Danh sách học sinh Đội 1:
-                </label>
-                <span id="tzRosterCountTeam1" style="font-weight:800; font-size:13px; color:#DC2626; background:#FEE2E2; padding:2px 8px; border-radius:6px;">
-                  (0 học sinh)
-                </span>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦁 Đội Sư Tử Vàng', '🦅 Đội Đại Bàng')">🦁 Sư Tử vs 🦅 Đại Bàng</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🐉 Rồng Đỏ (Dragons)', '🐯 Cọp Xanh (Tigers)')">🐉 Rồng Đỏ vs 🐯 Cọp Xanh</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('⚡ Đội Tia Chớp', '🚀 Đội Phi Thuyền')">⚡ Tia Chớp vs 🚀 Phi Thuyền</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🦊 Đội Cáo Đỏ', '🦁 Đội Sư Tử Xanh')">🦊 Cáo Đỏ vs 🦁 Sư Tử Xanh</button>
+                <button type="button" class="tag-chip" onclick="applyTzTeamPreset('🔴 Đội 1 (Đỏ)', '🔵 Đội 2 (Xanh)')">🔴 Đội 1 vs 🔵 Đội 2</button>
               </div>
-              <textarea id="tzRosterInputTeam1" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 1 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
             </div>
 
-            <!-- Column Team 2 -->
-            <div style="background:#EFF6FF; border:3px solid #2563EB; border-radius:14px; padding:16px; box-shadow:0 4px 0 #2563EB;">
-              <div style="margin-bottom:12px;">
-                <label for="tzTeamNameInput2" style="font-weight:800; color:#2563EB; display:block; margin-bottom:6px; font-size:15px;">
-                  🔵 Tên Đội 2:
-                </label>
-                <input type="text" id="tzTeamNameInput2" class="glass-input" placeholder="Nhập tên Đội 2..." style="font-weight:800; font-size:16px; width:100%; border-color:#2563EB;">
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <label for="tzRosterInputTeam2" style="font-weight:800; font-size:14px; color:#1E40AF;">
-                  👥 Danh sách học sinh Đội 2:
-                </label>
-                <span id="tzRosterCountTeam2" style="font-weight:800; font-size:13px; color:#2563EB; background:#DBEAFE; padding:2px 8px; border-radius:6px;">
-                  (0 học sinh)
+            <!-- Quick paste Excel whole class and auto split -->
+            <div style="background:var(--yellow-tint); border:2.5px dashed var(--ink); border-radius:12px; padding:16px; margin-bottom:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                <div style="font-weight:800; color:var(--ink); font-size:15px;">
+                  📋 Dán danh sách học sinh từ Excel (Mỗi tên 1 dòng):
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#B45309; background:#FEF3C7; padding:2px 8px; border-radius:6px; border:1px solid #F59E0B;">
+                  💡 Copy 1 cột từ Excel / Google Sheets rồi dán vào đây
                 </span>
               </div>
-              <textarea id="tzRosterInputTeam2" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 2 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;"></textarea>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <textarea id="aiTzRosterQuickPasteInput" class="glass-input" rows="3" placeholder="Dán danh sách học sinh cả lớp vào đây... (Ví dụ: Nguyễn Văn An, Trần Thị Mai, Lê Hoàng Long...)" style="flex:1; min-width:280px; font-size:14px; line-height:1.4; resize:vertical;"></textarea>
+                <div style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
+                  <button type="button" class="btn btn-primary" onclick="autoSplitRosterFromTzQuickPaste('ai')" style="white-space:nowrap; padding:12px 18px;">
+                    ⚡ Tự động chia đều 2 đội
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- Bottom Actions -->
-          <div style="display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-            <button type="button" class="btn btn-secondary" onclick="loadDefaultTeacherZoneTeams()">
-              🔄 Khôi phục danh sách mặc định
-            </button>
-            <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <button type="button" class="btn btn-green" onclick="saveTeacherZoneTeams()">
-                💾 Lưu cài đặt 2 Đội & Vòng Quay
+            <!-- Two team roster editing columns -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:20px;">
+              <!-- Column Team 1 -->
+              <div style="background:#FFF5F5; border:3px solid #DC2626; border-radius:14px; padding:16px; box-shadow:0 4px 0 #DC2626;">
+                <div style="margin-bottom:12px;">
+                  <label for="aiTzTeamNameInput1" style="font-weight:800; color:#DC2626; display:block; margin-bottom:6px; font-size:15px;">
+                    🔴 Tên Đội 1:
+                  </label>
+                  <input type="text" id="aiTzTeamNameInput1" class="glass-input" placeholder="Nhập tên Đội 1..." style="font-weight:800; font-size:16px; width:100%; border-color:#DC2626;" oninput="syncTzTeamName(1, 'ai')">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <label for="aiTzRosterInputTeam1" style="font-weight:800; font-size:14px; color:#991B1B;">
+                    👥 Danh sách học sinh Đội 1:
+                  </label>
+                  <span id="aiTzRosterCountTeam1" style="font-weight:800; font-size:13px; color:#DC2626; background:#FEE2E2; padding:2px 8px; border-radius:6px;">
+                    (0 học sinh)
+                  </span>
+                </div>
+                <textarea id="aiTzRosterInputTeam1" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 1 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;" oninput="updateTzRosterCounts()"></textarea>
+              </div>
+
+              <!-- Column Team 2 -->
+              <div style="background:#EFF6FF; border:3px solid #2563EB; border-radius:14px; padding:16px; box-shadow:0 4px 0 #2563EB;">
+                <div style="margin-bottom:12px;">
+                  <label for="aiTzTeamNameInput2" style="font-weight:800; color:#2563EB; display:block; margin-bottom:6px; font-size:15px;">
+                    🔵 Tên Đội 2:
+                  </label>
+                  <input type="text" id="aiTzTeamNameInput2" class="glass-input" placeholder="Nhập tên Đội 2..." style="font-weight:800; font-size:16px; width:100%; border-color:#2563EB;" oninput="syncTzTeamName(2, 'ai')">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <label for="aiTzRosterInputTeam2" style="font-weight:800; font-size:14px; color:#1E40AF;">
+                    👥 Danh sách học sinh Đội 2:
+                  </label>
+                  <span id="aiTzRosterCountTeam2" style="font-weight:800; font-size:13px; color:#2563EB; background:#DBEAFE; padding:2px 8px; border-radius:6px;">
+                    (0 học sinh)
+                  </span>
+                </div>
+                <textarea id="aiTzRosterInputTeam2" class="glass-input" rows="9" placeholder="Dán hoặc gõ tên các bạn Đội 2 (mỗi dòng 1 tên)..." style="width:100%; font-size:14px; line-height:1.5; resize:vertical;" oninput="updateTzRosterCounts()"></textarea>
+              </div>
+            </div>
+
+            <!-- Bottom Actions -->
+            <div style="display:flex; gap:12px; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary" onclick="loadDefaultTeacherZoneTeams()">
+                🔄 Khôi phục danh sách mặc định
               </button>
-              <button type="button" class="btn btn-primary" onclick="saveTeacherZoneTeamsAndPlay()">
-                🎲 Lưu & Vào Đấu Đội Baamboozle Ngay
-              </button>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-green" onclick="saveTeacherZoneTeams('ai')">
+                  💾 Lưu cài đặt 2 Đội & Vòng Quay
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveTeacherZoneTeamsAndPlay('ai')">
+                  🖼️ Lưu & Vào Chiếu Bảng Đoán Hình Ngay
+                </button>
+              </div>
             </div>
           </div>
         </div>
