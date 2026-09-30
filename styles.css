@@ -2187,3 +2187,174 @@ textarea:focus {
     font-size: 20px;
   }
 }
+
+/* ==========================================================================
+   18. Đấu Trường Game Show & Teacher Zone Tại Trang Chủ
+   ========================================================================== */
+.arena-hero-banner {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FDE68A 100%);
+  border: 3.5px solid var(--ink);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-card-lg);
+  padding: 32px 36px;
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arena-hero-content {
+  flex: 1;
+  max-width: 820px;
+}
+
+.arena-hero-title {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.25;
+  margin: 10px 0 12px 0;
+}
+
+.arena-hero-subtitle {
+  font-size: 18px;
+  color: #334155;
+  line-height: 1.55;
+  margin-bottom: 22px;
+}
+
+.arena-hero-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.arena-hero-mascot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hero-mascot-badge {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: #FFFFFF;
+  border: 2px solid var(--ink);
+  color: #DC2626;
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.arena-games-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+.arena-game-card {
+  background-color: #FFFFFF;
+  border: 3.5px solid var(--ink);
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-card-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.arena-game-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 0 var(--ink);
+}
+
+.arena-game-card:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.arena-card-tag {
+  align-self: flex-start;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 2px solid var(--ink);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.arena-card-baam .arena-card-tag {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.arena-card-icon {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.arena-game-card h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.arena-game-card p {
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.arena-card-subfeature {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.arena-card-subfeature span {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1F2A44;
+  background: #F1F5F9;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #CBD5E1;
+}
+
+.teacher-zone-embed {
+  margin-top: 10px;
+}
+
+@media (max-width: 980px) {
+  .arena-games-grid {
+    grid-template-columns: 1fr;
+  }
+  .arena-hero-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+  .arena-hero-actions {
+    justify-content: center;
+  }
+}
+

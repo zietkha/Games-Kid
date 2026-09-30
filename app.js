@@ -665,41 +665,46 @@ function scrollToGrades() {
 }
 window.scrollToGrades = scrollToGrades;
 
-// Teacher Zone Controls (Mục 5.1 & 5.6 UI-REDESIGN.md)
+// Teacher Zone Controls (Đấu Trường & Teacher Zone Tại Trang Chủ)
+function scrollToTeacherZone() {
+  switchView('view-dashboard');
+  setTimeout(() => {
+    const el = document.getElementById('homepageTeacherZone');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+    initBaamCreatorFileInput();
+    renderBaamCreatorPresets();
+    renderBaamCustomQuestionsList();
+    renderCreatorPresets();
+    renderCreatorQuestionsList();
+    if (typeof syncTeacherZoneTeamsUI === 'function') {
+      syncTeacherZoneTeamsUI();
+    }
+  }, 100);
+}
+window.scrollToTeacherZone = scrollToTeacherZone;
+
+function openTeacherZone() {
+  scrollToTeacherZone();
+  showToast("👩‍🏫 Đã chuyển đến Teacher Zone: Tinh chỉnh trò chơi & danh sách học sinh!", "info");
+}
+window.openTeacherZone = openTeacherZone;
+
 function openTeacherZonePrompt() {
-  openModal('teacherAccessModal');
+  scrollToTeacherZone();
 }
 window.openTeacherZonePrompt = openTeacherZonePrompt;
 
 function verifyTeacherPin() {
-  const pinInput = document.getElementById('teacherPinInput');
-  const pin = pinInput ? pinInput.value.trim() : "";
-  // Mặc định PIN: 1234
-  if (pin === "1234" || pin === "" || pin.length >= 4) {
-    closeModal('teacherAccessModal');
-    openTeacherZone();
-  } else {
-    showToast("⚠️ Mã PIN không đúng. Mã mặc định là 1234!", "warning");
-    if (pinInput) pinInput.focus();
-  }
+  closeModal('teacherAccessModal');
+  scrollToTeacherZone();
 }
 window.verifyTeacherPin = verifyTeacherPin;
 
-function openTeacherZone() {
-  switchView('view-teacher-zone');
-  switchTeacherMode('baam');
-  initBaamCreatorFileInput();
-  renderBaamCreatorPresets();
-  renderBaamCustomQuestionsList();
-  renderCreatorPresets();
-  renderCreatorQuestionsList();
-  showToast("👩‍🏫 Đã vào khu vực giáo viên: Soạn trò chơi Baamboozle & câu đố!", "info");
-}
-window.openTeacherZone = openTeacherZone;
-
 function closeTeacherZone() {
-  switchView('view-dashboard');
-  showToast("Trở về khu vực học tập của bé!", "info");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showToast("Trở về đầu trang Đấu trường!", "info");
 }
 window.closeTeacherZone = closeTeacherZone;
 
@@ -1665,6 +1670,11 @@ function updateTeamNamesUI() {
   if (dualTitle1) dualTitle1.textContent = name1.toUpperCase();
   if (dualTitle2) dualTitle2.textContent = name2.toUpperCase();
 
+  const tzInp1 = document.getElementById('tzTeamNameInput1');
+  const tzInp2 = document.getElementById('tzTeamNameInput2');
+  if (tzInp1 && !tzInp1.matches(':focus')) tzInp1.value = name1;
+  if (tzInp2 && !tzInp2.matches(':focus')) tzInp2.value = name2;
+
   updateBaamScoreboard();
 }
 
@@ -1938,27 +1948,41 @@ function saveBaamCustomQuestions(questions) {
   }
 }
 
-// Switch Teacher Zone Sub-Mode (Baamboozle vs Đoán hình AI)
+// Switch Teacher Zone Sub-Mode (Baamboozle vs Đoán hình AI vs Cài đặt 2 Đội Excel)
 function switchTeacherMode(mode) {
   const baamView = document.getElementById('teacherModeBaam');
   const aiView = document.getElementById('teacherModeAi');
+  const teamsView = document.getElementById('teacherModeTeams');
   const btnBaam = document.getElementById('teacherTabBtnBaam');
   const btnAi = document.getElementById('teacherTabBtnAi');
+  const btnTeams = document.getElementById('teacherTabBtnTeams');
 
   if (mode === 'baam') {
     if (baamView) baamView.style.display = 'grid';
     if (aiView) aiView.style.display = 'none';
+    if (teamsView) teamsView.style.display = 'none';
     if (btnBaam) btnBaam.classList.add('active');
     if (btnAi) btnAi.classList.remove('active');
+    if (btnTeams) btnTeams.classList.remove('active');
     renderBaamCustomQuestionsList();
     renderBaamCreatorPresets();
-  } else {
+  } else if (mode === 'ai') {
     if (baamView) baamView.style.display = 'none';
     if (aiView) aiView.style.display = 'grid';
+    if (teamsView) teamsView.style.display = 'none';
     if (btnAi) btnAi.classList.add('active');
     if (btnBaam) btnBaam.classList.remove('active');
+    if (btnTeams) btnTeams.classList.remove('active');
     renderCreatorPresets();
     renderCreatorQuestionsList();
+  } else if (mode === 'teams') {
+    if (baamView) baamView.style.display = 'none';
+    if (aiView) aiView.style.display = 'none';
+    if (teamsView) teamsView.style.display = 'block';
+    if (btnTeams) btnTeams.classList.add('active');
+    if (btnBaam) btnBaam.classList.remove('active');
+    if (btnAi) btnAi.classList.remove('active');
+    syncTeacherZoneTeamsUI();
   }
 }
 window.switchTeacherMode = switchTeacherMode;
@@ -3331,6 +3355,178 @@ window.loadDefaultStudentRosters = loadDefaultStudentRosters;
 window.autoSplitRosterFromQuickPaste = autoSplitRosterFromQuickPaste;
 window.handleWinnerAction = handleWinnerAction;
 window.handleDualWinnerAction = handleDualWinnerAction;
+
+// ==========================================================================
+// Teacher Zone Teams & Excel Roster Management (Mục 10 - Tinh chỉnh trên Trang Chủ)
+// ==========================================================================
+function syncTeacherZoneTeamsUI() {
+  const inp1 = document.getElementById('tzTeamNameInput1');
+  const inp2 = document.getElementById('tzTeamNameInput2');
+  if (inp1) inp1.value = getTeamName(1);
+  if (inp2) inp2.value = getTeamName(2);
+
+  const r1 = document.getElementById('tzRosterInputTeam1');
+  const r2 = document.getElementById('tzRosterInputTeam2');
+  if (r1 && BaamWheelState[1] && BaamWheelState[1].students) {
+    r1.value = BaamWheelState[1].students.join('\n');
+  }
+  if (r2 && BaamWheelState[2] && BaamWheelState[2].students) {
+    r2.value = BaamWheelState[2].students.join('\n');
+  }
+  updateTzRosterCounts();
+}
+
+function updateTzRosterCounts() {
+  const r1 = document.getElementById('tzRosterInputTeam1');
+  const r2 = document.getElementById('tzRosterInputTeam2');
+  const c1 = document.getElementById('tzRosterCountTeam1');
+  const c2 = document.getElementById('tzRosterCountTeam2');
+
+  if (r1 && c1) {
+    const count1 = r1.value.split('\n').map(s => s.trim()).filter(Boolean).length;
+    c1.textContent = `(${count1} học sinh)`;
+  }
+  if (r2 && c2) {
+    const count2 = r2.value.split('\n').map(s => s.trim()).filter(Boolean).length;
+    c2.textContent = `(${count2} học sinh)`;
+  }
+}
+
+function applyTzTeamPreset(team1Name, team2Name) {
+  const inp1 = document.getElementById('tzTeamNameInput1');
+  const inp2 = document.getElementById('tzTeamNameInput2');
+  if (inp1) inp1.value = team1Name;
+  if (inp2) inp2.value = team2Name;
+  BaamState.teamNames[1] = team1Name;
+  BaamState.teamNames[2] = team2Name;
+  updateTeamNamesUI();
+  try {
+    localStorage.setItem('ekm_baam_team_names', JSON.stringify(BaamState.teamNames));
+  } catch (e) {
+    console.warn("Storage error:", e);
+  }
+  showToast(`🏷️ Đã chọn cặp tên: ${team1Name} vs ${team2Name}!`, "success");
+}
+
+function syncTzTeamName(teamNum) {
+  const inp = document.getElementById(`tzTeamNameInput${teamNum}`);
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (val) {
+    BaamState.teamNames[teamNum] = val;
+    updateTeamNamesUI();
+  }
+}
+
+function autoSplitRosterFromTzQuickPaste() {
+  const input = document.getElementById('tzRosterQuickPasteInput');
+  if (!input) return;
+  const rawText = input.value.trim();
+  if (!rawText) {
+    showToast("⚠️ Vui lòng dán danh sách học sinh từ file Excel vào ô trước!", "warning");
+    input.focus();
+    return;
+  }
+
+  // Parse by newline or comma or semicolon
+  let names = rawText
+    .split(/[\r\n,;]+/)
+    .map(n => n.trim().replace(/^[\d\.\-\)\s]+/, '')) // remove leading index numbers
+    .filter(n => n.length > 0);
+
+  if (names.length < 2) {
+    showToast("⚠️ Cần ít nhất 2 học sinh để chia đều cho 2 đội!", "warning");
+    return;
+  }
+
+  // Random shuffle
+  for (let i = names.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [names[i], names[j]] = [names[j], names[i]];
+  }
+
+  const mid = Math.ceil(names.length / 2);
+  const team1List = names.slice(0, mid);
+  const team2List = names.slice(mid);
+
+  const t1 = document.getElementById('tzRosterInputTeam1');
+  const t2 = document.getElementById('tzRosterInputTeam2');
+  if (t1) t1.value = team1List.join('\n');
+  if (t2) t2.value = team2List.join('\n');
+
+  updateTzRosterCounts();
+  showToast(`⚡ Đã chia đều ${names.length} học sinh: Đội 1 (${team1List.length} em) & Đội 2 (${team2List.length} em)!`, "success");
+}
+
+function saveTeacherZoneTeams() {
+  const inp1 = document.getElementById('tzTeamNameInput1');
+  const inp2 = document.getElementById('tzTeamNameInput2');
+  if (inp1 && inp1.value.trim()) BaamState.teamNames[1] = inp1.value.trim();
+  if (inp2 && inp2.value.trim()) BaamState.teamNames[2] = inp2.value.trim();
+
+  const r1 = document.getElementById('tzRosterInputTeam1');
+  const r2 = document.getElementById('tzRosterInputTeam2');
+
+  const list1 = r1 ? r1.value.split('\n').map(s => s.trim()).filter(Boolean) : [];
+  const list2 = r2 ? r2.value.split('\n').map(s => s.trim()).filter(Boolean) : [];
+
+  if (list1.length > 0) BaamWheelState[1].students = list1;
+  if (list2.length > 0) BaamWheelState[2].students = list2;
+
+  try {
+    localStorage.setItem('ekm_baam_team_names', JSON.stringify(BaamState.teamNames));
+    localStorage.setItem('ekm_baam_roster_t1', JSON.stringify(BaamWheelState[1].students));
+    localStorage.setItem('ekm_baam_roster_t2', JSON.stringify(BaamWheelState[2].students));
+  } catch (e) {
+    console.warn("Storage error:", e);
+  }
+
+  updateTeamNamesUI();
+  syncRosterUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  updateTzRosterCounts();
+  showToast("💾 Đã lưu cấu hình 2 Đội & Vòng Quay May Mắn thành công!", "success");
+}
+
+function saveTeacherZoneTeamsAndPlay() {
+  saveTeacherZoneTeams();
+  setTimeout(() => {
+    switchView('view-baamboozle');
+    showToast("🎲 Bắt đầu trận đấu Baamboozle ngay thôi!", "success");
+  }, 250);
+}
+
+function loadDefaultTeacherZoneTeams() {
+  BaamState.teamNames[1] = DEFAULT_TEAM_NAMES[1];
+  BaamState.teamNames[2] = DEFAULT_TEAM_NAMES[2];
+  BaamWheelState[1].students = [...DEFAULT_TEAM1_ROSTER];
+  BaamWheelState[2].students = [...DEFAULT_TEAM2_ROSTER];
+
+  try {
+    localStorage.setItem('ekm_baam_team_names', JSON.stringify(BaamState.teamNames));
+    localStorage.setItem('ekm_baam_roster_t1', JSON.stringify(BaamWheelState[1].students));
+    localStorage.setItem('ekm_baam_roster_t2', JSON.stringify(BaamWheelState[2].students));
+  } catch (e) {
+    console.warn("Storage error:", e);
+  }
+
+  updateTeamNamesUI();
+  syncTeacherZoneTeamsUI();
+  syncRosterUI();
+  drawBaamWheel(1);
+  drawBaamWheel(2);
+  showToast("🔄 Đã khôi phục 2 Đội và danh sách 20 học sinh mặc định!", "info");
+}
+
+window.syncTeacherZoneTeamsUI = syncTeacherZoneTeamsUI;
+window.updateTzRosterCounts = updateTzRosterCounts;
+window.applyTzTeamPreset = applyTzTeamPreset;
+window.syncTzTeamName = syncTzTeamName;
+window.autoSplitRosterFromTzQuickPaste = autoSplitRosterFromTzQuickPaste;
+window.saveTeacherZoneTeams = saveTeacherZoneTeams;
+window.saveTeacherZoneTeamsAndPlay = saveTeacherZoneTeamsAndPlay;
+window.loadDefaultTeacherZoneTeams = loadDefaultTeacherZoneTeams;
 
 // AI Sentence Synthesizer Engine
 const AI_TOPIC_TEMPLATES = {
@@ -5210,6 +5406,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initBaamCreatorFileInput();
   renderBaamCreatorPresets();
   renderBaamCustomQuestionsList();
+  renderCreatorPresets();
+  renderCreatorQuestionsList();
+  syncTeacherZoneTeamsUI();
 
   const hasVisited = localStorage.getItem('ekm_kids_visited');
   if (!hasVisited) {
