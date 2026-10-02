@@ -1251,12 +1251,66 @@
         <h3 id="baamModalCurrentTeam" style="margin-top:6px;">Lượt của: Đội Cáo Đỏ</h3>
       </div>
 
-      <!-- Surprise Event -->
-      <div class="baam-powerup-box" id="baamPowerupBox" style="display:none; text-align:center; padding:20px 0;">
-        <div style="font-size:54px;" id="baamPowerupIcon">🎁</div>
-        <h2 id="baamPowerupTitle">Sự kiện bất ngờ!</h2>
-        <p id="baamPowerupDesc">Đội bạn được thưởng nóng +50 điểm!</p>
-        <button class="btn btn-green full-width" id="baamPowerupOkBtn" style="margin-top:14px;">Nhận quà & đổi lượt</button>
+      <!-- Surprise Event Box -->
+      <div class="baam-powerup-box" id="baamPowerupBox" style="display:none; text-align:center; padding:16px 0;">
+        
+        <!-- TRƯỜNG HỢP 1: HOẠT HỌA RƯƠNG KHO BÁU VÀNG (Nhảy 3 lần trong 2.5s rồi nổ thành +40đ) -->
+        <div id="baamChestEventWrap" style="display:none;">
+          <div class="chest-stage-container">
+            <div class="chest-box-anim" id="chestAnimBox">🎁</div>
+          </div>
+          <h2 id="chestEventTitle" style="font-size:26px; margin:12px 0 6px 0; color:var(--ink);">Đang mở rương kho báu vàng...</h2>
+          <p id="chestEventDesc" style="color:#64748B; font-size:16px; margin:0 0 14px 0; min-height:24px;">Hồi hộp chờ đợi xem điều bất ngờ gì bên trong!</p>
+          <div id="chestRewardBanner" style="display:none; margin:14px 0; padding:16px; background:linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border:3px solid var(--ink); border-radius:14px; box-shadow:0 4px 0 var(--ink);">
+            <div style="font-size:36px; font-weight:900; color:#B45309; text-shadow:0 2px 0 #FFF;">🎉 +40 ĐIỂM THƯỞNG!</div>
+            <div style="font-size:15px; font-weight:700; color:#475569; margin-top:4px;">Cộng trực tiếp +40 điểm cho cả đội!</div>
+          </div>
+          <button type="button" class="btn btn-green full-width" id="chestRewardConfirmBtn" style="display:none; margin-top:10px; font-size:18px; padding:14px;" onclick="handleBaamChestConfirm()">
+            🌟 Nhận +40 Điểm & Đổi Lượt Tiếp Theo
+          </button>
+        </div>
+
+        <!-- TRƯỜNG HỢP 2: CƯỚP ĐIỂM SIÊU HẠNG VỚI 3 LỰA CHỌN (5đ, 10đ, 20đ) -->
+        <div id="baamStealEventWrap" style="display:none;">
+          <div style="font-size:64px; animation:bounce 1s infinite alternate; display:inline-block; margin-bottom:6px;">🔄</div>
+          <h2 style="font-size:28px; margin:4px 0 6px 0; color:var(--ink);">Cướp Điểm Siêu Hạng!</h2>
+          <p style="color:#475569; font-size:16px; margin-bottom:18px;">
+            Đội bạn được quyền rút bớt điểm của đối thủ sang cho mình! Hãy chọn mức điểm muốn cướp:
+          </p>
+          
+          <div class="steal-options-grid">
+            <button type="button" class="btn btn-steal-choice steal-5-btn" onclick="executeBaamStealChoice(5)">
+              <span class="steal-badge">Lựa chọn 1</span>
+              <span class="steal-icon">⭐</span>
+              <span class="steal-pts">+5 ĐIỂM</span>
+              <span class="steal-sub">Cướp 5 điểm</span>
+            </button>
+
+            <button type="button" class="btn btn-steal-choice steal-10-btn" onclick="executeBaamStealChoice(10)">
+              <span class="steal-badge">Lựa chọn 2</span>
+              <span class="steal-icon">⚡</span>
+              <span class="steal-pts">+10 ĐIỂM</span>
+              <span class="steal-sub">Cướp 10 điểm</span>
+            </button>
+
+            <button type="button" class="btn btn-steal-choice steal-20-btn" onclick="executeBaamStealChoice(20)">
+              <span class="steal-badge">Lựa chọn 3</span>
+              <span class="steal-icon">🔥</span>
+              <span class="steal-pts">+20 ĐIỂM</span>
+              <span class="steal-sub">Cướp 20 điểm</span>
+            </button>
+          </div>
+          <div style="font-size:14px; font-weight:700; color:#64748B;">💡 Điểm sẽ được trừ trực tiếp từ đối thủ và cộng ngay vào đội bạn.</div>
+        </div>
+
+        <!-- TRƯỜNG HỢP 3: CÁC SỰ KIỆN KHÁC (ĐẠP MÌN TRỪ 20Đ, ĐẢO NGƯỢC ĐIỂM) -->
+        <div id="baamStandardEventWrap" style="display:none;">
+          <div style="font-size:68px; display:inline-block; margin-bottom:4px;" id="baamPowerupIcon">💣</div>
+          <h2 id="baamPowerupTitle" style="font-size:28px; margin:6px 0 6px 0; color:var(--ink);">Bạn đã đạp trúng mìn!</h2>
+          <p id="baamPowerupDesc" style="color:#475569; font-size:17px; margin-bottom:18px;">Bạn đã đạp trúng mìn trừ 20 điểm!</p>
+          <button type="button" class="btn btn-primary full-width" id="baamPowerupOkBtn" style="font-size:18px; padding:14px;" onclick="handleBaamPowerupConfirm()">Đã hiểu & đổi lượt</button>
+        </div>
+
       </div>
 
       <!-- Question Content -->

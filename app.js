@@ -2323,9 +2323,9 @@ function initBaamboozleGame() {
       type: "powerup",
       powerupType: "bonus",
       title: "Rương Kho Báu Vàng! 🎁",
-      desc: "Chúc mừng đội bạn! Vô tình mở trúng rương vàng bí mật, nhận ngay +50 Điểm thưởng!",
+      desc: "Đang mở rương thần kỳ... Nhảy 3 lần trong 2.5 giây rồi nổ thành +40 điểm!",
       icon: "🎁",
-      points: 50,
+      points: 40,
       opened: false
     },
     {
@@ -2341,16 +2341,16 @@ function initBaamboozleGame() {
       type: "powerup",
       powerupType: "steal",
       title: "Cướp Điểm Siêu Hạng! 🔄",
-      desc: "Nhanh như chớp! Đội bạn rút thành công 15 Điểm từ đối thủ sang kho điểm của mình!",
+      desc: "Đội bạn được quyền rút bớt điểm của đối thủ! Chọn 1 trong 3 mức cướp điểm (5đ, 10đ, 20đ):",
       icon: "🔄",
-      points: 15,
+      points: 10,
       opened: false
     },
     {
       type: "powerup",
       powerupType: "bomb",
-      title: "Vỏ Chuối Trơn Trượt! 💣",
-      desc: "Ối dồi ôi! Đội bạn đạp phải vỏ chuối, trượt chân bị trừ 20 Điểm!",
+      title: "Bạn đã đạp trúng mìn! 💣",
+      desc: "Ối dồi ôi! Bạn đã đạp trúng mìn trừ 20 điểm!",
       icon: "💣",
       points: -20,
       opened: false
@@ -2494,17 +2494,98 @@ function openBaamTile(idx) {
   const questionContent = document.getElementById('baamQuestionContent');
 
   if (tile.type === 'powerup') {
-    // Show surprise mystery powerup
-    playSoundMystery();
     if (questionContent) questionContent.style.display = 'none';
-    if (powerupBox) {
-      powerupBox.style.display = 'block';
+    if (powerupBox) powerupBox.style.display = 'block';
+
+    const chestWrap = document.getElementById('baamChestEventWrap');
+    const stealWrap = document.getElementById('baamStealEventWrap');
+    const standardWrap = document.getElementById('baamStandardEventWrap');
+
+    if (tile.powerupType === 'bonus') {
+      // 1. Rương kho báu vàng: Nhảy 3 lần trong 2.5s rồi nổ thành +40 điểm
+      if (chestWrap) chestWrap.style.display = 'block';
+      if (stealWrap) stealWrap.style.display = 'none';
+      if (standardWrap) standardWrap.style.display = 'none';
+
+      const chestAnimBox = document.getElementById('chestAnimBox');
+      const chestTitle = document.getElementById('chestEventTitle');
+      const chestDesc = document.getElementById('chestEventDesc');
+      const rewardBanner = document.getElementById('chestRewardBanner');
+      const rewardConfirmBtn = document.getElementById('chestRewardConfirmBtn');
+
+      if (chestAnimBox) {
+        chestAnimBox.textContent = '🎁';
+        chestAnimBox.className = 'chest-box-anim';
+        void chestAnimBox.offsetWidth; // trigger reflow
+        chestAnimBox.classList.add('chest-bouncing');
+      }
+
+      if (chestTitle) chestTitle.textContent = "Đang mở rương kho báu vàng...";
+      if (chestDesc) chestDesc.textContent = "Hồi hộp chờ đợi xem điều bất ngờ gì bên trong!";
+      if (rewardBanner) rewardBanner.style.display = 'none';
+      if (rewardConfirmBtn) rewardConfirmBtn.style.display = 'none';
+
+      // Phát âm thanh nhịp nhảy 3 lần (0s, 0.8s, 1.6s)
+      playChestJumpSound(1);
+      setTimeout(() => playChestJumpSound(2), 800);
+      setTimeout(() => playChestJumpSound(3), 1600);
+
+      // Đúng 2.5 giây (2500ms): Rương nổ tung thành +40 điểm!
+      setTimeout(() => {
+        if (chestAnimBox) {
+          chestAnimBox.classList.remove('chest-bouncing');
+          chestAnimBox.classList.add('chest-exploded');
+          chestAnimBox.textContent = '🌟';
+        }
+        if (chestTitle) chestTitle.textContent = "🎉 RƯƠNG VÀNG NỔ TUNG!";
+        if (chestDesc) chestDesc.textContent = `Tuyệt vời! ${teamName} nhận ngay +40 Điểm thưởng!`;
+        if (rewardBanner) rewardBanner.style.display = 'block';
+        if (rewardConfirmBtn) rewardConfirmBtn.style.display = 'block';
+
+        playKahootPowerupSound();
+        playSoundCheerAndApplause();
+      }, 2500);
+
+    } else if (tile.powerupType === 'steal') {
+      // 2. Cướp điểm siêu hạng: 3 Lựa chọn (5đ, 10đ, 20đ)
+      if (chestWrap) chestWrap.style.display = 'none';
+      if (stealWrap) stealWrap.style.display = 'block';
+      if (standardWrap) standardWrap.style.display = 'none';
+      playSoundMystery();
+
+    } else {
+      // 3. Đạp trúng mìn (-20đ) hoặc Đảo ngược điểm (swap)
+      if (chestWrap) chestWrap.style.display = 'none';
+      if (stealWrap) stealWrap.style.display = 'none';
+      if (standardWrap) standardWrap.style.display = 'block';
+
       const icon = document.getElementById('baamPowerupIcon');
       const title = document.getElementById('baamPowerupTitle');
       const desc = document.getElementById('baamPowerupDesc');
-      if (icon) icon.textContent = tile.icon;
-      if (title) title.textContent = tile.title;
-      if (desc) desc.textContent = tile.desc;
+      const okBtn = document.getElementById('baamPowerupOkBtn');
+
+      if (tile.powerupType === 'bomb') {
+        if (icon) icon.textContent = '💣';
+        if (title) title.textContent = "Bạn đã đạp trúng mìn! 💣";
+        if (desc) desc.textContent = "Ối dồi ôi! Bạn đã đạp trúng mìn trừ 20 điểm!";
+        if (okBtn) okBtn.textContent = "Chấp nhận trừ 20 điểm & đổi lượt";
+
+        // Rung giật mìn nổ
+        const modalCard = document.querySelector('#baamTileModal .modal-card');
+        if (modalCard) {
+          modalCard.classList.remove('mine-shaking');
+          void modalCard.offsetWidth;
+          modalCard.classList.add('mine-shaking');
+        }
+        playBombExplosionSound();
+      } else {
+        // Swap
+        if (icon) icon.textContent = '⚡';
+        if (title) title.textContent = tile.title;
+        if (desc) desc.textContent = tile.desc;
+        if (okBtn) okBtn.textContent = "Đổi điểm 2 đội & tiếp tục";
+        playSoundMystery();
+      }
     }
   } else {
     // Show standard question with image & English prompt
@@ -2704,20 +2785,46 @@ window.adjustBaamTeamScore = function(team, delta) {
   }
 };
 
-// Confirm Power-Up Event -> Trừ/Cộng trực tiếp
+// Xác nhận nhận thưởng +40 điểm rương vàng sau khi nổ
+function handleBaamChestConfirm() {
+  const currentTeam = BaamState.currentTeam;
+  const currentTeamName = getTeamName(currentTeam);
+
+  animateDirectScoreChange(currentTeam, 40);
+  playKahootPowerupSound();
+  showToast(`🎁 +40 Điểm Thưởng Cho Toàn Đội ${currentTeamName}!`, "success");
+
+  markActiveTileCompleted();
+}
+window.handleBaamChestConfirm = handleBaamChestConfirm;
+
+// Thực hiện cướp điểm theo 3 lựa chọn (5đ, 10đ, 20đ)
+function executeBaamStealChoice(stolenPoints) {
+  const currentTeam = BaamState.currentTeam;
+  const otherTeam = currentTeam === 1 ? 2 : 1;
+  const currentTeamName = getTeamName(currentTeam);
+  const otherTeamName = getTeamName(otherTeam);
+
+  animateDirectScoreChange(otherTeam, -stolenPoints);
+  animateDirectScoreChange(currentTeam, stolenPoints);
+  playKahootPowerupSound();
+
+  showToast(`🔄 ${currentTeamName} đã cướp thành công ${stolenPoints} Điểm từ ${otherTeamName}!`, "success");
+  markActiveTileCompleted();
+}
+window.executeBaamStealChoice = executeBaamStealChoice;
+
+// Confirm Power-Up Event -> Trừ mìn 20đ hoặc Đảo ngược điểm
 function handleBaamPowerupConfirm() {
   const tile = BaamState.activeTile;
   if (!tile || tile.type !== 'powerup') return;
 
   const currentTeam = BaamState.currentTeam;
-  const otherTeam = currentTeam === 1 ? 2 : 1;
-  const currentTeamName = currentTeam === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
-  const otherTeamName = otherTeam === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
+  const currentTeamName = getTeamName(currentTeam);
 
-  if (tile.powerupType === 'bonus') {
-    animateDirectScoreChange(currentTeam, tile.points);
-    playKahootPowerupSound();
-    showToast(`🎁 +50 Điểm Thưởng Siêu To Khổng Lồ! (${currentTeamName}: ${BaamState.scores[currentTeam]}đ)`, "success");
+  if (tile.powerupType === 'bomb') {
+    animateDirectScoreChange(currentTeam, -20);
+    showToast(`💣 ${currentTeamName} bị trừ 20 Điểm vì đạp trúng mìn!`, "warning");
   } else if (tile.powerupType === 'swap') {
     const temp1 = BaamState.scores[1];
     const temp2 = BaamState.scores[2];
@@ -2727,15 +2834,6 @@ function handleBaamPowerupConfirm() {
     animateDirectScoreChange(1, 0);
     animateDirectScoreChange(2, 0);
     showToast(`⚡ Điểm 2 đội đã được hoán đổi cho nhau!`, "info");
-  } else if (tile.powerupType === 'steal') {
-    const stolen = tile.points;
-    animateDirectScoreChange(otherTeam, -stolen);
-    animateDirectScoreChange(currentTeam, stolen);
-    playKahootPowerupSound();
-    showToast(`🔄 Cướp ${stolen} Điểm từ ${otherTeamName}! (${otherTeamName} còn: ${BaamState.scores[otherTeam]}đ)`, "success");
-  } else if (tile.powerupType === 'bomb') {
-    animateDirectScoreChange(currentTeam, tile.points);
-    showToast(`💣 Bị trừ 20 Điểm vì trượt vỏ chuối! (${currentTeamName}: còn ${BaamState.scores[currentTeam]}đ)`, "warning");
   }
 
   markActiveTileCompleted();
@@ -3991,6 +4089,86 @@ function playSoundCheerAndApplause() {
 }
 
 // Creative fail sound: Cartoon "Boing-Boing-Wobble!" 🪀 + Comical Slide
+// Âm thanh mỗi nhịp rương kho báu nhảy tưng (tăng dần cao độ)
+function playChestJumpSound(jumpIndex = 1) {
+  if (!AppState.soundEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    const baseFreq = jumpIndex === 1 ? 260 : jumpIndex === 2 ? 360 : 490;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.18);
+
+    gain.gain.setValueAtTime(0.28, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.22);
+  } catch (e) {
+    console.warn("Chest jump sound error:", e);
+  }
+}
+
+// Âm thanh mìn nổ (Bomb Explosion)
+function playBombExplosionSound() {
+  if (!AppState.soundEnabled) return;
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // Sub-bass pitch drop (boom)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(130, now);
+    osc.frequency.exponentialRampToValueAtTime(30, now + 0.55);
+
+    gain.gain.setValueAtTime(0.45, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.6);
+
+    // Noise burst
+    const bufferSize = Math.floor(ctx.sampleRate * 0.45);
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(450, now);
+    filter.frequency.exponentialRampToValueAtTime(80, now + 0.45);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.38, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    noise.start(now);
+    noise.stop(now + 0.45);
+  } catch (e) {
+    console.warn("Bomb sound error:", e);
+  }
+}
+
 function playSoundFunnyBoing() {
   if (!AppState.soundEnabled) return;
   try {

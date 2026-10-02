@@ -2358,3 +2358,164 @@ textarea:focus {
   }
 }
 
+/* ==========================================================================
+   19. Baamboozle Mystery Powerups: Chest 2.5s Bounce, Steal Choices & Mine
+   ========================================================================== */
+.chest-stage-container {
+  position: relative;
+  width: 140px;
+  height: 130px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chest-box-anim {
+  font-size: 76px;
+  line-height: 1;
+  transform-origin: bottom center;
+  user-select: none;
+  display: inline-block;
+}
+
+/* Nhảy rương 3 lần dồn dập trong 2.5 giây */
+.chest-bouncing {
+  animation: chestBounce3Times 2.5s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+}
+
+@keyframes chestBounce3Times {
+  /* Lần nhảy 1 (0s -> 0.75s) */
+  0%   { transform: translateY(0) scale(1) rotate(0deg); }
+  10%  { transform: translateY(-24px) scale(1.15) rotate(-8deg); }
+  20%  { transform: translateY(0) scale(1) rotate(0deg); }
+  25%  { transform: translateY(4px) scale(1.08, 0.92); }
+  
+  /* Lần nhảy 2 (0.75s -> 1.55s) - nảy cao hơn */
+  35%  { transform: translateY(-42px) scale(1.28) rotate(10deg); }
+  45%  { transform: translateY(0) scale(1) rotate(0deg); }
+  52%  { transform: translateY(6px) scale(1.15, 0.85); }
+  
+  /* Lần nhảy 3 (1.55s -> 2.4s) - nảy cực mạnh rung lắc chuẩn bị nổ */
+  65%  { transform: translateY(-58px) scale(1.42) rotate(-14deg); }
+  75%  { transform: translateY(-12px) scale(1.36) rotate(12deg); }
+  85%  { transform: translateY(0) scale(1.3) rotate(-6deg); }
+  92%  { transform: translateY(8px) scale(1.22, 0.78); }
+  
+  /* Nổ bùng (2.5s) */
+  100% { transform: translateY(-15px) scale(1.5) rotate(0deg); filter: drop-shadow(0 0 25px #F59E0B); }
+}
+
+.chest-exploded {
+  animation: chestExplodePop 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes chestExplodePop {
+  0% { transform: scale(1.5); filter: brightness(2) drop-shadow(0 0 35px #F59E0B); }
+  40% { transform: scale(1.85) rotate(6deg); filter: brightness(1.6) drop-shadow(0 0 45px #F59E0B); }
+  100% { transform: scale(1.35) rotate(0deg); filter: drop-shadow(0 0 20px #F59E0B); }
+}
+
+/* 3 Nút lựa chọn cướp điểm */
+.steal-options-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn-steal-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 12px;
+  border-radius: 14px;
+  border: 3px solid var(--ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  text-decoration: none;
+}
+
+.btn-steal-choice:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+.btn-steal-choice:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink) !important;
+}
+
+.steal-badge {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 3px 8px;
+  border-radius: 99px;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.steal-icon {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.steal-pts {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.steal-sub {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.steal-5-btn {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #B45309;
+  box-shadow: 0 4px 0 #D97706;
+}
+
+.steal-10-btn {
+  background: linear-gradient(135deg, #FFEDD5 0%, #FED7AA 100%);
+  color: #C2410C;
+  box-shadow: 0 4px 0 #EA580C;
+}
+
+.steal-20-btn {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  color: #B91C1C;
+  box-shadow: 0 4px 0 #DC2626;
+}
+
+/* Hiệu ứng rung mìn */
+@keyframes mineShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-8px, 4px) rotate(-3deg); }
+  30% { transform: translate(8px, -4px) rotate(3deg); }
+  45% { transform: translate(-10px, 3px) rotate(-2deg); }
+  60% { transform: translate(10px, -3px) rotate(2deg); }
+  75% { transform: translate(-6px, 4px) rotate(-1deg); }
+  90% { transform: translate(6px, -2px) rotate(1deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.mine-shaking {
+  animation: mineShake 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@media (max-width: 600px) {
+  .steal-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
