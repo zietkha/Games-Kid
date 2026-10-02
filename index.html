@@ -1320,8 +1320,11 @@
         </div>
 
         <div style="text-align:center; margin:16px 0;">
-          <h2 id="baamPromptText" style="font-size:32px;">Department Store</h2>
-          <button class="btn btn-secondary small-btn" id="baamListenPromptBtn" style="margin-top:8px;">🔊 Nghe phát âm</button>
+          <div id="baamPromptText" style="min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="font-size:24px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
+            <div style="font-size:15px; color:#64748B; font-weight:600; margin-top:4px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
+          </div>
+          <button class="btn btn-secondary small-btn" id="baamListenPromptBtn" style="margin-top:8px; display:none;">🔊 Nghe phát âm</button>
         </div>
 
         <div id="baamInteractiveInputRow" style="margin-bottom:16px;">
@@ -1342,7 +1345,10 @@
         <!-- Kết quả hiện khi đúng: Tự động nhảy đáp án & chuyển lượt -->
         <div class="ai-feedback-banner success" id="baamResultSuccess" style="display:none; margin-top:16px; padding:16px; border-radius:14px; flex-direction:column; align-items:center; text-align:center;">
           <div style="font-size:24px; font-weight:900; color:#15803D;" id="baamSuccessTitle">🎉 Chính xác! +20 Điểm!</div>
-          <div style="font-size:20px; font-weight:800; color:var(--ink); margin:8px 0 4px 0;" id="baamCorrectAnswerText">Đáp án đúng</div>
+          <div style="font-size:22px; font-weight:800; color:var(--ink); margin:8px 0 4px 0; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span id="baamCorrectAnswerText">Đáp án đúng</span>
+            <button type="button" class="btn btn-secondary" style="padding:4px 8px; font-size:14px; border-radius:8px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
+          </div>
           <div style="font-size:14px; color:#475569; font-weight:700;" id="baamSuccessCountdown">⚡ Đang tự động đổi lượt tiếp theo...</div>
           <button type="button" class="btn btn-green full-width" id="baamProceedTurnBtn" style="margin-top:10px;">Đổi lượt ngay ➔</button>
         </div>
@@ -1351,7 +1357,10 @@
         <div class="ai-feedback-banner wrong" id="baamResultWrong" style="display:none; margin-top:16px; padding:16px; border-radius:14px; flex-direction:column; align-items:center; text-align:center;">
           <div style="font-size:22px; font-weight:900; color:#B91C1C;" id="baamWrongTitle">⚠️ Bị trừ 10 điểm!</div>
           <div style="font-size:15px; font-weight:700; color:#64748B; margin-top:4px;">💡 Đáp án đúng là:</div>
-          <div style="font-size:20px; font-weight:800; color:var(--ink); margin:6px 0;" id="baamWrongAnswerText">Đáp án đúng</div>
+          <div style="font-size:22px; font-weight:800; color:var(--ink); margin:6px 0; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span id="baamWrongAnswerText">Đáp án đúng</span>
+            <button type="button" class="btn btn-secondary" style="padding:4px 8px; font-size:14px; border-radius:8px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
+          </div>
           <div style="font-size:14px; color:#475569; font-weight:700;" id="baamWrongCountdown">⚡ Đang tự động đổi lượt tiếp theo...</div>
           <button type="button" class="btn btn-secondary full-width" id="baamProceedWrongTurnBtn" style="margin-top:10px;">Đổi lượt ngay ➔</button>
         </div>
@@ -1653,6 +1662,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20261002_v5"></script>
+  <script src="app.js?v=20261002_v6"></script>
 </body>
 </html>

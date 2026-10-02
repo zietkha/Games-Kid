@@ -2605,6 +2605,7 @@ function openBaamTile(idx) {
 
     const emojiEl = document.getElementById('baamQuestionEmoji');
     const promptEl = document.getElementById('baamPromptText');
+    const listenPromptBtn = document.getElementById('baamListenPromptBtn');
     const inputEl = document.getElementById('baamStudentAnswerInput');
     const inputRow = document.getElementById('baamInteractiveInputRow');
     const quickScoreRow = document.getElementById('baamQuickScoreRow');
@@ -2614,15 +2615,46 @@ function openBaamTile(idx) {
     const imageEl = document.getElementById('baamQuestionImg');
 
     if (emojiEl) emojiEl.textContent = tile.emoji || "❓";
-    if (promptEl) promptEl.textContent = tile.q;
+
+    // Ẩn nút nghe phát âm khi đang mở câu hỏi để không làm lộ đáp án
+    if (listenPromptBtn) listenPromptBtn.style.display = 'none';
+
+    // Phân tích câu hỏi: là câu hỏi giao tiếp hay từ vựng flashcard
+    const rawQ = (tile.q || '').trim();
+    const isQuestionSentence = rawQ.includes('?') ||
+      /^(what|where|when|why|who|how|is|are|do|does|can|which)\b/i.test(rawQ);
 
     // Show image if available
     if (tile.image) {
       if (imageWrap) imageWrap.style.display = 'block';
       if (imageEl) imageEl.src = tile.image;
+
+      if (promptEl) {
+        if (isQuestionSentence) {
+          promptEl.innerHTML = `<span style="font-size:24px; font-weight:800; color:var(--ink);">${rawQ}</span>`;
+        } else {
+          // Từ vựng kèm hình ảnh: KHÔNG hiển thị từ tiếng Anh (đáp án) mà hiển thị lời mời gợi mở để học sinh suy nghĩ!
+          promptEl.innerHTML = `
+            <div style="font-size:24px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
+            <div style="font-size:15px; color:#64748B; font-weight:600; margin-top:4px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
+          `;
+        }
+      }
     } else {
       if (imageWrap) imageWrap.style.display = 'none';
       if (imageEl) imageEl.src = '';
+
+      if (promptEl) {
+        if (isQuestionSentence) {
+          promptEl.innerHTML = `<span style="font-size:24px; font-weight:800; color:var(--ink);">${rawQ}</span>`;
+        } else {
+          // Từ vựng không có ảnh: Hiển thị nghĩa tiếng Việt để học sinh dịch sang tiếng Anh
+          promptEl.innerHTML = `
+            <div style="font-size:15px; color:#64748B; font-weight:600;">Dịch sang Tiếng Anh từ:</div>
+            <div style="font-size:26px; color:var(--ink); font-weight:800; margin-top:4px;">"${tile.a}" ❓</div>
+          `;
+        }
+      }
     }
 
     // Reset interactive fields
@@ -2641,10 +2673,8 @@ function openBaamTile(idx) {
     const penaltyBtn = document.getElementById('baamAnswerPenaltyBtn');
     if (penaltyBtn) penaltyBtn.innerHTML = `⚠️ Trừ (-10đ)`;
 
-    // Pronounce English prompt automatically
-    setTimeout(() => {
-      speakWord(tile.q);
-    }, 280);
+    // GHI CHÚ: KHÔNG phát âm trước khi trả lời để tránh làm lộ đáp án cho học sinh.
+    // Phát âm chuẩn bản xứ sẽ tự động vang lên ngay khi bấm Đúng / Trừ trong handleBaamAnswerCorrect / handleBaamAnswerPenalty.
   }
 
   openModal('baamTileModal');
