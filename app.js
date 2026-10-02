@@ -2749,13 +2749,11 @@ function handleBaamAnswerCorrect() {
   // Phát âm lại từ vựng chuẩn bản xứ
   speakWord(tile.q);
 
-  // Tự động chuyển lượt sau 1.8 giây để cả lớp cùng thấy đáp án
-  baamAutoTurnTimer = setTimeout(() => {
-    markActiveTileCompleted();
-  }, 1800);
+  // Không tự động out — giữ nguyên modal để thầy cô & học sinh cùng xem đáp án và phát âm.
+  // Khi thầy cô bấm nút "Đổi lượt tiếp theo ➔" thì mới chuyển lượt.
 }
 
-// Team Answered Penalty (-10 Points) -> Tự động nhảy đáp án đúng & chuyển lượt
+// Team Answered Penalty (-10 Points) -> Nhảy đáp án đúng & chờ bấm đổi lượt
 function handleBaamAnswerPenalty() {
   const tile = BaamState.activeTile;
   if (!tile) return;
@@ -2789,10 +2787,7 @@ function handleBaamAnswerPenalty() {
   // Phát âm từ vựng để học sinh ghi nhớ
   speakWord(tile.q);
 
-  // Tự động chuyển lượt sau 2.2 giây
-  baamAutoTurnTimer = setTimeout(() => {
-    markActiveTileCompleted();
-  }, 2200);
+  // Không tự động out — chỉ chuyển lượt khi người dùng bấm nút Đổi lượt tiếp theo.
 }
 
 // Manual Score Adjustment for Teachers (+10 / -10)
