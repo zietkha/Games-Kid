@@ -6,12 +6,12 @@
   <title>English Kha Master — Học & Chơi Tiếng Anh Tiểu Học (Lớp 1-5)</title>
   <meta name="description" content="Trang web học và chơi Tiếng Anh tương tác cho học sinh Tiểu học Lớp 1 - 5. Gồm đấu đội Baamboozle, flashcard, đố vui, xếp chữ và đoán hình.">
 
-  <!-- Google Fonts: Baloo 2 (Tiêu đề, nút, game) & Lexend (Nội dung dễ đọc) -->
+  <!-- Google Fonts: Baloo 2 (Tiêu đề & Game) & Nunito (Phông bo tròn mềm mại cho học sinh) & Lexend -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="styles.css?v=20261002_v5">
+  <link rel="stylesheet" href="styles.css?v=20261002_v7">
 </head>
 <body>
 
@@ -1245,9 +1245,9 @@
   <!-- Modal: Câu hỏi Baamboozle -->
   <div class="modal-overlay" id="baamTileModal" aria-hidden="true">
     <div class="modal-card">
-      <div class="modal-header">
-        <span class="continue-badge" id="baamModalTileNum">Ô số #1</span>
-        <h3 id="baamModalCurrentTeam" style="margin-top:6px;">Lượt của: Đội Cáo Đỏ</h3>
+      <div class="modal-header" style="margin-bottom:12px;">
+        <span class="continue-badge" id="baamModalTileNum" style="font-size:16px; font-weight:800; padding:6px 16px; border-radius:99px;">Ô số #1</span>
+        <h3 id="baamModalCurrentTeam" style="margin-top:8px; font-size:24px; font-weight:800; color:var(--ink);">Lượt của: Đội Cáo Đỏ</h3>
       </div>
 
       <!-- Surprise Event Box -->
@@ -1258,22 +1258,22 @@
           <div class="chest-stage-container">
             <div class="chest-box-anim" id="chestAnimBox">🎁</div>
           </div>
-          <h2 id="chestEventTitle" style="font-size:26px; margin:12px 0 6px 0; color:var(--ink);">Đang mở rương kho báu vàng...</h2>
-          <p id="chestEventDesc" style="color:#64748B; font-size:16px; margin:0 0 14px 0; min-height:24px;">Hồi hộp chờ đợi xem điều bất ngờ gì bên trong!</p>
-          <div id="chestRewardBanner" style="display:none; margin:14px 0; padding:16px; background:linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border:3px solid var(--ink); border-radius:14px; box-shadow:0 4px 0 var(--ink);">
-            <div style="font-size:36px; font-weight:900; color:#B45309; text-shadow:0 2px 0 #FFF;">🎉 +40 ĐIỂM THƯỞNG!</div>
-            <div style="font-size:15px; font-weight:700; color:#475569; margin-top:4px;">Cộng trực tiếp +40 điểm cho cả đội!</div>
+          <h2 id="chestEventTitle" style="font-size:32px; font-weight:800; margin:14px 0 8px 0; color:var(--ink);">Đang mở rương kho báu vàng...</h2>
+          <p id="chestEventDesc" style="color:#475569; font-size:18px; font-weight:700; margin:0 0 16px 0; min-height:26px;">Hồi hộp chờ đợi xem điều bất ngờ gì bên trong!</p>
+          <div id="chestRewardBanner" style="display:none; margin:16px 0; padding:18px; background:linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border:3px solid var(--ink); border-radius:18px; box-shadow:0 4px 0 var(--ink);">
+            <div style="font-size:38px; font-weight:900; color:#B45309; text-shadow:0 2px 0 #FFF;">🎉 +40 ĐIỂM THƯỞNG!</div>
+            <div style="font-size:17px; font-weight:800; color:#475569; margin-top:6px;">Cộng trực tiếp +40 điểm cho cả đội!</div>
           </div>
-          <button type="button" class="btn btn-green full-width" id="chestRewardConfirmBtn" style="display:none; margin-top:10px; font-size:18px; padding:14px;" onclick="handleBaamChestConfirm()">
+          <button type="button" class="btn btn-green full-width" id="chestRewardConfirmBtn" style="display:none; margin-top:14px; font-size:20px; font-weight:800; padding:16px; border-radius:16px;" onclick="handleBaamChestConfirm()">
             🌟 Nhận +40 Điểm & Đổi Lượt Tiếp Theo
           </button>
         </div>
 
         <!-- TRƯỜNG HỢP 2: CƯỚP ĐIỂM SIÊU HẠNG VỚI 3 LỰA CHỌN (5đ, 10đ, 20đ) -->
         <div id="baamStealEventWrap" style="display:none;">
-          <div style="font-size:64px; animation:bounce 1s infinite alternate; display:inline-block; margin-bottom:6px;">🔄</div>
-          <h2 style="font-size:28px; margin:4px 0 6px 0; color:var(--ink);">Cướp Điểm Siêu Hạng!</h2>
-          <p style="color:#475569; font-size:16px; margin-bottom:18px;">
+          <div style="font-size:68px; animation:bounce 1s infinite alternate; display:inline-block; margin-bottom:8px;">🔄</div>
+          <h2 style="font-size:34px; font-weight:800; margin:6px 0 10px 0; color:var(--ink);">Cướp Điểm Siêu Hạng!</h2>
+          <p style="color:#334155; font-size:19px; font-weight:700; line-height:1.5; margin-bottom:20px;">
             Đội bạn được quyền rút bớt điểm của đối thủ sang cho mình! Hãy chọn mức điểm muốn cướp:
           </p>
           
@@ -1299,15 +1299,15 @@
               <span class="steal-sub">Cướp 20 điểm</span>
             </button>
           </div>
-          <div style="font-size:14px; font-weight:700; color:#64748B;">💡 Điểm sẽ được trừ trực tiếp từ đối thủ và cộng ngay vào đội bạn.</div>
+          <div style="font-size:16px; font-weight:800; color:#64748B; margin-top:8px;">💡 Điểm sẽ được trừ trực tiếp từ đối thủ và cộng ngay vào đội bạn.</div>
         </div>
 
         <!-- TRƯỜNG HỢP 3: CÁC SỰ KIỆN KHÁC (ĐẠP MÌN TRỪ 20Đ, ĐẢO NGƯỢC ĐIỂM) -->
         <div id="baamStandardEventWrap" style="display:none;">
-          <div style="font-size:68px; display:inline-block; margin-bottom:4px;" id="baamPowerupIcon">💣</div>
-          <h2 id="baamPowerupTitle" style="font-size:28px; margin:6px 0 6px 0; color:var(--ink);">Bạn đã đạp trúng mìn!</h2>
-          <p id="baamPowerupDesc" style="color:#475569; font-size:17px; margin-bottom:18px;">Bạn đã đạp trúng mìn trừ 20 điểm!</p>
-          <button type="button" class="btn btn-primary full-width" id="baamPowerupOkBtn" style="font-size:18px; padding:14px;" onclick="handleBaamPowerupConfirm()">Đã hiểu & đổi lượt</button>
+          <div style="font-size:72px; display:inline-block; margin-bottom:6px;" id="baamPowerupIcon">💣</div>
+          <h2 id="baamPowerupTitle" style="font-size:34px; font-weight:800; margin:6px 0 8px 0; color:var(--ink);">Bạn đã đạp trúng mìn!</h2>
+          <p id="baamPowerupDesc" style="color:#334155; font-size:20px; font-weight:700; margin-bottom:20px;">Bạn đã đạp trúng mìn trừ 20 điểm!</p>
+          <button type="button" class="btn btn-primary full-width" id="baamPowerupOkBtn" style="font-size:20px; font-weight:800; padding:16px; border-radius:16px;" onclick="handleBaamPowerupConfirm()">Đã hiểu & đổi lượt</button>
         </div>
 
       </div>
@@ -1316,53 +1316,53 @@
       <div id="baamQuestionContent">
         <!-- Hình ảnh minh họa câu hỏi nếu có -->
         <div id="baamImageWrap" style="display:none; text-align:center; margin-bottom:14px;">
-          <img id="baamQuestionImg" src="" alt="Hình ảnh câu hỏi" style="max-height:220px; max-width:100%; object-fit:contain; border-radius:12px; border:2.5px solid var(--ink); background:#fff;">
+          <img id="baamQuestionImg" src="" alt="Hình ảnh câu hỏi" style="max-height:230px; max-width:100%; object-fit:contain; border-radius:16px; border:3px solid var(--ink); background:#fff;">
         </div>
 
         <div style="text-align:center; margin:16px 0;">
-          <div id="baamPromptText" style="min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div style="font-size:24px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
-            <div style="font-size:15px; color:#64748B; font-weight:600; margin-top:4px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
+          <div id="baamPromptText" style="min-height:50px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="font-size:28px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
+            <div style="font-size:17px; color:#64748B; font-weight:700; margin-top:6px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
           </div>
           <button class="btn btn-secondary small-btn" id="baamListenPromptBtn" style="margin-top:8px; display:none;">🔊 Nghe phát âm</button>
         </div>
 
         <div id="baamInteractiveInputRow" style="margin-bottom:16px;">
-          <input type="text" id="baamStudentAnswerInput" class="glass-input" placeholder="Nhập đáp án hoặc nghĩa tiếng Việt...">
-          <button class="btn btn-primary full-width" id="baamStudentCheckBtn" style="margin-top:10px;">🔍 Kiểm tra đáp án</button>
+          <input type="text" id="baamStudentAnswerInput" class="glass-input" placeholder="Nhập đáp án hoặc nghĩa tiếng Việt..." style="font-size:20px; font-weight:700; min-height:56px; border-radius:14px; padding:0 20px;">
+          <button class="btn btn-primary full-width" id="baamStudentCheckBtn" style="margin-top:12px; font-size:20px; font-weight:800; padding:15px; border-radius:14px;">🔍 Kiểm tra đáp án</button>
         </div>
 
         <!-- Chỉ có 2 lựa chọn: Đúng và Trừ điểm -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px;" id="baamQuickScoreRow">
-          <button type="button" class="btn btn-danger" id="baamAnswerPenaltyBtn" style="padding:15px 16px; font-size:18px; font-weight:800; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 0 #DC2626;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:10px;" id="baamQuickScoreRow">
+          <button type="button" class="btn btn-danger" id="baamAnswerPenaltyBtn" style="padding:18px 20px; font-size:21px; font-weight:900; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 5px 0 #DC2626;">
             ⚠️ Trừ (-10đ)
           </button>
-          <button type="button" class="btn btn-green" id="baamAnswerCorrectBtn" style="padding:15px 16px; font-size:18px; font-weight:800; border-radius:12px; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 0 #15803D;">
+          <button type="button" class="btn btn-green" id="baamAnswerCorrectBtn" style="padding:18px 20px; font-size:21px; font-weight:900; border-radius:16px; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 5px 0 #15803D;">
             ✅ Đúng (+20đ)
           </button>
         </div>
 
         <!-- Kết quả hiện khi đúng: Nhảy đáp án & chờ bấm đổi lượt -->
-        <div class="ai-feedback-banner success" id="baamResultSuccess" style="display:none; margin-top:16px; padding:16px; border-radius:14px; flex-direction:column; align-items:center; text-align:center;">
-          <div style="font-size:24px; font-weight:900; color:#15803D;" id="baamSuccessTitle">🎉 Chính xác! +20 Điểm!</div>
-          <div style="font-size:22px; font-weight:800; color:var(--ink); margin:8px 0 4px 0; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <div class="ai-feedback-banner success" id="baamResultSuccess" style="display:none; margin-top:16px; padding:18px; border-radius:16px; flex-direction:column; align-items:center; text-align:center;">
+          <div style="font-size:26px; font-weight:900; color:#15803D;" id="baamSuccessTitle">🎉 Chính xác! +20 Điểm!</div>
+          <div style="font-size:24px; font-weight:900; color:var(--ink); margin:10px 0 6px 0; display:flex; align-items:center; justify-content:center; gap:10px;">
             <span id="baamCorrectAnswerText">Đáp án đúng</span>
-            <button type="button" class="btn btn-secondary" style="padding:4px 8px; font-size:14px; border-radius:8px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
+            <button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:16px; border-radius:10px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
           </div>
-          <div style="font-size:14px; color:#15803D; font-weight:700;" id="baamSuccessCountdown">✨ Cả lớp cùng nghe và đọc to từ vựng nhé!</div>
-          <button type="button" class="btn btn-green full-width" id="baamProceedTurnBtn" style="margin-top:10px; font-size:17px; padding:12px; font-weight:800;">Đổi lượt tiếp theo ➔</button>
+          <div style="font-size:16px; color:#15803D; font-weight:700;" id="baamSuccessCountdown">✨ Cả lớp cùng nghe và đọc to từ vựng nhé!</div>
+          <button type="button" class="btn btn-green full-width" id="baamProceedTurnBtn" style="margin-top:12px; font-size:19px; padding:14px; font-weight:800; border-radius:14px;">Đổi lượt tiếp theo ➔</button>
         </div>
 
         <!-- Kết quả hiện khi trừ: Nhảy đáp án & chờ bấm đổi lượt -->
-        <div class="ai-feedback-banner wrong" id="baamResultWrong" style="display:none; margin-top:16px; padding:16px; border-radius:14px; flex-direction:column; align-items:center; text-align:center;">
-          <div style="font-size:22px; font-weight:900; color:#B91C1C;" id="baamWrongTitle">⚠️ Bị trừ 10 điểm!</div>
-          <div style="font-size:15px; font-weight:700; color:#64748B; margin-top:4px;">💡 Đáp án đúng là:</div>
-          <div style="font-size:22px; font-weight:800; color:var(--ink); margin:6px 0; display:flex; align-items:center; justify-content:center; gap:8px;">
+        <div class="ai-feedback-banner wrong" id="baamResultWrong" style="display:none; margin-top:16px; padding:18px; border-radius:16px; flex-direction:column; align-items:center; text-align:center;">
+          <div style="font-size:24px; font-weight:900; color:#B91C1C;" id="baamWrongTitle">⚠️ Bị trừ 10 điểm!</div>
+          <div style="font-size:16px; font-weight:700; color:#64748B; margin-top:4px;">💡 Đáp án đúng là:</div>
+          <div style="font-size:24px; font-weight:900; color:var(--ink); margin:8px 0; display:flex; align-items:center; justify-content:center; gap:10px;">
             <span id="baamWrongAnswerText">Đáp án đúng</span>
-            <button type="button" class="btn btn-secondary" style="padding:4px 8px; font-size:14px; border-radius:8px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
+            <button type="button" class="btn btn-secondary" style="padding:6px 12px; font-size:16px; border-radius:10px;" onclick="if(BaamState.activeTile) speakWord(BaamState.activeTile.q)" title="Nghe lại phát âm">🔊</button>
           </div>
-          <div style="font-size:14px; color:#64748B; font-weight:700;" id="baamWrongCountdown">💡 Bấm loa 🔊 để nghe lại cách phát âm từ này!</div>
-          <button type="button" class="btn btn-primary full-width" id="baamProceedWrongTurnBtn" style="margin-top:10px; font-size:17px; padding:12px; font-weight:800;">Đổi lượt tiếp theo ➔</button>
+          <div style="font-size:16px; color:#64748B; font-weight:700;" id="baamWrongCountdown">💡 Bấm loa 🔊 để nghe lại cách phát âm từ này!</div>
+          <button type="button" class="btn btn-primary full-width" id="baamProceedWrongTurnBtn" style="margin-top:12px; font-size:19px; padding:14px; font-weight:800; border-radius:14px;">Đổi lượt tiếp theo ➔</button>
         </div>
       </div>
     </div>
@@ -1662,6 +1662,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20261002_v7"></script>
+  <script src="app.js?v=20261002_v8"></script>
 </body>
 </html>

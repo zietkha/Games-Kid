@@ -2631,12 +2631,12 @@ function openBaamTile(idx) {
 
       if (promptEl) {
         if (isQuestionSentence) {
-          promptEl.innerHTML = `<span style="font-size:24px; font-weight:800; color:var(--ink);">${rawQ}</span>`;
+          promptEl.innerHTML = `<span style="font-size:28px; font-weight:800; line-height:1.35; color:var(--ink);">${rawQ}</span>`;
         } else {
           // Từ vựng kèm hình ảnh: KHÔNG hiển thị từ tiếng Anh (đáp án) mà hiển thị lời mời gợi mở để học sinh suy nghĩ!
           promptEl.innerHTML = `
-            <div style="font-size:24px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
-            <div style="font-size:15px; color:#64748B; font-weight:600; margin-top:4px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
+            <div style="font-size:28px; font-weight:800; color:var(--ink);">❓ What is this in English?</div>
+            <div style="font-size:17px; color:#64748B; font-weight:700; margin-top:6px;">(Nhìn hình ảnh và đoán từ vựng Tiếng Anh)</div>
           `;
         }
       }
@@ -2646,12 +2646,12 @@ function openBaamTile(idx) {
 
       if (promptEl) {
         if (isQuestionSentence) {
-          promptEl.innerHTML = `<span style="font-size:24px; font-weight:800; color:var(--ink);">${rawQ}</span>`;
+          promptEl.innerHTML = `<span style="font-size:28px; font-weight:800; line-height:1.35; color:var(--ink);">${rawQ}</span>`;
         } else {
           // Từ vựng không có ảnh: Hiển thị nghĩa tiếng Việt để học sinh dịch sang tiếng Anh
           promptEl.innerHTML = `
-            <div style="font-size:15px; color:#64748B; font-weight:600;">Dịch sang Tiếng Anh từ:</div>
-            <div style="font-size:26px; color:var(--ink); font-weight:800; margin-top:4px;">"${tile.a}" ❓</div>
+            <div style="font-size:18px; color:#64748B; font-weight:700;">Dịch sang Tiếng Anh từ:</div>
+            <div style="font-size:30px; color:var(--ink); font-weight:800; margin-top:6px;">"${tile.a}" ❓</div>
           `;
         }
       }
