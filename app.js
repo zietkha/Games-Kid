@@ -1613,6 +1613,7 @@ const BaamState = {
   activeTileIndex: -1,
   selectedLessonId: "baam_grade1",
   isGameActive: false,
+  editingQuestionIndex: -1,
   teamNames: {
     1: localStorage.getItem('ekm_baam_team1_name') || DEFAULT_TEAM_NAMES[1],
     2: localStorage.getItem('ekm_baam_team2_name') || DEFAULT_TEAM_NAMES[2]
@@ -1930,14 +1931,18 @@ const BAAM_IMAGE_PRESETS = [
 function getBaamCustomQuestions() {
   try {
     const raw = localStorage.getItem(BAAM_QUESTIONS_STORAGE_KEY);
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed;
     }
-  } catch (e) {}
+  } catch (e) {
+    console.warn("Error reading custom questions from storage:", e);
+  }
   // Default to 12 illustrated sample questions
   const def = JSON.parse(JSON.stringify(DEFAULT_BAAM_CUSTOM_QUESTIONS));
-  localStorage.setItem(BAAM_QUESTIONS_STORAGE_KEY, JSON.stringify(def));
+  try {
+    localStorage.setItem(BAAM_QUESTIONS_STORAGE_KEY, JSON.stringify(def));
+  } catch (e) {}
   return def;
 }
 
@@ -2024,7 +2029,100 @@ function testSpeakBaamVocab() {
 }
 window.testSpeakBaamVocab = testSpeakBaamVocab;
 
-// Save a new Baamboozle Question
+// Load a question into the creator form for viewing or editing
+function loadBaamQuestionForEdit(idx, silent = false) {
+  const list = getBaamCustomQuestions();
+  if (idx < 0 || idx >= list.length) return;
+  const q = list[idx];
+  BaamState.editingQuestionIndex = idx;
+
+  const vocabInput = document.getElementById('baamCreatorVocabInput');
+  const meaningInput = document.getElementById('baamCreatorMeaningInput');
+  const pointsSelect = document.getElementById('baamCreatorPoints');
+  const urlInput = document.getElementById('baamCreatorImageUrl');
+  const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+  const previewImg = document.getElementById('baamCreatorImagePreview');
+  const formTitle = document.getElementById('baamCreatorFormTitle');
+  const saveBtn = document.getElementById('baamSaveCreatorBtn');
+  const cancelBtn = document.getElementById('baamCancelEditBtn');
+
+  if (vocabInput) vocabInput.value = q.vocab || '';
+  if (meaningInput) meaningInput.value = q.meaning || '';
+  if (pointsSelect) pointsSelect.value = q.points || 20;
+  if (urlInput) urlInput.value = (q.image && !q.image.startsWith('data:')) ? q.image : '';
+
+  BaamState.selectedCreatorImage = q.image || '';
+  if (q.image && previewWrap && previewImg) {
+    previewWrap.style.display = 'block';
+    previewImg.src = q.image;
+  }
+
+  if (formTitle) {
+    formTitle.innerHTML = `✏️ Đang sửa câu #${idx + 1}: <span style="color:var(--blue);">${q.vocab}</span>`;
+  }
+  if (saveBtn) {
+    saveBtn.innerHTML = `💾 Cập nhật câu hỏi #${idx + 1}`;
+  }
+  if (cancelBtn) {
+    cancelBtn.style.display = 'inline-flex';
+  }
+
+  // Highlight active editing card in list
+  document.querySelectorAll('.baam-q-card').forEach((c, i) => {
+    if (i === idx) c.classList.add('active-editing');
+    else c.classList.remove('active-editing');
+  });
+
+  if (!silent) {
+    if (vocabInput) vocabInput.focus();
+    playKahootTickSound();
+    showToast(`✏️ Đã nạp câu #${idx + 1} ("${q.vocab}") vào bảng soạn để xem và chỉnh sửa!`, "info");
+  }
+}
+window.loadBaamQuestionForEdit = loadBaamQuestionForEdit;
+
+// Cancel editing and revert to new question form
+function cancelBaamEdit() {
+  BaamState.editingQuestionIndex = -1;
+  const vocabInput = document.getElementById('baamCreatorVocabInput');
+  const meaningInput = document.getElementById('baamCreatorMeaningInput');
+  const urlInput = document.getElementById('baamCreatorImageUrl');
+  const fileInput = document.getElementById('baamCreatorImageFile');
+  const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+  const previewImg = document.getElementById('baamCreatorImagePreview');
+  const formTitle = document.getElementById('baamCreatorFormTitle');
+  const saveBtn = document.getElementById('baamSaveCreatorBtn');
+  const cancelBtn = document.getElementById('baamCancelEditBtn');
+
+  if (vocabInput) vocabInput.value = '';
+  if (meaningInput) meaningInput.value = '';
+  if (urlInput) urlInput.value = '';
+  if (fileInput) fileInput.value = '';
+  if (previewWrap) previewWrap.style.display = 'none';
+  if (previewImg) previewImg.src = '';
+  BaamState.selectedCreatorImage = '';
+
+  if (formTitle) formTitle.textContent = 'Tạo câu hỏi / Từ vựng có hình ảnh & phát âm';
+  if (saveBtn) saveBtn.innerHTML = '💾 Lưu câu hỏi Baamboozle';
+  if (cancelBtn) cancelBtn.style.display = 'none';
+
+  document.querySelectorAll('.baam-q-card').forEach(c => c.classList.remove('active-editing'));
+}
+window.cancelBaamEdit = cancelBaamEdit;
+
+// Auto fill first saved question if form is empty on load
+function autoFillFirstSavedQuestionIfEmpty() {
+  const vocabInput = document.getElementById('baamCreatorVocabInput');
+  if (vocabInput && !vocabInput.value.trim() && BaamState.editingQuestionIndex === -1) {
+    const list = getBaamCustomQuestions();
+    if (list && list.length > 0) {
+      loadBaamQuestionForEdit(0, true);
+    }
+  }
+}
+window.autoFillFirstSavedQuestionIfEmpty = autoFillFirstSavedQuestionIfEmpty;
+
+// Save or Update a Baamboozle Question
 function saveBaamCreatorQuestion() {
   const vocabInput = document.getElementById('baamCreatorVocabInput');
   const meaningInput = document.getElementById('baamCreatorMeaningInput');
@@ -2042,35 +2140,51 @@ function saveBaamCreatorQuestion() {
     return;
   }
 
-  const newQuestion = {
-    id: `baam_cq_${Date.now()}`,
-    vocab: vocab,
-    meaning: meaning || "Trả lời tự nhiên bằng tiếng Anh",
-    image: image || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
-    points: points
-  };
-
   const list = getBaamCustomQuestions();
-  list.push(newQuestion);
-  saveBaamCustomQuestions(list);
+  const isEditing = BaamState.editingQuestionIndex >= 0 && BaamState.editingQuestionIndex < list.length;
+
+  if (isEditing) {
+    const existing = list[BaamState.editingQuestionIndex];
+    list[BaamState.editingQuestionIndex] = {
+      ...existing,
+      vocab: vocab,
+      meaning: meaning || "Trả lời tự nhiên bằng tiếng Anh",
+      image: image || existing.image || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+      points: points
+    };
+    saveBaamCustomQuestions(list);
+    showToast(`💾 Đã cập nhật thành công câu hỏi #${BaamState.editingQuestionIndex + 1} ("${vocab}")!`, "success");
+    cancelBaamEdit();
+  } else {
+    const newQuestion = {
+      id: `baam_cq_${Date.now()}`,
+      vocab: vocab,
+      meaning: meaning || "Trả lời tự nhiên bằng tiếng Anh",
+      image: image || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
+      points: points
+    };
+    list.push(newQuestion);
+    saveBaamCustomQuestions(list);
+    showToast(`💾 Đã lưu câu hỏi "${vocab}" (+${points}đ) vào kho Baamboozle vĩnh viễn!`, "success");
+
+    // Reset form inputs for next question
+    if (vocabInput) vocabInput.value = '';
+    if (meaningInput) meaningInput.value = '';
+    if (urlInput) urlInput.value = '';
+    const fileInput = document.getElementById('baamCreatorImageFile');
+    if (fileInput) fileInput.value = '';
+    const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
+    const previewImg = document.getElementById('baamCreatorImagePreview');
+    if (previewWrap) previewWrap.style.display = 'none';
+    if (previewImg) previewImg.src = '';
+    BaamState.selectedCreatorImage = '';
+    if (vocabInput) vocabInput.focus();
+  }
 
   renderBaamCustomQuestionsList();
+  initBaamboozleGame(); // Tự động đồng bộ ngay vào bàn đấu 16 ô Baamboozle
   playKahootCorrectSound();
-  addXP(20, `Tạo câu Baamboozle: ${vocab}`);
-  showToast(`💾 Đã lưu câu hỏi "${vocab}" (+${points}đ) vào kho Baamboozle!`, "success");
-
-  // Reset form inputs for next question
-  if (vocabInput) vocabInput.value = '';
-  if (meaningInput) meaningInput.value = '';
-  if (urlInput) urlInput.value = '';
-  const fileInput = document.getElementById('baamCreatorImageFile');
-  if (fileInput) fileInput.value = '';
-  const previewWrap = document.getElementById('baamCreatorImagePreviewWrap');
-  const previewImg = document.getElementById('baamCreatorImagePreview');
-  if (previewWrap) previewWrap.style.display = 'none';
-  if (previewImg) previewImg.src = '';
-  BaamState.selectedCreatorImage = '';
-  if (vocabInput) vocabInput.focus();
+  addXP(20, `Soạn câu Baamboozle: ${vocab}`);
 }
 window.saveBaamCreatorQuestion = saveBaamCreatorQuestion;
 
@@ -2097,22 +2211,27 @@ function renderBaamCustomQuestionsList() {
   container.innerHTML = '';
   list.forEach((q, idx) => {
     const card = document.createElement('div');
-    card.className = 'baam-q-card';
+    card.className = `baam-q-card ${BaamState.editingQuestionIndex === idx ? 'active-editing' : ''}`;
     card.innerHTML = `
       <img src="${q.image || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80'}" alt="${q.vocab}" class="baam-q-thumb" onerror="this.src='https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80'">
-      <div class="baam-q-info">
+      <div class="baam-q-info" onclick="loadBaamQuestionForEdit(${idx})" title="Nhấp để xem lại & sửa câu này">
         <div class="baam-q-vocab">
           <span>${idx + 1}. ${q.vocab}</span>
-          <button type="button" class="btn btn-secondary small-btn" onclick="speakWord('${(q.vocab || '').replace(/'/g, "\\'")}')" title="Phát âm từ vựng" style="padding:2px 8px; font-size:13px; border-width:2px;">
+          <button type="button" class="btn btn-secondary small-btn" onclick="event.stopPropagation(); speakWord('${(q.vocab || '').replace(/'/g, "\\'")}')" title="Phát âm từ vựng" style="padding:2px 8px; font-size:13px; border-width:2px;">
             🔊
           </button>
         </div>
         <div class="baam-q-meaning">${q.meaning || 'Chưa có nghĩa tiếng Việt'}</div>
         <span class="baam-q-points">⭐ +${q.points || 20} điểm</span>
       </div>
-      <button type="button" class="btn btn-danger small-btn" onclick="deleteBaamCustomQuestion(${idx})" title="Xóa câu hỏi này" style="padding:8px 12px;">
-        🗑️
-      </button>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button type="button" class="btn btn-secondary small-btn" onclick="event.stopPropagation(); loadBaamQuestionForEdit(${idx})" title="Xem lại & sửa câu hỏi này" style="padding:6px 10px; font-size:13px; font-weight:700;">
+          ✏️ Sửa
+        </button>
+        <button type="button" class="btn btn-danger small-btn" onclick="event.stopPropagation(); deleteBaamCustomQuestion(${idx})" title="Xóa câu hỏi này" style="padding:6px 10px; font-size:13px;">
+          🗑️
+        </button>
+      </div>
     `;
     container.appendChild(card);
   });
@@ -2124,16 +2243,24 @@ function deleteBaamCustomQuestion(idx) {
   const list = getBaamCustomQuestions();
   const deleted = list.splice(idx, 1);
   saveBaamCustomQuestions(list);
+  if (BaamState.editingQuestionIndex === idx) {
+    cancelBaamEdit();
+  } else if (BaamState.editingQuestionIndex > idx) {
+    BaamState.editingQuestionIndex--;
+  }
   renderBaamCustomQuestionsList();
-  showToast(`Đã xóa câu "${deleted[0] ? deleted[0].vocab : 'hỏi'}"!`, "info");
+  initBaamboozleGame();
+  showToast(`Đã xóa câu "${deleted[0] ? deleted[0].vocab : 'hỏi'}"! Bàn đấu Baamboozle đã được cập nhật.`, "info");
 }
 window.deleteBaamCustomQuestion = deleteBaamCustomQuestion;
 
 // Clear all questions
 function clearAllBaamCustomQuestions() {
   saveBaamCustomQuestions([]);
+  cancelBaamEdit();
   renderBaamCustomQuestionsList();
-  showToast("Đã xóa sạch tất cả câu hỏi Baamboozle!", "success");
+  initBaamboozleGame();
+  showToast("Đã xóa sạch tất cả câu hỏi Baamboozle! Bàn đấu Baamboozle đã được làm mới.", "success");
 }
 window.clearAllBaamCustomQuestions = clearAllBaamCustomQuestions;
 
@@ -2141,7 +2268,9 @@ window.clearAllBaamCustomQuestions = clearAllBaamCustomQuestions;
 function resetToDefaultBaamQuestions() {
   const def = JSON.parse(JSON.stringify(DEFAULT_BAAM_CUSTOM_QUESTIONS));
   saveBaamCustomQuestions(def);
+  cancelBaamEdit();
   renderBaamCustomQuestionsList();
+  initBaamboozleGame();
   playKahootCorrectSound();
   showToast("Đã khôi phục 12 câu hỏi Baamboozle mẫu có hình ảnh!", "success");
 }
@@ -2367,6 +2496,21 @@ function initBaamboozleGame() {
   BaamState.tiles = allTiles;
   renderBaamTiles();
   updateBaamScoreboard();
+
+  // Update banner in view-baamboozle
+  const bannerTitle = document.getElementById('baamActiveQuestionsTitle');
+  const bannerDesc = document.getElementById('baamActiveQuestionsDesc');
+  if (bannerTitle) {
+    if (customQuestions && customQuestions.length > 0) {
+      const sampleWords = pool.slice(0, 4).map(p => p.q).join(', ');
+      bannerTitle.innerHTML = `🎯 Đang chơi kho câu hỏi: <strong>${customQuestions.length} câu</strong> đã lưu ("${sampleWords}${pool.length > 4 ? '...' : ''}")`;
+      if (bannerDesc) {
+        bannerDesc.textContent = "Hệ thống luôn lưu trữ vĩnh viễn các từ vựng này. Khi mở lại website vẫn hiển thị và chơi đúng bộ từ đã setup!";
+      }
+    } else {
+      bannerTitle.textContent = "🎯 Đang chơi với bộ câu hỏi bài học mặc định";
+    }
+  }
 }
 
 // Render the 16 Baamboozle Tiles on the grid
@@ -5501,12 +5645,43 @@ function renderCreatorQuestionsList() {
       </div>
       <div class="created-q-actions">
         <button type="button" class="glass-btn small-btn btn-primary" onclick="playSpecificAiQuestion(${idx})" title="Chơi từ câu này">▶ Chơi</button>
+        <button type="button" class="glass-btn small-btn" onclick="loadAiQuestionForEdit(${idx})" title="Xem lại & sửa câu này" style="background:#F1F5F9; color:#1E293B;">✏️ Sửa</button>
         <button type="button" class="glass-btn small-btn btn-delete-q" onclick="deleteAiQuestion(${idx})" title="Xóa câu hỏi này">✕ Xóa</button>
       </div>
     `;
     container.appendChild(card);
   });
 }
+
+function loadAiQuestionForEdit(idx) {
+  if (!AiStudioState.questions || idx < 0 || idx >= AiStudioState.questions.length) return;
+  const q = AiStudioState.questions[idx];
+  selectCreatorQuestionType(q.type || 'picture_word');
+
+  const vocabInput = document.getElementById('creatorVocabInput');
+  const meaningInput = document.getElementById('creatorMeaningInput');
+  const titleInput = document.getElementById('creatorQuestionTitleInput');
+  const urlInput = document.getElementById('creatorImageUrlInput');
+  const previewWrap = document.getElementById('creatorImagePreviewWrap');
+  const previewImg = document.getElementById('creatorImagePreview');
+  const sentenceInput = document.getElementById('creatorSentenceInput');
+  const sentenceMeaningInput = document.getElementById('creatorSentenceMeaningInput');
+
+  if (vocabInput) vocabInput.value = q.vocab || '';
+  if (meaningInput) meaningInput.value = q.meaning || '';
+  if (titleInput) titleInput.value = q.questionTitle || '';
+  if (urlInput) urlInput.value = (q.image && !q.image.startsWith('data:')) ? q.image : '';
+  if (sentenceInput && q.fullSentence) sentenceInput.value = q.fullSentence;
+  if (sentenceMeaningInput && q.sentenceMeaning) sentenceMeaningInput.value = q.sentenceMeaning;
+
+  if (q.image && previewWrap && previewImg) {
+    previewWrap.style.display = 'block';
+    previewImg.src = q.image;
+    AiStudioState.selectedCreatorImage = q.image;
+  }
+  showToast(`✏️ Đã nạp câu #${idx + 1} ("${q.vocab}") vào bảng soạn!`, "info");
+}
+window.loadAiQuestionForEdit = loadAiQuestionForEdit;
 
 function playSpecificAiQuestion(idx) {
   AiStudioState.currentIndex = idx;
@@ -5615,6 +5790,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBaamCreatorFileInput();
   renderBaamCreatorPresets();
   renderBaamCustomQuestionsList();
+  autoFillFirstSavedQuestionIfEmpty();
   renderCreatorPresets();
   renderCreatorQuestionsList();
   syncTeacherZoneTeamsUI();

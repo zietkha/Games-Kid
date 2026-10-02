@@ -1428,6 +1428,20 @@ textarea:focus {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.baam-q-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--ink);
+  border-color: var(--blue);
+}
+
+.baam-q-card.active-editing {
+  background-color: var(--yellow-tint) !important;
+  border: 3px solid var(--blue) !important;
+  box-shadow: 0 5px 0 var(--blue) !important;
 }
 
 .baam-q-thumb {
