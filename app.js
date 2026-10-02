@@ -2475,8 +2475,18 @@ function updateBaamScoreboard() {
   }
 }
 
+let baamAutoTurnTimer = null;
+
+function clearBaamAutoTimer() {
+  if (baamAutoTurnTimer) {
+    clearTimeout(baamAutoTurnTimer);
+    baamAutoTurnTimer = null;
+  }
+}
+
 // Handle tile click
 function openBaamTile(idx) {
+  clearBaamAutoTimer();
   const tile = BaamState.tiles[idx];
   if (!tile || tile.opened) return;
 
@@ -2621,9 +2631,15 @@ function openBaamTile(idx) {
       inputEl.disabled = false;
     }
     if (inputRow) inputRow.style.display = 'block';
-    if (quickScoreRow) quickScoreRow.style.display = 'flex';
+    if (quickScoreRow) quickScoreRow.style.display = 'grid';
     if (resultSuccess) resultSuccess.style.display = 'none';
     if (resultWrong) resultWrong.style.display = 'none';
+
+    // Cập nhật điểm động lên nút Đúng (+20đ, +15đ, +50đ...) và nút Trừ
+    const correctBtn = document.getElementById('baamAnswerCorrectBtn');
+    if (correctBtn) correctBtn.innerHTML = `✅ Đúng (+${tile.points || 20}đ)`;
+    const penaltyBtn = document.getElementById('baamAnswerPenaltyBtn');
+    if (penaltyBtn) penaltyBtn.innerHTML = `⚠️ Trừ (-10đ)`;
 
     // Pronounce English prompt automatically
     setTimeout(() => {
@@ -2641,7 +2657,7 @@ function handleBaamStudentCheck() {
   const userText = inputEl.value.trim().toLowerCase();
 
   if (!userText) {
-    showToast("⚠️ Vui lòng nhập câu trả lời hoặc bấm 'Xem Đáp Án'!", "warning");
+    showToast("⚠️ Vui lòng nhập đáp án vào ô hoặc bấm nút Đúng / Trừ bên dưới!", "warning");
     inputEl.focus();
     return;
   }
@@ -2649,61 +2665,45 @@ function handleBaamStudentCheck() {
   const tile = BaamState.activeTile;
   if (!tile) return;
   const targetAns = (tile.a || "").toLowerCase();
+  const targetQ = (tile.q || "").toLowerCase();
 
-  // Smart matching
+  // Smart matching đáp án tiếng Anh & tiếng Việt
   const isMatch = targetAns.includes(userText) || userText.includes(targetAns) ||
+                  targetQ.includes(userText) || userText.includes(targetQ) ||
                   targetAns.split(/[\s,()/-]+/).some(w => w.length > 2 && userText.includes(w));
 
   if (isMatch) {
     handleBaamAnswerCorrect();
   } else {
-    handleBaamAnswerWrong();
+    handleBaamAnswerPenalty();
   }
 }
 
-// Reveal Answer button click
-function handleBaamRevealAnswer() {
-  const tile = BaamState.activeTile;
-  if (!tile) return;
-
-  const inputRow = document.getElementById('baamInteractiveInputRow');
-  const quickScoreRow = document.getElementById('baamQuickScoreRow');
-  const resultSuccess = document.getElementById('baamResultSuccess');
-  const resultWrong = document.getElementById('baamResultWrong');
-  const ansText = document.getElementById('baamWrongAnswerText');
-
-  if (inputRow) inputRow.style.display = 'none';
-  if (quickScoreRow) quickScoreRow.style.display = 'none';
-  if (resultSuccess) resultSuccess.style.display = 'none';
-
-  if (resultWrong) {
-    resultWrong.style.display = 'block';
-    if (ansText) ansText.textContent = tile.a;
-  }
-
-  speakWord(tile.q);
-}
-
-// Team Answered Correct (+20 Points or question points) -> Trừ/Cộng trực tiếp + Âm thanh Kahoot
+// Team Answered Correct (+20 Points or question points) -> Tự động nhảy đáp án & chuyển lượt
 function handleBaamAnswerCorrect() {
   const tile = BaamState.activeTile;
   if (!tile) return;
+  clearBaamAutoTimer();
 
   const team = BaamState.currentTeam;
+  const teamName = getTeamName(team);
   const points = (tile && tile.points) ? tile.points : 20;
 
   // Cộng trực tiếp với hiệu ứng nảy thẻ điểm và âm thanh Kahoot
   animateDirectScoreChange(team, points);
   triggerConfetti();
+  playKahootPowerupSound();
+  playSoundCheerAndApplause();
 
-  addXP(points, `Baamboozle: Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'} trả lời chuẩn xác`);
-  showToast(`🎉 Yeahhh! +${points} Điểm cho Đội ${team === 1 ? 'Cáo Đỏ' : 'Sư Tử Xanh'}!`, "success");
+  addXP(points, `Baamboozle: ${teamName} trả lời chuẩn xác`);
+  showToast(`🎉 Chính xác! +${points} Điểm cho ${teamName}!`, "success");
 
-  // Hide input & action controls
+  // Ẩn các nút chấm điểm, tự động nhảy đáp án đúng to rõ
   const inputRow = document.getElementById('baamInteractiveInputRow');
   const quickScoreRow = document.getElementById('baamQuickScoreRow');
   const resultSuccess = document.getElementById('baamResultSuccess');
   const resultWrong = document.getElementById('baamResultWrong');
+  const successTitle = document.getElementById('baamSuccessTitle');
   const ansText = document.getElementById('baamCorrectAnswerText');
 
   if (inputRow) inputRow.style.display = 'none';
@@ -2711,55 +2711,39 @@ function handleBaamAnswerCorrect() {
   if (resultWrong) resultWrong.style.display = 'none';
 
   if (resultSuccess) {
-    resultSuccess.style.display = 'block';
-    if (ansText) ansText.textContent = tile.a;
+    resultSuccess.style.display = 'flex';
+    if (successTitle) successTitle.textContent = `🎉 Chính xác! +${points} Điểm!`;
+    if (ansText) ansText.textContent = `${tile.q} ➔ ${tile.a}`;
   }
+
+  // Phát âm lại từ vựng chuẩn bản xứ
+  speakWord(tile.q);
+
+  // Tự động chuyển lượt sau 1.8 giây để cả lớp cùng thấy đáp án
+  baamAutoTurnTimer = setTimeout(() => {
+    markActiveTileCompleted();
+  }, 1800);
 }
 
-// Team Answered Wrong (0 Points)
-function handleBaamAnswerWrong() {
-  const tile = BaamState.activeTile;
-  if (!tile) return;
-
-  const team = BaamState.currentTeam;
-  animateDirectScoreChange(team, 0);
-
-  const teamName = team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
-  showToast(`Cố gắng hơn ở ô tiếp theo nhé ${teamName}!`, "warning");
-
-  const inputRow = document.getElementById('baamInteractiveInputRow');
-  const quickScoreRow = document.getElementById('baamQuickScoreRow');
-  const resultSuccess = document.getElementById('baamResultSuccess');
-  const resultWrong = document.getElementById('baamResultWrong');
-  const ansText = document.getElementById('baamWrongAnswerText');
-
-  if (inputRow) inputRow.style.display = 'none';
-  if (quickScoreRow) quickScoreRow.style.display = 'none';
-  if (resultSuccess) resultSuccess.style.display = 'none';
-
-  if (resultWrong) {
-    resultWrong.style.display = 'block';
-    const badge = resultWrong.querySelector('.res-badge');
-    if (badge) badge.textContent = `💡 Đáp án đúng: (0 điểm)`;
-    if (ansText) ansText.textContent = tile.a;
-  }
-}
-
-// Team Answered Wrong & Gets Penalized (-10 Points) -> Trừ trực tiếp + Rung thẻ điểm + Âm thanh Kahoot
+// Team Answered Penalty (-10 Points) -> Tự động nhảy đáp án đúng & chuyển lượt
 function handleBaamAnswerPenalty() {
   const tile = BaamState.activeTile;
   if (!tile) return;
+  clearBaamAutoTimer();
 
   const team = BaamState.currentTeam;
+  const teamName = getTeamName(team);
   animateDirectScoreChange(team, -10);
 
-  const teamName = team === 1 ? 'Đội Cáo Đỏ' : 'Đội Sư Tử Xanh';
-  showToast(`⚠️ ${teamName} bị trừ 10 Điểm! (Hiện tại: ${BaamState.scores[team]} điểm)`, "warning");
+  playSoundFunnyBoing();
+  showToast(`⚠️ ${teamName} bị trừ 10 Điểm! (Còn: ${BaamState.scores[team]} điểm)`, "warning");
 
+  // Ẩn các nút chấm điểm, tự động nhảy đáp án đúng to rõ
   const inputRow = document.getElementById('baamInteractiveInputRow');
   const quickScoreRow = document.getElementById('baamQuickScoreRow');
   const resultSuccess = document.getElementById('baamResultSuccess');
   const resultWrong = document.getElementById('baamResultWrong');
+  const wrongTitle = document.getElementById('baamWrongTitle');
   const ansText = document.getElementById('baamWrongAnswerText');
 
   if (inputRow) inputRow.style.display = 'none';
@@ -2767,11 +2751,18 @@ function handleBaamAnswerPenalty() {
   if (resultSuccess) resultSuccess.style.display = 'none';
 
   if (resultWrong) {
-    resultWrong.style.display = 'block';
-    const badge = resultWrong.querySelector('.res-badge');
-    if (badge) badge.textContent = `⚠️ Trừ 10 điểm (${teamName}: còn ${BaamState.scores[team]}đ)`;
-    if (ansText) ansText.textContent = tile.a;
+    resultWrong.style.display = 'flex';
+    if (wrongTitle) wrongTitle.textContent = `⚠️ Bị trừ 10 điểm! (${teamName}: còn ${BaamState.scores[team]}đ)`;
+    if (ansText) ansText.textContent = `${tile.q} ➔ ${tile.a}`;
   }
+
+  // Phát âm từ vựng để học sinh ghi nhớ
+  speakWord(tile.q);
+
+  // Tự động chuyển lượt sau 2.2 giây
+  baamAutoTurnTimer = setTimeout(() => {
+    markActiveTileCompleted();
+  }, 2200);
 }
 
 // Manual Score Adjustment for Teachers (+10 / -10)
@@ -2841,6 +2832,7 @@ function handleBaamPowerupConfirm() {
 
 // Mark current tile as opened and alternate turns
 function markActiveTileCompleted() {
+  clearBaamAutoTimer();
   if (BaamState.activeTile) {
     BaamState.activeTile.opened = true;
     BaamState.openedCount++;
