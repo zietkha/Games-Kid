@@ -1599,8 +1599,8 @@ const DEFAULT_BAAMBOOZLE_LESSONS = [
 ];
 
 const DEFAULT_TEAM_NAMES = {
-  1: "🦊 Đội Cáo Đỏ",
-  2: "🦁 Đội Sư Tử Xanh"
+  1: "lion",
+  2: "monkey"
 };
 
 // Active Baamboozle State
@@ -1832,99 +1832,51 @@ const BAAM_QUESTIONS_STORAGE_KEY = 'ekm_baam_custom_questions';
 const DEFAULT_BAAM_CUSTOM_QUESTIONS = [
   {
     id: "baam_cq_1",
-    vocab: "Elephant",
-    meaning: "Con voi to lớn",
-    image: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=600&auto=format&fit=crop&q=80",
+    vocab: "department store",
+    meaning: "cửa hàng bách hóa",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT25wIzfQ2bz8Wsi7zhEbozKYlSxn1PFU2t6ZvRSYDn4w&s=10",
     points: 20
   },
   {
-    id: "baam_cq_2",
-    vocab: "Apple",
-    meaning: "Quả táo đỏ ngọt ngào",
-    image: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80",
+    id: "baam_cq_1791025925848",
+    vocab: "park",
+    meaning: "công viên",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS799MS_PKShiy4pS1XkoACUVi6Pad4fHl8Fai6jJG4aUOt88nAb5qlqaI&s=10",
     points: 20
   },
   {
-    id: "baam_cq_3",
-    vocab: "Doctor",
-    meaning: "Bác sĩ khám chữa bệnh",
-    image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80",
+    id: "baam_cq_1791025953207",
+    vocab: "cabbage",
+    meaning: "bắp cải",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPmEZTIMmS9Y_qZbWraF_Cgipj1Vft5jwH7ZRIafNwdw&s=10",
     points: 20
   },
   {
-    id: "baam_cq_4",
-    vocab: "Cat",
-    meaning: "Chú mèo con dễ thương",
-    image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80",
+    id: "baam_cq_1791025980234",
+    vocab: "movie theater",
+    meaning: "rạp chiếu phim",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQg2qdpqVFL8f16ZQ48rKSpxkP9GW2wIZ9WQf2sQ1YcXw&s=10",
     points: 20
   },
   {
-    id: "baam_cq_5",
-    vocab: "School",
-    meaning: "Trường tiểu học thân yêu",
-    image: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80",
+    id: "baam_cq_1791026048345",
+    vocab: "post office",
+    meaning: "Bưu điện",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5rQh1vWoYLFPwO9hhAMw8TKWjInQIeoMJWZ8slFjfCw&s=10",
     points: 20
-  },
-  {
-    id: "baam_cq_6",
-    vocab: "Dog",
-    meaning: "Chú cún con vẫy đuôi",
-    image: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80",
-    points: 20
-  },
-  {
-    id: "baam_cq_7",
-    vocab: "Pizza",
-    meaning: "Bánh pizza phô mai",
-    image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
-    points: 20
-  },
-  {
-    id: "baam_cq_8",
-    vocab: "Bird",
-    meaning: "Chú chim hót líu lo",
-    image: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80",
-    points: 20
-  },
-  {
-    id: "baam_cq_9",
-    vocab: "Bicycle",
-    meaning: "Chiếc xe đạp nhỏ",
-    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=600&auto=format&fit=crop&q=80",
-    points: 20
-  },
-  {
-    id: "baam_cq_10",
-    vocab: "Beach",
-    meaning: "Bãi biển đầy cát vàng",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80",
-    points: 25
-  },
-  {
-    id: "baam_cq_11",
-    vocab: "Book",
-    meaning: "Quyển sách tiếng Anh",
-    image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&auto=format&fit=crop&q=80",
-    points: 15
-  },
-  {
-    id: "baam_cq_12",
-    vocab: "Sun",
-    meaning: "Mặt trời rực rỡ buổi sớm",
-    image: "https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=600&auto=format&fit=crop&q=80",
-    points: 50
   }
 ];
 
 const BAAM_IMAGE_PRESETS = [
+  { name: "department store", vocab: "department store", meaning: "cửa hàng bách hóa", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT25wIzfQ2bz8Wsi7zhEbozKYlSxn1PFU2t6ZvRSYDn4w&s=10" },
+  { name: "park", vocab: "park", meaning: "công viên", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS799MS_PKShiy4pS1XkoACUVi6Pad4fHl8Fai6jJG4aUOt88nAb5qlqaI&s=10" },
+  { name: "cabbage", vocab: "cabbage", meaning: "bắp cải", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPmEZTIMmS9Y_qZbWraF_Cgipj1Vft5jwH7ZRIafNwdw&s=10" },
+  { name: "movie theater", vocab: "movie theater", meaning: "rạp chiếu phim", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQg2qdpqVFL8f16ZQ48rKSpxkP9GW2wIZ9WQf2sQ1YcXw&s=10" },
+  { name: "post office", vocab: "post office", meaning: "Bưu điện", url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5rQh1vWoYLFPwO9hhAMw8TKWjInQIeoMJWZ8slFjfCw&s=10" },
   { name: "Elephant", vocab: "Elephant", meaning: "Con voi", url: "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=600&auto=format&fit=crop&q=80" },
   { name: "Apple", vocab: "Apple", meaning: "Quả táo", url: "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80" },
   { name: "Doctor", vocab: "Doctor", meaning: "Bác sĩ", url: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&auto=format&fit=crop&q=80" },
-  { name: "Cat", vocab: "Cat", meaning: "Con mèo", url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80" },
-  { name: "School", vocab: "School", meaning: "Trường học", url: "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&auto=format&fit=crop&q=80" },
-  { name: "Dog", vocab: "Dog", meaning: "Con chó", url: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=600&auto=format&fit=crop&q=80" },
-  { name: "Pizza", vocab: "Pizza", meaning: "Bánh pizza", url: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80" },
-  { name: "Bird", vocab: "Bird", meaning: "Con chim", url: "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&auto=format&fit=crop&q=80" }
+  { name: "Cat", vocab: "Cat", meaning: "Con mèo", url: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80" }
 ];
 
 // Helper: Get custom questions from localStorage
@@ -1933,12 +1885,18 @@ function getBaamCustomQuestions() {
     const raw = localStorage.getItem(BAAM_QUESTIONS_STORAGE_KEY);
     if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // If it was the old animal default, upgrade to the user's questions
+        const isOldAnimalDefault = parsed.length === 12 && parsed[0].vocab === "Elephant" && parsed[1].vocab === "Apple";
+        if (!isOldAnimalDefault) {
+          return parsed;
+        }
+      }
     }
   } catch (e) {
     console.warn("Error reading custom questions from storage:", e);
   }
-  // Default to 12 illustrated sample questions
+  // Default to the user's exact setup questions
   const def = JSON.parse(JSON.stringify(DEFAULT_BAAM_CUSTOM_QUESTIONS));
   try {
     localStorage.setItem(BAAM_QUESTIONS_STORAGE_KEY, JSON.stringify(def));
@@ -3152,12 +3110,12 @@ function restartBaamboozleGame() {
 
 const DEFAULT_TEAM1_ROSTER = [
   "Minh Khang", "Bảo Trâm", "Tuấn Kiệt", "Gia Bảo", "Khánh An",
-  "Hải Đăng", "Bảo Ngọc", "Phương Thảo", "Hoàng Nam", "Thảo My"
+  "Bảo Ngọc", "Phương Thảo", "Hoàng Nam", "Thảo My"
 ];
 
 const DEFAULT_TEAM2_ROSTER = [
   "Đăng Khoa", "Thanh Trúc", "Việt Hoàng", "Quỳnh Anh", "Đức Anh",
-  "Hương Giang", "Quang Huy", "Ngọc Diệp", "Anh Dũng", "Cẩm Ly"
+  "Hương Giang", "Ngọc Diệp", "Anh Dũng", "Cẩm Ly"
 ];
 
 const WHEEL_PALETTES = {
