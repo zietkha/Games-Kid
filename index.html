@@ -885,6 +885,9 @@
           <button type="button" class="btn btn-secondary small-btn" onclick="scrollToTeacherZone()" style="font-weight:700;">
             ✏️ Soạn thêm / Sửa từ vựng
           </button>
+          <button type="button" class="btn btn-secondary small-btn" id="baamTgTopBtn" onclick="openBaamTelegramModal()" style="font-weight:800; background:#0284C7; color:#fff; border-color:#0369A1;" title="Cài đặt Telegram nhận đáp án bí mật 16 ô">
+            ✈️ Đáp án Telegram
+          </button>
           <button type="button" class="btn btn-primary small-btn" onclick="initBaamboozleGame(); playKahootPowerupSound(); showToast('🔄 Đã xáo trộn và nạp lại kho câu hỏi!', 'success');" style="font-weight:700;">
             🔄 Nạp lại 16 ô mới
           </button>
@@ -972,9 +975,14 @@
             <span class="turn-dot"></span>
             <h3 id="baamTurnIndicator" style="margin:0; font-size:22px;">Lượt của: Đội Cáo Đỏ 🦊 — Hãy chọn 1 ô số!</h3>
           </div>
-          <button type="button" class="btn btn-secondary small-btn" onclick="restartBaamboozleGame()">
-            🔄 Chơi lại
-          </button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary small-btn" id="baamTgGridBtn" onclick="openBaamTelegramModal()" style="background:#0284C7; color:#fff; border-color:#0369A1; font-weight:800;" title="Nhận lộ diện 16 ô qua Telegram">
+              ✈️ Đáp án Telegram
+            </button>
+            <button type="button" class="btn btn-secondary small-btn" onclick="restartBaamboozleGame()">
+              🔄 Chơi lại
+            </button>
+          </div>
         </div>
         <div class="baam-tiles-grid" id="baamTilesGrid">
           <!-- 16 tiles rendered by JS -->
@@ -1640,6 +1648,64 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: CẤU HÌNH GỬI ĐÁP ÁN BÍ MẬT QUA TELEGRAM ================= -->
+  <div class="modal-overlay" id="baamTelegramModal" aria-hidden="true">
+    <div class="modal-card" style="max-width:580px;">
+      <button class="modal-close-btn" onclick="closeModal('baamTelegramModal')">✕</button>
+      <div class="modal-header" style="margin-bottom:14px; text-align:center;">
+        <div style="font-size:48px; margin-bottom:4px;">✈️</div>
+        <span class="continue-badge" style="background:#0284C7; color:#fff;">Khu vực bí mật của Thầy/Cô</span>
+        <h3 style="margin-top:6px; font-size:24px;">Gửi lộ diện 16 ô qua Telegram</h3>
+        <p style="color:#64748B; font-size:15px; margin:4px 0 0 0;">
+          Tự động gửi bản đồ toàn bộ 16 ô (câu hỏi, đáp án, rương vàng, mìn, đổi điểm) vào điện thoại thầy cô khi bắt đầu ván mới!
+        </p>
+      </div>
+
+      <div id="tgConfigStatus" style="padding:10px 14px; border-radius:10px; font-size:14px; font-weight:700; margin-bottom:14px; background:#F8FAFC; border:1.5px solid #CBD5E1;">
+        <!-- Filled by JS -->
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label for="tgBotTokenInput" style="font-weight:800; font-size:15px; display:block; margin-bottom:6px; color:var(--ink);">
+          🤖 Telegram Bot Token:
+        </label>
+        <input type="text" id="tgBotTokenInput" class="glass-input" placeholder="Ví dụ: 7123456789:AAHkL1m0v..." style="width:100%; font-size:15px; font-family:monospace;">
+        <div style="font-size:13px; color:#64748B; margin-top:4px;">
+          💡 <em>Chat với <strong>@BotFather</strong> trên Telegram, gõ <code>/newbot</code> để tạo bot và copy Token.</em>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label for="tgChatIdInput" style="font-weight:800; font-size:15px; display:block; margin-bottom:6px; color:var(--ink);">
+          💬 Telegram Chat ID:
+        </label>
+        <input type="text" id="tgChatIdInput" class="glass-input" placeholder="Ví dụ: 123456789 hoặc -100123456789" style="width:100%; font-size:15px; font-family:monospace;">
+        <div style="font-size:13px; color:#64748B; margin-top:4px;">
+          💡 <em>Chat với bot <strong>@userinfobot</strong> trên Telegram để lấy ID của bạn (dãy số dạng <code>123456789</code>).</em>
+        </div>
+      </div>
+
+      <div style="background:#F0FDF4; border:1.5px solid #86EFAC; border-radius:12px; padding:12px 14px; margin-bottom:18px;">
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:800; color:#166534; font-size:15px;">
+          <input type="checkbox" id="tgAutoSendCheckbox" style="width:20px; height:20px; accent-color:#16A34A;" checked>
+          <span>Tự động gửi ma trận 16 ô qua Telegram mỗi khi bắt đầu hoặc chia lại ô mới</span>
+        </label>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; align-items:center;">
+        <button type="button" class="btn btn-secondary small-btn" onclick="testTelegramConnection()">
+          🧪 Gửi thử nghiệm
+        </button>
+        <button type="button" class="btn btn-secondary small-btn" onclick="sendBaamMatrixToTelegram(false)" style="background:#0284C7; color:#fff; border-color:#0369A1;">
+          ✈️ Gửi đáp án ván này ngay
+        </button>
+        <button type="button" class="btn btn-green" onclick="saveTelegramSettingsFromModal()">
+          💾 Lưu cấu hình
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= MODAL: KẾT QUẢ QUAY TRÚNG HỌC SINH LÊN BẢNG ================= -->
   <div class="modal-overlay" id="baamWinnerModal" aria-hidden="true">
     <div class="modal-card" style="text-align:center; max-width:540px;">
@@ -1703,6 +1769,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20261003_v4"></script>
+  <script src="app.js?v=20261003_v5"></script>
 </body>
 </html>

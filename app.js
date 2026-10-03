@@ -2552,6 +2552,19 @@ function initBaamboozleGame() {
       bannerTitle.textContent = "🎯 Đang chơi với bộ câu hỏi bài học mặc định";
     }
   }
+
+  // Cập nhật trạng thái nút Telegram
+  if (typeof updateTelegramButtonBadge === 'function') {
+    updateTelegramButtonBadge();
+  }
+
+  // Tự động gửi ma trận đáp án 16 ô qua Telegram cho thầy cô nếu đã cấu hình
+  if (typeof getTelegramConfig === 'function') {
+    const tgConfig = getTelegramConfig();
+    if (tgConfig.botToken && tgConfig.chatId && tgConfig.autoSend) {
+      sendBaamMatrixToTelegram(false);
+    }
+  }
 }
 
 // Render the 16 Baamboozle Tiles on the grid
@@ -3186,6 +3199,251 @@ function restartBaamboozleGame() {
   initBaamboozleGame();
   showToast("🚀 Trận đấu Baamboozle mới đã sẵn sàng!", "info");
 }
+
+// ==========================================================================
+// 12.0. Telegram Secret Answer Key Bot for Teachers (Lộ diện toàn bộ 16 ô qua Telegram)
+// ==========================================================================
+
+const DEFAULT_TELEGRAM_CONFIG = {
+  botToken: "",
+  chatId: "",
+  autoSend: true
+};
+
+function getTelegramConfig() {
+  try {
+    const raw = localStorage.getItem('baam_telegram_config');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        botToken: (parsed.botToken || "").trim(),
+        chatId: (parsed.chatId || "").trim(),
+        autoSend: parsed.autoSend !== undefined ? Boolean(parsed.autoSend) : true
+      };
+    }
+  } catch (e) {
+    console.warn("Lỗi đọc telegram config:", e);
+  }
+  return { ...DEFAULT_TELEGRAM_CONFIG };
+}
+
+function saveTelegramConfig(config) {
+  try {
+    localStorage.setItem('baam_telegram_config', JSON.stringify({
+      botToken: (config.botToken || "").trim(),
+      chatId: (config.chatId || "").trim(),
+      autoSend: Boolean(config.autoSend)
+    }));
+  } catch (e) {
+    console.error("Lỗi lưu telegram config:", e);
+  }
+}
+
+function openBaamTelegramModal() {
+  const config = getTelegramConfig();
+  const tokenInput = document.getElementById('tgBotTokenInput');
+  const chatIdInput = document.getElementById('tgChatIdInput');
+  const autoSendCheck = document.getElementById('tgAutoSendCheckbox');
+  const statusEl = document.getElementById('tgConfigStatus');
+
+  if (tokenInput) tokenInput.value = config.botToken || '';
+  if (chatIdInput) chatIdInput.value = config.chatId || '';
+  if (autoSendCheck) autoSendCheck.checked = config.autoSend !== false;
+
+  if (statusEl) {
+    if (config.botToken && config.chatId) {
+      statusEl.innerHTML = `🟢 <strong>Đã kết nối:</strong> Bot đã được cấu hình và sẵn sàng gửi ma trận đáp án.`;
+      statusEl.style.color = "#15803D";
+      statusEl.style.background = "#DCFCE7";
+      statusEl.style.borderColor = "#86EFAC";
+    } else {
+      statusEl.innerHTML = `⚠️ <strong>Chưa cấu hình:</strong> Vui lòng nhập Bot Token và Chat ID để nhận đáp án qua Telegram.`;
+      statusEl.style.color = "#B45309";
+      statusEl.style.background = "#FEF3C7";
+      statusEl.style.borderColor = "#FCD34D";
+    }
+  }
+
+  openModal('baamTelegramModal');
+}
+window.openBaamTelegramModal = openBaamTelegramModal;
+
+function saveTelegramSettingsFromModal() {
+  const tokenInput = document.getElementById('tgBotTokenInput');
+  const chatIdInput = document.getElementById('tgChatIdInput');
+  const autoSendCheck = document.getElementById('tgAutoSendCheckbox');
+
+  const botToken = tokenInput ? tokenInput.value.trim() : '';
+  const chatId = chatIdInput ? chatIdInput.value.trim() : '';
+  const autoSend = autoSendCheck ? autoSendCheck.checked : true;
+
+  if (!botToken || !chatId) {
+    showToast("⚠️ Vui lòng nhập cả Bot Token và Chat ID!", "warning");
+    return;
+  }
+
+  saveTelegramConfig({ botToken, chatId, autoSend });
+  showToast("💾 Đã lưu cấu hình Telegram thành công vĩnh viễn!", "success");
+  closeModal('baamTelegramModal');
+
+  updateTelegramButtonBadge();
+}
+window.saveTelegramSettingsFromModal = saveTelegramSettingsFromModal;
+
+function updateTelegramButtonBadge() {
+  const config = getTelegramConfig();
+  const isReady = Boolean(config.botToken && config.chatId);
+  const topBtn = document.getElementById('baamTgTopBtn');
+  const gridBtn = document.getElementById('baamTgGridBtn');
+
+  const text = isReady ? "✈️ Telegram (Đã bật)" : "✈️ Cài đặt Telegram";
+
+  if (topBtn) {
+    topBtn.innerHTML = text;
+    topBtn.style.background = isReady ? "#0284C7" : "#475569";
+    topBtn.title = isReady ? "Telegram đã sẵn sàng tự động gửi 16 ô đáp án" : "Chưa cấu hình Telegram";
+  }
+  if (gridBtn) {
+    gridBtn.innerHTML = text;
+    gridBtn.style.background = isReady ? "#0284C7" : "#475569";
+    gridBtn.title = isReady ? "Telegram đã sẵn sàng tự động gửi 16 ô đáp án" : "Chưa cấu hình Telegram";
+  }
+}
+window.updateTelegramButtonBadge = updateTelegramButtonBadge;
+
+let lastTelegramSentTime = 0;
+
+async function sendBaamMatrixToTelegram(isTest = false) {
+  const config = getTelegramConfig();
+  if (!config.botToken || !config.chatId) {
+    if (isTest) {
+      showToast("⚠️ Vui lòng nhập đầy đủ Bot Token và Chat ID trước khi kiểm tra!", "warning");
+    }
+    return false;
+  }
+
+  // Chống spam / trùng lặp liên tiếp trong 2 giây (trừ khi test)
+  const now = Date.now();
+  if (!isTest && now - lastTelegramSentTime < 2000) {
+    return false;
+  }
+  lastTelegramSentTime = now;
+
+  const dateStr = new Date().toLocaleString('vi-VN', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+  const team1 = getTeamName(1);
+  const team2 = getTeamName(2);
+
+  let message = "";
+  if (isTest) {
+    message = `🔔 <b>[TEST KẾT NỐI TELEGRAM THÀNH CÔNG]</b>\n\n` +
+      `⏰ <b>Thời gian:</b> <i>${dateStr}</i>\n` +
+      `🎮 <b>Website:</b> English Kha Master (Baamboozle)\n` +
+      `🦁 <b>Đội 1:</b> ${team1}\n` +
+      `🐒 <b>Đội 2:</b> ${team2}\n\n` +
+      `✅ <i>Bot Telegram đã kết nối thành công! Khi vào game hoặc bấm 'Chơi lại', ma trận bí mật 16 ô sẽ tự động gửi vào đây.</i>`;
+  } else {
+    message = `🎲 <b>[BAAMBOOZLE] BẢN ĐỒ ĐÁP ÁN BÍ MẬT (16 Ô)</b>\n` +
+      `⏰ <i>Bắt đầu lúc: ${dateStr}</i>\n` +
+      `🦁 <b>Đội 1:</b> <code>${team1}</code>  |  🐒 <b>Đội 2:</b> <code>${team2}</code>\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+    if (BaamState.tiles && BaamState.tiles.length > 0) {
+      BaamState.tiles.forEach((tile, idx) => {
+        const num = idx + 1;
+        const pad = num < 10 ? `0${num}` : `${num}`;
+
+        if (tile.type === 'powerup') {
+          if (tile.powerupType === 'bonus') {
+            message += `🎁 <b>Ô ${pad}:</b> RƯƠNG VÀNG ➔ <b>+40 Điểm</b>\n`;
+          } else if (tile.powerupType === 'swap') {
+            message += `⚡ <b>Ô ${pad}:</b> CƠN LỐC ĐẢO NGƯỢC ➔ <b>Đổi điểm 2 đội</b>\n`;
+          } else if (tile.powerupType === 'steal') {
+            message += `🔄 <b>Ô ${pad}:</b> CƯỚP ĐIỂM SIÊU HẠNG ➔ <b>Cướp 5đ / 10đ / 20đ</b>\n`;
+          } else if (tile.powerupType === 'bomb') {
+            message += `💣 <b>Ô ${pad}:</b> MÌN NỔ ➔ <b>Trừ 20 Điểm!</b>\n`;
+          } else {
+            message += `✨ <b>Ô ${pad}:</b> ${tile.title || 'Quà bí mật'}\n`;
+          }
+        } else {
+          const q = tile.q || '';
+          const a = tile.a || '';
+          const pts = tile.points || 20;
+          message += `❓ <b>Ô ${pad}:</b> <i>"${q}"</i> ➔ <b>${a}</b> (+${pts}đ)\n`;
+        }
+      });
+    }
+
+    message += `\n━━━━━━━━━━━━━━━━━━━━\n` +
+      `💡 <i>Thầy cô mở tin nhắn này trên điện thoại để điều phối trò chơi trên lớp nhé!</i>`;
+  }
+
+  try {
+    const url = `https://api.telegram.org/bot${config.botToken}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: config.chatId,
+        text: message,
+        parse_mode: 'HTML'
+      })
+    });
+
+    const data = await res.json();
+    if (data.ok) {
+      if (isTest) {
+        showToast("✅ Đã gửi tin nhắn test thành công qua Telegram!", "success");
+      } else {
+        showToast("✈️ Đã gửi đáp án 16 ô qua Telegram cho thầy cô!", "info");
+      }
+      return true;
+    } else {
+      console.error("Lỗi Telegram API:", data);
+      showToast(`❌ Lỗi Telegram: ${data.description || 'Không gửi được tin nhắn'}`, "error");
+      return false;
+    }
+  } catch (err) {
+    console.error("Lỗi kết nối Telegram:", err);
+    showToast(`❌ Lỗi kết nối Telegram: ${err.message}`, "error");
+    return false;
+  }
+}
+window.sendBaamMatrixToTelegram = sendBaamMatrixToTelegram;
+
+async function testTelegramConnection() {
+  const tokenInput = document.getElementById('tgBotTokenInput');
+  const chatIdInput = document.getElementById('tgChatIdInput');
+  const botToken = tokenInput ? tokenInput.value.trim() : '';
+  const chatId = chatIdInput ? chatIdInput.value.trim() : '';
+
+  if (!botToken || !chatId) {
+    showToast("⚠️ Vui lòng nhập cả Bot Token và Chat ID trước khi kiểm tra!", "warning");
+    return;
+  }
+
+  // Tạm lưu để test
+  saveTelegramConfig({
+    botToken,
+    chatId,
+    autoSend: document.getElementById('tgAutoSendCheckbox')?.checked !== false
+  });
+
+  showToast("⏳ Đang gửi tin nhắn thử nghiệm tới Telegram...", "info");
+  const ok = await sendBaamMatrixToTelegram(true);
+  if (ok) {
+    const statusEl = document.getElementById('tgConfigStatus');
+    if (statusEl) {
+      statusEl.innerHTML = `🟢 <strong>Kết nối thành công!</strong> Tin nhắn test đã tới Telegram của bạn.`;
+      statusEl.style.color = "#15803D";
+      statusEl.style.background = "#DCFCE7";
+      statusEl.style.borderColor = "#86EFAC";
+    }
+  }
+}
+window.testTelegramConnection = testTelegramConnection;
 
 // ==========================================================================
 // 12.1. Lucky Wheels Engine for Baamboozle (2 Vòng quay may mắn gọi học sinh 2 đội)
@@ -4199,6 +4457,7 @@ function initBaamboozleEngine() {
   updateTeamNamesUI();
   loadStudentRosters();
   initRosterInputListeners();
+  updateTelegramButtonBadge();
 
   // Restart match button
   const restartBtn = document.getElementById('baamRestartGameBtn');
