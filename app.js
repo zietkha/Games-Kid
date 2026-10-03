@@ -3323,7 +3323,7 @@ function drawBaamWheel(team) {
       maxChars = 15;
     }
 
-    ctx.font = `900 ${fontSize}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+    ctx.font = `900 ${fontSize}px "Nunito", "Baloo 2", sans-serif`;
     ctx.fillStyle = "#FFFFFF";
     ctx.shadowColor = "rgba(0, 0, 0, 0.55)";
     ctx.shadowBlur = 3;
@@ -3354,7 +3354,7 @@ function drawBaamWheel(team) {
   ctx.strokeStyle = team === 1 ? "#EF4444" : "#3B82F6";
   ctx.stroke();
 
-  ctx.font = "24px -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  ctx.font = '24px "Baloo 2", "Nunito", sans-serif';
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.shadowColor = "transparent";

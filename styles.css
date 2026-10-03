@@ -1193,17 +1193,29 @@ textarea:focus {
 }
 
 .team-name {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
+  font-family: "Baloo 2", "Nunito", var(--font-display);
+  font-size: 26px;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  text-align: center;
+  gap: 8px;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
   transition: transform 0.15s ease;
+  margin: 6px auto;
 }
 .team-name:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
+}
+
+.team-1-card .team-name {
+  color: #DC2626;
+}
+
+.team-2-card .team-name {
+  color: #1D4ED8;
 }
 
 .tag-chip {
@@ -1278,27 +1290,66 @@ textarea:focus {
 .wheel-header {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 2px dashed #CBD5E1;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2.5px dashed #CBD5E1;
+  position: relative;
 }
 
 .wheel-team-title {
-  font-family: var(--font-display);
-  font-size: 20px;
+  font-family: "Baloo 2", "Nunito", var(--font-display);
+  font-size: 28px;
   font-weight: 900;
-  color: var(--ink);
+  line-height: 1.25;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 28px;
+  border-radius: 99px;
+  border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wheel-team-title:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.wheel-box-team1 .wheel-team-title {
+  background-color: #FEE2E2;
+  color: #DC2626;
+  border-color: var(--ink);
+}
+
+.wheel-box-team2 .wheel-team-title {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+  border-color: var(--ink);
 }
 
 .wheel-roster-count {
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 800;
-  padding: 3px 10px;
+  padding: 4px 14px;
   border-radius: 99px;
-  border: 1.5px solid var(--ink);
+  border: 2px solid var(--ink);
   background-color: #FFFFFF;
+  color: #475569;
+  box-shadow: 0 2px 0 var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .wheel-stage-wrap {
@@ -1345,9 +1396,12 @@ textarea:focus {
 }
 
 .wheel-spin-btn {
-  font-size: 18px;
+  font-family: "Baloo 2", "Nunito", var(--font-display);
+  font-size: 20px;
   font-weight: 900;
-  padding: 12px 20px;
+  padding: 13px 22px;
+  border-radius: var(--r-m);
+  letter-spacing: 0.4px;
   margin-top: auto;
 }
 
