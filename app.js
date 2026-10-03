@@ -2776,9 +2776,18 @@ function openBaamTile(idx) {
       } else {
         // Swap
         if (icon) icon.textContent = '⚡';
-        if (title) title.textContent = tile.title;
-        if (desc) desc.textContent = tile.desc;
-        if (okBtn) okBtn.textContent = "Đổi điểm 2 đội & tiếp tục";
+        if (title) title.textContent = tile.title || "Cơn Lốc Đảo Ngược! ⚡";
+        if (desc) {
+          const s1 = BaamState.scores[1] !== undefined ? BaamState.scores[1] : 0;
+          const s2 = BaamState.scores[2] !== undefined ? BaamState.scores[2] : 0;
+          desc.innerHTML = `Bất ngờ chưa! Cơn lốc ma thuật sẽ <strong>hoán đổi toàn bộ điểm số</strong> của hai đội cho nhau!<br>
+            <div style="margin-top:14px; padding:12px 18px; background:linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%); border:2px dashed #3B82F6; border-radius:16px; font-size:18px; font-weight:800; color:#1E40AF; display:inline-block; box-shadow:0 4px 12px rgba(59,130,246,0.15);">
+              🦁 <span style="color:#DC2626;">${getTeamName(1)}: ${s1}đ</span>
+              <span style="margin:0 12px; font-size:24px; color:#F59E0B;">⇆</span>
+              🐒 <span style="color:#2563EB;">${getTeamName(2)}: ${s2}đ</span>
+            </div>`;
+        }
+        if (okBtn) okBtn.textContent = "⚡ Hoán Đổi Điểm 2 Đội Ngay & Đổi Lượt";
         playSoundMystery();
       }
     }
@@ -3015,8 +3024,88 @@ function executeBaamStealChoice(stolenPoints) {
 }
 window.executeBaamStealChoice = executeBaamStealChoice;
 
+// Biến cờ chống click đúp hoặc xử lý trùng lặp sự kiện
+let isBaamPowerupProcessing = false;
+
+// Thực hiện hoán đổi điểm 2 đội với hiệu ứng đẹp mắt, pháo hoa và âm thanh sinh động
+function executeBaamSwapScores() {
+  const oldScore1 = BaamState.scores[1] !== undefined ? BaamState.scores[1] : 0;
+  const oldScore2 = BaamState.scores[2] !== undefined ? BaamState.scores[2] : 0;
+  const name1 = getTeamName(1);
+  const name2 = getTeamName(2);
+
+  // Đổi điểm thực tế trong state
+  BaamState.scores[1] = oldScore2;
+  BaamState.scores[2] = oldScore1;
+
+  // Hiệu ứng âm thanh ma thuật & powerup
+  playSoundMystery();
+  playKahootPowerupSound();
+
+  // Hiệu ứng nảy thẻ điểm cho cả 2 đội
+  const card1 = document.getElementById('teamCard1');
+  const card2 = document.getElementById('teamCard2');
+  if (card1) {
+    card1.classList.remove('score-bump-gain', 'score-bump-loss');
+    void card1.offsetWidth;
+    card1.classList.add(oldScore2 >= oldScore1 ? 'score-bump-gain' : 'score-bump-loss');
+    setTimeout(() => card1.classList.remove('score-bump-gain', 'score-bump-loss'), 700);
+  }
+  if (card2) {
+    card2.classList.remove('score-bump-gain', 'score-bump-loss');
+    void card2.offsetWidth;
+    card2.classList.add(oldScore1 >= oldScore2 ? 'score-bump-gain' : 'score-bump-loss');
+    setTimeout(() => card2.classList.remove('score-bump-gain', 'score-bump-loss'), 700);
+  }
+
+  // Floating pill hiển thị điểm mới nổi bật
+  const float1 = document.getElementById('teamScoreFloat1');
+  if (float1) {
+    const pill1 = document.createElement('div');
+    pill1.className = `floating-score-pill ${oldScore2 >= oldScore1 ? 'gain' : 'loss'}`;
+    pill1.textContent = `⚡ ${oldScore2} đ`;
+    float1.appendChild(pill1);
+    setTimeout(() => pill1.remove(), 1600);
+  }
+  const float2 = document.getElementById('teamScoreFloat2');
+  if (float2) {
+    const pill2 = document.createElement('div');
+    pill2.className = `floating-score-pill ${oldScore1 >= oldScore2 ? 'gain' : 'loss'}`;
+    pill2.textContent = `⚡ ${oldScore1} đ`;
+    float2.appendChild(pill2);
+    setTimeout(() => pill2.remove(), 1600);
+  }
+
+  // Cập nhật DOM điểm ngay lập tức
+  const scoreEl1 = document.getElementById('teamScore1') || document.getElementById('baamTeam1Score');
+  const scoreEl2 = document.getElementById('teamScore2') || document.getElementById('baamTeam2Score');
+  if (scoreEl1) {
+    scoreEl1.textContent = BaamState.scores[1];
+    if (BaamState.scores[1] < 0) scoreEl1.classList.add('is-negative');
+    else scoreEl1.classList.remove('is-negative');
+  }
+  if (scoreEl2) {
+    scoreEl2.textContent = BaamState.scores[2];
+    if (BaamState.scores[2] < 0) scoreEl2.classList.add('is-negative');
+    else scoreEl2.classList.remove('is-negative');
+  }
+
+  // Bắn pháo hoa rực rỡ ăn mừng pha đảo ngược thế trận
+  triggerConfetti();
+
+  // Thông báo rõ ràng điểm trước và sau khi đổi
+  showToast(`⚡ ĐÃ HOÁN ĐỔI ĐIỂM! ${name1}: ${oldScore1}đ ➔ ${oldScore2}đ | ${name2}: ${oldScore2}đ ➔ ${oldScore1}đ`, "info");
+}
+window.executeBaamSwapScores = executeBaamSwapScores;
+
 // Confirm Power-Up Event -> Trừ mìn 20đ hoặc Đảo ngược điểm
 function handleBaamPowerupConfirm() {
+  if (isBaamPowerupProcessing) return;
+  isBaamPowerupProcessing = true;
+  setTimeout(() => {
+    isBaamPowerupProcessing = false;
+  }, 600);
+
   const tile = BaamState.activeTile;
   if (!tile || tile.type !== 'powerup') return;
 
@@ -3027,18 +3116,12 @@ function handleBaamPowerupConfirm() {
     animateDirectScoreChange(currentTeam, -20);
     showToast(`💣 ${currentTeamName} bị trừ 20 Điểm vì đạp trúng mìn!`, "warning");
   } else if (tile.powerupType === 'swap') {
-    const temp1 = BaamState.scores[1];
-    const temp2 = BaamState.scores[2];
-    BaamState.scores[1] = temp2;
-    BaamState.scores[2] = temp1;
-    playSoundMystery();
-    animateDirectScoreChange(1, 0);
-    animateDirectScoreChange(2, 0);
-    showToast(`⚡ Điểm 2 đội đã được hoán đổi cho nhau!`, "info");
+    executeBaamSwapScores();
   }
 
   markActiveTileCompleted();
 }
+window.handleBaamPowerupConfirm = handleBaamPowerupConfirm;
 
 // Mark current tile as opened and alternate turns
 function markActiveTileCompleted() {
@@ -4185,11 +4268,6 @@ function initBaamboozleEngine() {
     });
   }
 
-  // Powerup OK Button
-  const powerupOkBtn = document.getElementById('baamPowerupOkBtn');
-  if (powerupOkBtn) {
-    powerupOkBtn.addEventListener('click', handleBaamPowerupConfirm);
-  }
 }
 
 function initAddLessonModal() {
