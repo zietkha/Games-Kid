@@ -2276,6 +2276,89 @@ function resetToDefaultBaamQuestions() {
 }
 window.resetToDefaultBaamQuestions = resetToDefaultBaamQuestions;
 
+// Export questions, teams, and rosters to a JSON backup file
+function exportBaamQuestionsToFile() {
+  const list = getBaamCustomQuestions();
+  const data = {
+    appName: "English Kha Master",
+    version: "2.0",
+    exportDate: new Date().toISOString(),
+    customQuestions: list,
+    teamNames: BaamState.teamNames,
+    rosters: {
+      1: (BaamWheelState && BaamWheelState[1]) ? BaamWheelState[1].students : [],
+      2: (BaamWheelState && BaamWheelState[2]) ? BaamWheelState[2].students : []
+    }
+  };
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `EnglishKhaMaster_Questions_Backup_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '-')}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Đã tải file dự phòng câu hỏi và cấu hình về máy thành công!", "success");
+}
+window.exportBaamQuestionsToFile = exportBaamQuestionsToFile;
+
+// Import questions from a JSON file
+function importBaamQuestionsFromFile(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        saveBaamCustomQuestions(data);
+      } else if (data.customQuestions && Array.isArray(data.customQuestions)) {
+        saveBaamCustomQuestions(data.customQuestions);
+        if (data.teamNames) {
+          if (data.teamNames[1]) {
+            BaamState.teamNames[1] = data.teamNames[1];
+            try { localStorage.setItem('ekm_baam_team1_name', data.teamNames[1]); } catch(err){}
+          }
+          if (data.teamNames[2]) {
+            BaamState.teamNames[2] = data.teamNames[2];
+            try { localStorage.setItem('ekm_baam_team2_name', data.teamNames[2]); } catch(err){}
+          }
+          updateTeamNamesUI();
+        }
+        if (data.rosters && typeof BaamWheelState !== 'undefined') {
+          if (Array.isArray(data.rosters[1])) {
+            BaamWheelState[1].students = data.rosters[1];
+            try { localStorage.setItem('ekm_baam_roster_1', JSON.stringify(data.rosters[1])); } catch(err){}
+          }
+          if (Array.isArray(data.rosters[2])) {
+            BaamWheelState[2].students = data.rosters[2];
+            try { localStorage.setItem('ekm_baam_roster_2', JSON.stringify(data.rosters[2])); } catch(err){}
+          }
+          if (typeof syncRosterUI === 'function') syncRosterUI();
+          if (typeof drawBaamWheel === 'function') {
+            drawBaamWheel(1);
+            drawBaamWheel(2);
+          }
+        }
+      } else {
+        showToast("⚠️ Định dạng file JSON không hợp lệ!", "warning");
+        return;
+      }
+      renderBaamCustomQuestionsList();
+      initBaamboozleGame();
+      playKahootCorrectSound();
+      showToast("🎉 Nạp file câu hỏi và danh sách đội thành công!", "success");
+    } catch (err) {
+      showToast("⚠️ Lỗi đọc file JSON: " + err.message, "danger");
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+window.importBaamQuestionsFromFile = importBaamQuestionsFromFile;
+
 // Start game using the custom questions bank
 function startPlayingBaamCustomGame() {
   initBaamboozleGame();

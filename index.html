@@ -450,7 +450,14 @@
         <div class="card card-lg">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
             <h3>🏆 Kho câu hỏi Baamboozle (<span id="baamCustomQuestionsCount">0</span>)</h3>
-            <div style="display:flex; gap:8px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary small-btn" onclick="exportBaamQuestionsToFile()" title="Tải file sao lưu toàn bộ câu hỏi và danh sách đội về máy (.json)">
+                💾 Xuất file (.json)
+              </button>
+              <button type="button" class="btn btn-secondary small-btn" onclick="document.getElementById('baamImportQuestionsFileInput').click()" title="Nạp file sao lưu từ máy tính vào">
+                📂 Nạp file
+              </button>
+              <input type="file" id="baamImportQuestionsFileInput" accept=".json" style="display:none;" onchange="importBaamQuestionsFromFile(event)">
               <button type="button" class="btn btn-danger small-btn" onclick="clearAllBaamCustomQuestions()" title="Xóa toàn bộ câu hỏi Baamboozle">
                 🗑️ Xóa tất cả
               </button>
@@ -1696,6 +1703,6 @@
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
   <!-- Scripts -->
-  <script src="app.js?v=20261003_v1"></script>
+  <script src="app.js?v=20261003_v2"></script>
 </body>
 </html>
